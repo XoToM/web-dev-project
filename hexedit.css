@@ -1,0 +1,23 @@
+.hexedit {
+    font-family: monospace;
+    font-weight: normal;
+    display:grid;
+    grid-template-columns: auto auto 1fr;
+    text-align: center;
+}
+.hexedit .labels {
+    display:grid;
+    grid-template-columns: auto;
+    margin-right: 1.5em;
+}
+.hexedit .labels, .hexedit .top-labels {
+    font-weight: bold;
+}
+.hexedit .top-labels {
+    display: grid;
+    grid-template-columns: repeat(16, 1.6em);
+}
+.hexedit .data {
+    display: grid;
+    grid-template-columns: repeat(16, 1.6em);
+}
