@@ -121,16 +121,56 @@ function loadHex(hex_id, data, defaultAddrPadding){
 	function applyHighlight(highlight){
 		let [start, count, style] = highlight;
 
-		for(let i=start; i < Math.min(start + count, hex.values.childNodes.length-1); i++){
+		for(let i=start; i < Math.min(start + count, hex.values.childNodes.length); i++){
 			hex.values.childNodes[i].classList.add(style);
 		}
 	}
+	function removeHighlightCell(address, style){
+		let toAppend = [];
+		let toRemove = [];
+		for(let i=0;i<hex.highlights.length;i++){
+			let highlight = hex.highlights[i];
+			if(highlight[0] > address || highlight[0]+highlight[1] < address && style==highlight[2]) continue;
+
+			let [start, count, s] = highlight;
+			let index = address-start;
+
+			highlight[1] = index;
+
+			let rest = [address + 1, count-index-1, style];
+			if(rest[1] > 0) toAppend.push(rest);
+			
+			if(highlight[1]==0){
+				toRemove.push(highlight);
+			}
+		}
+		if(style){
+			hex.values.childNodes[address].classList.remove(style);
+		}else{
+			hex.values.childNodes[address].classList = [];
+		}
+		hex.highlights = hex.highlights.filter((e)=>!toRemove.includes(e));
+		for(let i = 0; i < toAppend.length; i++) hex.highlights.push(toAppend[i]);
+	}
 
 	data.highlight = function(start, count, style){
+		if(typeof count=="string"){
+			style = count;
+			count = 1;
+		}
 		let h = [start, count, style];
 		hex.highlights.push(h);
 		applyHighlight(h);
 	};
+	data.unhighlight = function(start, count, style){
+		if(typeof count == "string"){
+			style = count;
+			count = 1;
+		}
+		for(let i=start; i<start+count; i++){
+			removeHighlightCell(i, style);
+		}
+	}
 
 	let proxy = new Proxy(data, hex);
 	hex.proxy = proxy;

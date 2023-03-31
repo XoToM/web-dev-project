@@ -24,14 +24,25 @@
 .hexedit .data {
     display: grid;
     grid-template-columns: repeat(16, 1.6em);
+    z-index: -1;
 }
-.hexedit .data span{
+.hexedit .data *{
     background: white;
     /*border-left: dotted 1px black;*/
 }
 /*.hexedit .data span:nth-child(16n-15){
     border-left: none;
 }*/
-.hexedit .data span:nth-child(even){
+.hexedit .data *:nth-child(even){
     filter:brightness(92.5%);
+}
+
+.hexedit .red {
+    background:red;
+}
+.hexedit .green {
+    background:green;
+}
+.hexedit .blue {
+    background:blue;
 }
