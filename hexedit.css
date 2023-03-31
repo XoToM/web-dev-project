@@ -2,8 +2,9 @@
     font-family: monospace;
     font-weight: normal;
     display:grid;
-    grid-template-columns: auto auto 1fr;
+    grid-template-columns: auto auto;
     text-align: center;
+    padding-right: 1em;
 }
 .hexedit .labels {
     display:grid;
@@ -12,6 +13,9 @@
 }
 .hexedit .labels, .hexedit .top-labels {
     font-weight: bold;
+    position: sticky;
+    top: 0px;
+    background: silver;
 }
 .hexedit .top-labels {
     display: grid;
@@ -22,8 +26,12 @@
     grid-template-columns: repeat(16, 1.6em);
 }
 .hexedit .data span{
-    border-left: dotted 1px black;
+    background: white;
+    /*border-left: dotted 1px black;*/
 }
-.hexedit .data span:nth-child(16n-15){
+/*.hexedit .data span:nth-child(16n-15){
     border-left: none;
+}*/
+.hexedit .data span:nth-child(even){
+    filter:brightness(92.5%);
 }

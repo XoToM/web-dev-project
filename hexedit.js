@@ -15,23 +15,24 @@ function loadHex(hex_id, data, defaultAddrPadding){
 	hex.grid = grid;
 	hex.data = data;
 	hex.changes = [];
+	hex.highlights = [];
 
 
 	for (let i = 0; i < grid.childNodes.length; i++) {
 		if (grid.childNodes[i].className == "labels") {
 		  hex.labels = grid.childNodes[i];
 		  break;
-		}        
+		}
 	}
 
 	for (let i = 0; i < grid.childNodes.length; i++) {
 		if (grid.childNodes[i].className == "top-labels") {
 		  hex.top_labels = grid.childNodes[i];
 		  break;
-		}        
+		}
 	}
 
-	for(let i = 0; i < 16;i++){
+	for(let i = 0; i < 16; i++){
 		let elem = document.createElement("SPAN");
 		elem.innerText = i.toString(16).toUpperCase();
 		hex.top_labels.appendChild(elem);
@@ -41,7 +42,7 @@ function loadHex(hex_id, data, defaultAddrPadding){
 		if (grid.childNodes[i].className == "data") {
 		  hex.values = grid.childNodes[i];
 		  break;
-		}        
+		}
 	}
 
 	hex.set = function(obj, prop, val){
@@ -115,6 +116,20 @@ function loadHex(hex_id, data, defaultAddrPadding){
 				values.childNodes[addr].innerText = HEX_PALETTE[data[addr]];
 			}
 		}
+	};
+
+	function applyHighlight(highlight){
+		let [start, count, style] = highlight;
+
+		for(let i=start; i < Math.min(start + count, hex.values.childNodes.length-1); i++){
+			hex.values.childNodes[i].classList.add(style);
+		}
+	}
+
+	data.highlight = function(start, count, style){
+		let h = [start, count, style];
+		hex.highlights.push(h);
+		applyHighlight(h);
 	};
 
 	let proxy = new Proxy(data, hex);
