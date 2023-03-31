@@ -17,33 +17,60 @@ function loadHex(hex_id, data, defaultAddrPadding){
 	hex.changes = [];
 	hex.highlights = [];
 
+	if(grid.childNodes.length==0){
+		hex.labels = document.createElement("DIV");
+		hex.top_labels = document.createElement("DIV");
+		hex.values = document.createElement("DIV");
 
-	for (let i = 0; i < grid.childNodes.length; i++) {
-		if (grid.childNodes[i].className == "labels") {
-		  hex.labels = grid.childNodes[i];
-		  break;
+		hex.top_labels.classList.add("top-labels");
+		hex.labels.classList.add("labels");
+		hex.values.classList.add("data");
+
+		grid.appendChild(document.createElement("DIV"));
+		grid.appendChild(hex.top_labels);
+		for(let i = 0; i < 16; i++){
+			let elem = document.createElement("SPAN");
+			elem.innerText = i.toString(16).toUpperCase();
+			hex.top_labels.appendChild(elem);
+		}
+		grid.appendChild(hex.labels);
+		grid.appendChild(hex.values);
+		
+	}else{
+		for (let i = 0; i < grid.childNodes.length; i++) {
+			if (grid.childNodes[i].className == "labels") {
+			  hex.labels = grid.childNodes[i];
+			  break;
+			}
+		}
+		
+	
+		for (let i = 0; i < grid.childNodes.length; i++) {
+			if (grid.childNodes[i].className == "top-labels") {
+			  hex.top_labels = grid.childNodes[i];
+			  break;
+			}
+		}
+
+		for(let i = 0; i < 16; i++){
+			let elem = document.createElement("SPAN");
+			elem.innerText = i.toString(16).toUpperCase();
+			hex.top_labels.appendChild(elem);
+		}
+
+		for (let i = 0; i < grid.childNodes.length; i++) {
+			if (grid.childNodes[i].className == "data") {
+			  hex.values = grid.childNodes[i];
+			  break;
+			}
 		}
 	}
 
-	for (let i = 0; i < grid.childNodes.length; i++) {
-		if (grid.childNodes[i].className == "top-labels") {
-		  hex.top_labels = grid.childNodes[i];
-		  break;
-		}
-	}
+	
 
-	for(let i = 0; i < 16; i++){
-		let elem = document.createElement("SPAN");
-		elem.innerText = i.toString(16).toUpperCase();
-		hex.top_labels.appendChild(elem);
-	}
+	
 
-	for (let i = 0; i < grid.childNodes.length; i++) {
-		if (grid.childNodes[i].className == "data") {
-		  hex.values = grid.childNodes[i];
-		  break;
-		}
-	}
+	
 
 	hex.set = function(obj, prop, val){
 		if(!isNaN(prop)){
