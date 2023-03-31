@@ -53,6 +53,9 @@ function loadHex(hex_id, data, defaultAddrPadding){
 
 			hex.changes.push(+prop);
 
+		}else if(prop=="length"){
+			if(hex.changes.length==0) setTimeout(hex.render, 5);
+			hex.changes.push(0);
 		}
 		data[prop] = val;
 		return true;
@@ -74,7 +77,7 @@ function loadHex(hex_id, data, defaultAddrPadding){
 			redo_full = true;
 		}
 		if(data.length < values.childNodes.length){
-			let count = data.length - values.childNodes.length;
+			let count = values.childNodes.length - data.length;
 			for(let i = 0; i < count; i++){
 				values.removeChild(values.childNodes[values.childNodes.length - 1]);
 			}
@@ -93,7 +96,7 @@ function loadHex(hex_id, data, defaultAddrPadding){
 			}
 		}
 		if(addrLength < labels.childNodes.length){
-			let count = addrLength - labels.childNodes.length;
+			let count = labels.childNodes.length - addrLength;
 			for(let i = 0; i < count; i++){
 				let n = labels.childNodes[labels.childNodes.length - 1];
 				labels.removeChild(n);

@@ -21,3 +21,9 @@
     display: grid;
     grid-template-columns: repeat(16, 1.6em);
 }
+.hexedit .data span{
+    border-left: dotted 1px black;
+}
+.hexedit .data span:nth-child(16n-15){
+    border-left: none;
+}
