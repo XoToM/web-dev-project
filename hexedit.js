@@ -66,12 +66,6 @@ function loadHex(hex_id, data, defaultAddrPadding){
 		}
 	}
 
-	
-
-	
-
-	
-
 	hex.set = function(obj, prop, val){
 		if(!isNaN(prop)){
 			//let hex = obj.hex;
