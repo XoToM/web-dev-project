@@ -10,17 +10,17 @@ function newReporter(obj){
 		let handler = reporter.dict.get(prop);
 		if(handler){
 			if(typeof handler == "function"){
-				handler(val, prop);
+				handler(val, obj[prop], prop);
 			}else{
 				for(let i = 0; i < handler.length; i++){
-					handler[i](val, prop);
+					handler[i](val, obj[prop], prop);
 				}
 			}
 		}
 		o[prop] = val;
 		return true;
 	};
-	obj.on = function(prop, handler){
+	obj.on = function(prop, handler){	//	Handler args: (newValue, oldValue, property)
 		let handlers = reporter.dict.get(prop);
 		if(handlers){
 			if(typeof handlers == "function"){
@@ -33,7 +33,7 @@ function newReporter(obj){
 			reporter.dict.set(prop, handler);
 		}
 	};
-	obj.onChangeUpdateText = function(prop, elem, transformer){
+	obj.onChangeUpdateText = function(prop, elem, transformer){	//	Transformer args: (newValue, oldValue), returns the new text of the text element
 		if(typeof elem == "string") elem = document.getElementById(elem);
 		obj.on(prop, (val, _)=>{
 			let text = val;
@@ -41,6 +41,6 @@ function newReporter(obj){
 			elem.innerText = text;
 		});
 	};
-	
+
 	return new Proxy(obj, reporter);
 }
