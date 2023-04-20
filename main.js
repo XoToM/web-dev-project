@@ -1,7 +1,13 @@
 const gl = document.getElementById("canvasgl").getContext("webgl");
 
+var getFileSync = function(url) {
+	var req = new XMLHttpRequest();
+	req.open("GET", url, false);
+	req.send(null);
+	return (req.status == 200) ? req.responseText : null;
+};
 
-const programInfo = twgl.createProgramInfo(gl, ["vert", "frag"]);
+const programInfo = twgl.createProgramInfo(gl, [getFileSync("shaders/vert.glsl"), getFileSync("shaders/frag.glsl")]);
  
 const arrays = {
 	position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
