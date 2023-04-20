@@ -1,4 +1,4 @@
-const gl = document.getElementById("canvasgl").getContext("webgl");
+const gl = document.getElementById("canvasgl").getContext("webgl2");	//	Get a WebGL 2 context. WebGL 1 doesn't have 3d textures, and has many other limitations
 
 var getFileSync = function(url) {
 	var req = new XMLHttpRequest();
@@ -8,28 +8,27 @@ var getFileSync = function(url) {
 };
 
 const programInfo = twgl.createProgramInfo(gl, [getFileSync("shaders/vert.glsl"), getFileSync("shaders/frag.glsl")]);
- 
+
 const arrays = {
 	position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
 };
 const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
- 
 
 
 function render(time) {
 	twgl.resizeCanvasToDisplaySize(gl.canvas);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
- 
+
 	const uniforms = {
 	  time: time * 0.001,
 	  resolution: [gl.canvas.width, gl.canvas.height],
 	};
- 
+
 	gl.useProgram(programInfo.program);
 	twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
 	twgl.setUniforms(programInfo, uniforms);
 	twgl.drawBufferInfo(gl, bufferInfo);
- 
+
 	requestAnimationFrame(render);
 }
 requestAnimationFrame(render);
