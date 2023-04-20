@@ -1,4 +1,6 @@
 const gl = document.getElementById("canvasgl").getContext("webgl");
+
+
 const programInfo = twgl.createProgramInfo(gl, ["vert", "frag"]);
  
 const arrays = {
@@ -6,6 +8,8 @@ const arrays = {
 };
 const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
  
+
+
 function render(time) {
 	twgl.resizeCanvasToDisplaySize(gl.canvas);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
