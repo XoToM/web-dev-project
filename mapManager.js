@@ -21,6 +21,15 @@ class TmpBrick {
 		data[pointer++] = 0;
 		data[pointer++] = 0;
 	}
+	setVoxelDebug(lx, ly, lz){
+		let data = this.data;
+		let pointer = 8*8*lz + 8*ly + lx;
+		pointer = pointer*4;
+		data[pointer++] = 255;
+		data[pointer++] = 255;
+		data[pointer++] = 255;
+		data[pointer++] = 255;
+	}
 	setVoxelColor(lx, ly, lz, r, g, b){
 		let data = this.data;
 		let pointer = 8*8*lz + 8*ly + lx;
@@ -66,15 +75,37 @@ class VoxelMap {
 	allocIndex = 0;
 
 	constructor(){
-		this.voxelMap = twgl.createTexture(gl, {
+		/*this.voxelMap = twgl.createTexture(gl, {
 			target: gl.TEXTURE_3D,
-			width: VOXELMAP_WORLD_SIZE[0]*8,
-			height: VOXELMAP_WORLD_SIZE[1]*8,
-			depth: VOXELMAP_WORLD_SIZE[2]*8,
+			width: VOXELMAP_CACHE_SIZE[0]*8,
+			height: VOXELMAP_CACHE_SIZE[1]*8,
+			depth: VOXELMAP_CACHE_SIZE[2]*8,
 			wrap: gl.REPEAT,
 			minMag: gl.NEAREST,
-		});
+		});//*/
+		
+		this.voxelMap = gl.createTexture();
 		gl.bindTexture(gl.TEXTURE_3D, this.voxelMap);
+
+		let rawData = [];
+		let bufferSize = VOXELMAP_CACHE_SIZE[0]*VOXELMAP_CACHE_SIZE[1]*VOXELMAP_CACHE_SIZE[2] * 8 * 8 * 8 * 4;
+		for(let i=0;i<bufferSize;i++){
+			rawData.push(0);
+		}
+
+		gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA, VOXELMAP_CACHE_SIZE[0]*8, VOXELMAP_CACHE_SIZE[1]*8, VOXELMAP_CACHE_SIZE[2]*8, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(rawData));
+
+		
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+		//gl.activeTexture(gl.TEXTURE0) main.js:4:10				//Found this in the gl call logs
+		//gl.bindTexture(gl.TEXTURE_3D, undefined) main.js:4:10
+		//gl.bindSampler(0, undefined)
+
+
+
 		let origin = this.allocBrick();	//	origin brick should always be at 0,0,0
 		this.uploadBrick(origin, generateMap(this, 0, 0, 0));
 	}
@@ -88,7 +119,8 @@ class VoxelMap {
 		return brick_pos;
 	}
 	uploadBrick(brickPos, data){
-		console.log("uploading at "+brickPos, data);
+		//console.log("uploading at "+brickPos, data);
+		//gl.bindTexture(gl.TEXTURE_3D, this.voxelMap);
 		gl.texSubImage3D(gl.TEXTURE_3D, 0, 8*brickPos[0], 8*brickPos[1], 8*brickPos[2], 8, 8, 8, gl.RGBA, gl.UNSIGNED_BYTE, data.data);
 	}
 
@@ -99,7 +131,7 @@ function generationFunction(x, y, z){		//	Basic world generation function to cre
 	let tz = z-VOXELMAP_WORLD_SIZE[2]/2;
 
 	//if(tx*tx+ty*ty+tz*tz>16) return [0,0,0,0];
-	if((tx+ty+tz)%2 == 0) return [0,0,0,0];
+	//if((tx+ty+tz)%2 == 0) return [0,0,0,0];
 
 	let r = Math.floor(x / VOXELMAP_WORLD_SIZE[0] * 256);
 	let g = Math.floor(y / VOXELMAP_WORLD_SIZE[1] * 256);
@@ -127,6 +159,7 @@ function generateMap(vmap, x, y, z, depth){
 				}
 
 				if(depth<=1){
+					brick.setVoxelDebug(lx,ly,lz);continue;
 					let voxel = generationFunction(x+lx, y+ly, z+lz);
 					if(voxel[3]==1){
 						brick.setVoxelColor(lx,ly,lz, voxel[0], voxel[1], voxel[2]);
@@ -144,7 +177,7 @@ function generateMap(vmap, x, y, z, depth){
 					}
 				}
 			}
-		}	
+		}
 	}
 	return brick;
 }

@@ -1,6 +1,13 @@
 const canvas = document.getElementById("canvasgl");
 
-let gl = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl2"));	//	Get a WebGL 2 context. WebGL 1 doesn't have 3d textures, and has many other limitations
+function logGLCall(functionName, args) {
+	console.log("gl." + functionName + "(" +
+		WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");
+}
+
+let gl = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl2"), undefined, logGLCall);	//	Get a WebGL 2 context. WebGL 1 doesn't have 3d textures, and has many other limitations
+
+
 
 var spector = new SPECTOR.Spector();
 //spector.captureCanvas(canvas);
