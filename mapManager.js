@@ -21,15 +21,6 @@ class TmpBrick {
 		data[pointer++] = 0;
 		data[pointer++] = 0;
 	}
-	setVoxelDebug(lx, ly, lz){
-		let data = this.data;
-		let pointer = 8*8*lz + 8*ly + lx;
-		pointer = pointer*4;
-		data[pointer++] = 255;
-		data[pointer++] = 255;
-		data[pointer++] = 255;
-		data[pointer++] = 255;
-	}
 	setVoxelColor(lx, ly, lz, r, g, b){
 		let data = this.data;
 		let pointer = 8*8*lz + 8*ly + lx;
@@ -91,19 +82,8 @@ class VoxelMap {
 			src: new Uint8Array(rawData),
 			format: gl.RGBA_INTEGER,
 			internalFormat: gl.RGBA8UI
-		});//*/
-		
-		//this.voxelMap = gl.createTexture();
+		});
 		gl.bindTexture(gl.TEXTURE_3D, this.voxelMap);
-
-		
-
-		//gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA8UI, VOXELMAP_CACHE_SIZE[0]*8, VOXELMAP_CACHE_SIZE[1]*8, VOXELMAP_CACHE_SIZE[2]*8, 0, gl.RGBA_INTEGER, gl.UNSIGNED_BYTE, new Uint8Array(rawData));
-
-		
-		//gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-		//gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-		//gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 
 
 
@@ -131,8 +111,8 @@ function generationFunction(x, y, z){		//	Basic world generation function to cre
 	let ty = y-VOXELMAP_WORLD_SIZE[1]/2;
 	let tz = z-VOXELMAP_WORLD_SIZE[2]/2;
 
-	if(tx*tx+ty*ty+tz*tz>64) return [0,0,0,0];
-	//if((tx+ty+tz)%3 == 0) return [0,0,0,0];
+	if(tx*tx+ty*ty+tz*tz>64) return [0,0,0,0];	//	RGB Sphere
+	//if((tx+ty+tz)%2 == 0) return [0,0,0,0];	//	RGB Checkerboard cube
 
 	let r = Math.floor(x / VOXELMAP_WORLD_SIZE[0] * 256);
 	let g = Math.floor(y / VOXELMAP_WORLD_SIZE[1] * 256);

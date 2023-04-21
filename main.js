@@ -1,17 +1,11 @@
 const canvas = document.getElementById("canvasgl");
 
 function logGLCall(functionName, args) {
-	//console.log("gl." + functionName + "(" +
-		//WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");
+	//console.log("gl." + functionName + "(" + WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");	//	Log WebGL calls
 }
 
 let gl = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl2"), undefined, logGLCall);	//	Get a WebGL 2 context. WebGL 1 doesn't have 3d textures, and has many other limitations
 
-
-
-var spector = new SPECTOR.Spector();
-//spector.captureCanvas(canvas);
-spector.displayUI();
 
 var getFileSync = function(url) {
 	var req = new XMLHttpRequest();
