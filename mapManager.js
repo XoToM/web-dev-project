@@ -75,11 +75,11 @@ class VoxelMap {
 	allocIndex = 0;
 
 	constructor(){
-		/*this.voxelMap = twgl.createTexture(gl, {
+		this.voxelMap = twgl.createTexture(gl, {
 			target: gl.TEXTURE_3D,
-			width: VOXELMAP_CACHE_SIZE[0]*8,
-			height: VOXELMAP_CACHE_SIZE[1]*8,
-			depth: VOXELMAP_CACHE_SIZE[2]*8,
+			width: VOXELMAP_CACHE_SIZE[0] * 8,
+			height: VOXELMAP_CACHE_SIZE[1] * 8,
+			depth: VOXELMAP_CACHE_SIZE[2] * 8,
 			wrap: gl.REPEAT,
 			minMag: gl.NEAREST,
 		});//*/
@@ -96,13 +96,9 @@ class VoxelMap {
 		gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA, VOXELMAP_CACHE_SIZE[0]*8, VOXELMAP_CACHE_SIZE[1]*8, VOXELMAP_CACHE_SIZE[2]*8, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(rawData));
 
 		
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-
-		//gl.activeTexture(gl.TEXTURE0) main.js:4:10				//Found this in the gl call logs
-		//gl.bindTexture(gl.TEXTURE_3D, undefined) main.js:4:10
-		//gl.bindSampler(0, undefined)
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 
 
 
