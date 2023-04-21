@@ -111,7 +111,7 @@ function generationFunction(x, y, z){		//	Basic world generation function to cre
 	let ty = y-VOXELMAP_WORLD_SIZE[1]/2;
 	let tz = z-VOXELMAP_WORLD_SIZE[2]/2;
 
-	if(tx*tx+ty*ty+tz*tz>64) return [0,0,0,0];	//	RGB Sphere
+	if(tx*tx+ty*ty+tz*tz>300) return [0,0,0,0];	//	RGB Sphere
 	//if((tx+ty+tz)%2 == 0) return [0,0,0,0];	//	RGB Checkerboard cube
 
 	let r = Math.floor(x / VOXELMAP_WORLD_SIZE[0] * 256);

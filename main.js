@@ -31,7 +31,8 @@ function render(time) {
 	const uniforms = {
 	  time: time * 0.001,
 	  resolution: [gl.canvas.width, gl.canvas.height],
-	  voxel_map: voxelMap.voxelMap
+	  voxel_map: voxelMap.voxelMap,
+	  slice_step: +document.getElementById("slice").value
 	};
 
 	gl.useProgram(programInfo.program);

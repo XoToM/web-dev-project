@@ -6,6 +6,7 @@ precision mediump usampler3D;
 uniform vec2 resolution;
 uniform float time;
 uniform usampler3D voxel_map;
+uniform int slice_step;
 
 out vec4 FragColor;
 
@@ -14,7 +15,7 @@ void main() {
 	vec2 pos = uv * 8.0 * 16.0;
 
 
-	uvec4 data = texelFetch(voxel_map, ivec3(int(pos.x), int(pos.y), 4),0);
+	uvec4 data = texelFetch(voxel_map, ivec3(int(pos.x), int(pos.y), slice_step),0);
 
 	if(data.w == 2u){
 		FragColor = vec4(0.0,0.0,1.0,1.0);
@@ -28,6 +29,6 @@ void main() {
 		FragColor = vec4(1.0,0.0,0.0,1.0);
 		return;
 	}
-	
+
 	FragColor = vec4(vec3(0.0), 1.0);
 }
