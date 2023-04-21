@@ -1,5 +1,5 @@
 const VOXELMAP_CACHE_SIZE = [16, 16, 16];			//	dimensions of the voxelmap brick cache (in bricks)
-const VOXELMAP_WORLD_SIZE = [64, 64, 64];
+let VOXELMAP_WORLD_SIZE = [64, 64, 64];
 
 
 //	Use to transfer data to gpu ->	gl.texSubImage3D(gl.TEXTURE_3D, 0, ox, oy, oz, width, height, depth, gl.RGBA, gl.UNSIGNED_BYTE, data);
@@ -13,6 +13,7 @@ class TmpBrick {
 		}
 	}
 	setVoxelEmpty(lx, ly, lz){
+		let data = this.data;
 		let pointer = 8*8*lz + 8*ly + lx;
 		pointer = pointer*4;
 		data[pointer++] = 0;
@@ -21,6 +22,7 @@ class TmpBrick {
 		data[pointer++] = 0;
 	}
 	setVoxelColor(lx, ly, lz, r, g, b){
+		let data = this.data;
 		let pointer = 8*8*lz + 8*ly + lx;
 		pointer = pointer*4;
 		data[pointer++] = r;
@@ -29,6 +31,7 @@ class TmpBrick {
 		data[pointer++] = 1;
 	}
 	setVoxelPointer(lx, ly, lz, brickPos){
+		let data = this.data;
 		let pointer = 8*8*lz + 8*ly + lx;
 		pointer = pointer*4;
 		data[pointer++] = brickPos[0];
@@ -39,10 +42,10 @@ class TmpBrick {
 	setVoxelRaw(lx, ly, lz, data){
 		let pointer = 8*8*lz + 8*ly + lx;
 		pointer = pointer*4;
-		data[pointer++] = data[0];
-		data[pointer++] = data[1];
-		data[pointer++] = data[2];
-		data[pointer++] = data[3];
+		this.data[pointer++] = data[0];
+		this.data[pointer++] = data[1];
+		this.data[pointer++] = data[2];
+		this.data[pointer++] = data[3];
 	}
 	checkIsAllEmpty(){
 		for(let i=0;i<8*8*8;i++){
@@ -65,27 +68,28 @@ class VoxelMap {
 	constructor(){
 		this.voxelMap = twgl.createTexture(gl, {
 			target: gl.TEXTURE_3D,
-			width: VOXELMAP_DIMENSIONS[0]*8,
-			height: VOXELMAP_DIMENSIONS[1]*8,
-			depth: VOXELMAP_DIMENSIONS[2]*8,
+			width: VOXELMAP_WORLD_SIZE[0]*8,
+			height: VOXELMAP_WORLD_SIZE[1]*8,
+			depth: VOXELMAP_WORLD_SIZE[2]*8,
 			wrap: gl.REPEAT,
 			minMag: gl.NEAREST,
 		});
-		gl.bindTexture(gl.TEXTURE_3D, voxelMap);
-		this.allocateBrick();	//	origin brick should always be at 0,0,0
-
+		gl.bindTexture(gl.TEXTURE_3D, this.voxelMap);
+		let origin = this.allocBrick();	//	origin brick should always be at 0,0,0
+		this.uploadBrick(origin, generateMap(this, 0, 0, 0));
 	}
-	allocateBrick(){
+	allocBrick(){
 		let brick_pos = [
-			allocIndex % (VOXELMAP_CACHE_SIZE[0]),
-			allocIndex % (VOXELMAP_CACHE_SIZE[0] * VOXELMAP_CACHE_SIZE[1]),
-			allocIndex 	//	This is a very basic allocator, it can't deallocate bricks yet. If we ever reach a point at which this overflows we might as well let it crash the program.
+			this.allocIndex % (VOXELMAP_CACHE_SIZE[0]),
+			Math.floor(this.allocIndex / (VOXELMAP_CACHE_SIZE[0])) % VOXELMAP_CACHE_SIZE[1],
+			Math.floor((this.allocIndex / (VOXELMAP_CACHE_SIZE[0])) / (VOXELMAP_CACHE_SIZE[1])) 	//	This is a very basic allocator, it can't deallocate bricks yet. If we ever reach a point at which this overflows we might as well let it crash the program.
 		];
 		this.allocIndex++;
 		return brick_pos;
 	}
 	uploadBrick(brickPos, data){
-
+		console.log("uploading at "+brickPos, data);
+		gl.texSubImage3D(gl.TEXTURE_3D, 0, 8*brickPos[0], 8*brickPos[1], 8*brickPos[2], 8, 8, 8, gl.RGBA, gl.UNSIGNED_BYTE, data.data);
 	}
 
 }
@@ -94,10 +98,53 @@ function generationFunction(x, y, z){		//	Basic world generation function to cre
 	let ty = y-VOXELMAP_WORLD_SIZE[1]/2;
 	let tz = z-VOXELMAP_WORLD_SIZE[2]/2;
 
-	if(tx*tx+ty*ty+tz*tz>5)return [0,0,0,0];
+	//if(tx*tx+ty*ty+tz*tz>16) return [0,0,0,0];
+	if((tx+ty+tz)%2 == 0) return [0,0,0,0];
 
 	let r = Math.floor(x / VOXELMAP_WORLD_SIZE[0] * 256);
 	let g = Math.floor(y / VOXELMAP_WORLD_SIZE[1] * 256);
 	let b = Math.floor(z / VOXELMAP_WORLD_SIZE[2] * 256);
 	return [r,g,b,1]
+}
+function generateMap(vmap, x, y, z, depth){
+	if(!depth){
+		toplevel = true;
+		let mdepth = Math.max(...VOXELMAP_WORLD_SIZE);
+		depth = 0;
+		while(mdepth > 1){
+			depth++;
+			mdepth /= 8;
+		}
+	}
+	[x,y,z] = [x*8, y*8, z*8];
+	let brick = new TmpBrick();
+	for(let lz=0; lz<8; lz++){
+		for(let ly=0; ly<8; ly++){
+			for(let lx=0; lx<8; lx++){
+				if(x+lx >= VOXELMAP_WORLD_SIZE[0] || y+ly >= VOXELMAP_WORLD_SIZE[1] || z+lz >= VOXELMAP_WORLD_SIZE[2])	{
+					brick.setVoxelEmpty(lx, ly, lz);
+					continue;
+				}
+
+				if(depth<=1){
+					let voxel = generationFunction(x+lx, y+ly, z+lz);
+					if(voxel[3]==1){
+						brick.setVoxelColor(lx,ly,lz, voxel[0], voxel[1], voxel[2]);
+					}else{
+						brick.setVoxelEmpty(lx,ly,lz);
+					}
+				}else{
+					let b = generateMap(vmap, x+lx, y+ly, z+lz, depth-1);
+					if(b.checkIsAllEmpty()){
+						brick.setVoxelEmpty(lx,ly,lz);
+					}else{
+						let location = vmap.allocBrick();
+						vmap.uploadBrick(location, b);
+						brick.setVoxelPointer(lx,ly,lz, location);
+					}
+				}
+			}
+		}	
+	}
+	return brick;
 }

@@ -1,4 +1,10 @@
-const gl = document.getElementById("canvasgl").getContext("webgl2");	//	Get a WebGL 2 context. WebGL 1 doesn't have 3d textures, and has many other limitations
+const canvas = document.getElementById("canvasgl");
+
+let gl = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl2"));	//	Get a WebGL 2 context. WebGL 1 doesn't have 3d textures, and has many other limitations
+
+var spector = new SPECTOR.Spector();
+//spector.captureCanvas(canvas);
+spector.displayUI();
 
 var getFileSync = function(url) {
 	var req = new XMLHttpRequest();
@@ -7,6 +13,7 @@ var getFileSync = function(url) {
 	return (req.status == 200) ? req.responseText : null;
 };
 
+
 const programInfo = twgl.createProgramInfo(gl, [getFileSync("shaders/vert.glsl"), getFileSync("shaders/frag.glsl")]);
 
 const arrays = {
@@ -14,6 +21,7 @@ const arrays = {
 };
 const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
 
+let voxelMap = new VoxelMap();
 
 function render(time) {
 	twgl.resizeCanvasToDisplaySize(gl.canvas);
@@ -22,6 +30,7 @@ function render(time) {
 	const uniforms = {
 	  time: time * 0.001,
 	  resolution: [gl.canvas.width, gl.canvas.height],
+	  voxel_map: voxelMap
 	};
 
 	gl.useProgram(programInfo.program);
