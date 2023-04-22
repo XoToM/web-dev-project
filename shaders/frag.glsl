@@ -10,6 +10,10 @@ uniform int slice_step;
 
 out vec4 FragColor;
 
+struct Brickmap{
+	uint[16] voxel_mask;
+};
+
 void main() {
 	vec2 uv = gl_FragCoord.xy / resolution;
 	vec2 pos = uv * 8.0 * 16.0;

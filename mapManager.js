@@ -1,68 +1,41 @@
 const VOXELMAP_CACHE_SIZE = [16, 16, 16];			//	dimensions of the voxelmap brick cache (in bricks)
-let VOXELMAP_WORLD_SIZE = [64, 64, 64];
+let BRICKGRID_SIZE = [64, 64, 64];
 
 
 //	Use to transfer data to gpu ->	gl.texSubImage3D(gl.TEXTURE_3D, 0, ox, oy, oz, width, height, depth, gl.RGBA, gl.UNSIGNED_BYTE, data);
 
-class TmpBrick {
+class Brickmap {
 	data = null;
 	constructor(){
-		this.data = new Uint8Array(8*8*8*4);
+		this.data = new Uint8Array(8*8);	//	Allocate space for just the voxel bit mask.		ToDo: Add colors
 		for(let i = 0; i < this.data.length; i++){
 			this.data[i] = 0;
 		}
 	}
 	setVoxelEmpty(lx, ly, lz){
-		let data = this.data;
-		let pointer = 8*8*lz + 8*ly + lx;
-		pointer = pointer*4;
-		data[pointer++] = 0;
-		data[pointer++] = 0;
-		data[pointer++] = 0;
-		data[pointer++] = 0;
+		let mask = 1 << ly;
+		data[lz*8+lx] &= ~mask;
 	}
 	setVoxelColor(lx, ly, lz, r, g, b){
-		let data = this.data;
-		let pointer = 8*8*lz + 8*ly + lx;
-		pointer = pointer*4;
-		data[pointer++] = r;
-		data[pointer++] = g;
-		data[pointer++] = b;
-		data[pointer++] = 1;
-	}
-	setVoxelPointer(lx, ly, lz, brickPos){
-		let data = this.data;
-		let pointer = 8*8*lz + 8*ly + lx;
-		pointer = pointer*4;
-		data[pointer++] = brickPos[0];
-		data[pointer++] = brickPos[1];
-		data[pointer++] = brickPos[2];
-		data[pointer++] = 2;
-	}
-	setVoxelRaw(lx, ly, lz, data){
-		let pointer = 8*8*lz + 8*ly + lx;
-		pointer = pointer*4;
-		this.data[pointer++] = data[0];
-		this.data[pointer++] = data[1];
-		this.data[pointer++] = data[2];
-		this.data[pointer++] = data[3];
+		let mask = 1 << ly;
+		data[lz*8+lx] |= mask;				//	Colors currently not supported. 	ToDo: Add colors
 	}
 	checkIsAllEmpty(){
-		for(let i=0;i<8*8*8;i++){
-			if(this.data[4*i+3] != 0) return false;
+		for(let i=0;i<8*8;i++){
+			if(this.data[i] != 0) return false;
 		}
 		return true;
 	}
 	checkIsAllSolid(){
-		for(let i=0;i<8*8*8;i++){
-			if(this.data[4*i+3] != 1) return false;
+		for(let i=0;i<8*8;i++){
+			if(this.data[i] != 255) return false;
 		}
 		return true;
 	}
 }
 
-class VoxelMap {
-	voxelMap = null;
+class BrickGrid {
+	brickgrid = null;
 	allocIndex = 0;
 
 	constructor(){
@@ -74,14 +47,14 @@ class VoxelMap {
 
 		this.voxelMap = twgl.createTexture(gl, {
 			target: gl.TEXTURE_3D,
-			width: VOXELMAP_CACHE_SIZE[0] * 8,
-			height: VOXELMAP_CACHE_SIZE[1] * 8,
-			depth: VOXELMAP_CACHE_SIZE[2] * 8,
+			width: VOXELMAP_CACHE_SIZE[0],
+			height: VOXELMAP_CACHE_SIZE[1],
+			depth: VOXELMAP_CACHE_SIZE[2],
 			wrap: gl.REPEAT,
 			minMag: gl.NEAREST,
 			src: new Uint8Array(rawData),
 			format: gl.RGBA_INTEGER,
-			internalFormat: gl.RGBA8UI
+			internalFormat: gl.R32I
 		});
 		gl.bindTexture(gl.TEXTURE_3D, this.voxelMap);
 
@@ -100,29 +73,28 @@ class VoxelMap {
 		return brick_pos;
 	}
 	uploadBrick(brickPos, data){
-		//console.log("uploading at "+brickPos, data);
 		gl.bindTexture(gl.TEXTURE_3D, this.voxelMap);
-		gl.texSubImage3D(gl.TEXTURE_3D, 0, 8*brickPos[0], 8*brickPos[1], 8*brickPos[2], 8, 8, 8, gl.RGBA_INTEGER, gl.UNSIGNED_BYTE, data.data);
+		gl.texSubImage3D(gl.TEXTURE_3D, 0, brickPos[0], brickPos[1], brickPos[2], 1, 1, 1, gl.RGBA_INTEGER, gl.INT, data.data);
 	}
 
 }
 function generationFunction(x, y, z){		//	Basic world generation function to create an rgb sphere out of voxels
-	let tx = x-VOXELMAP_WORLD_SIZE[0]/2;
-	let ty = y-VOXELMAP_WORLD_SIZE[1]/2;
-	let tz = z-VOXELMAP_WORLD_SIZE[2]/2;
+	let tx = x-BRICKGRID_SIZE[0]/2;
+	let ty = y-BRICKGRID_SIZE[1]/2;
+	let tz = z-BRICKGRID_SIZE[2]/2;
 
 	if(tx*tx+ty*ty+tz*tz>300) return [0,0,0,0];	//	RGB Sphere
 	//if((tx+ty+tz)%2 == 0) return [0,0,0,0];	//	RGB Checkerboard cube
 
-	let r = Math.floor(x / VOXELMAP_WORLD_SIZE[0] * 256);
-	let g = Math.floor(y / VOXELMAP_WORLD_SIZE[1] * 256);
-	let b = Math.floor(z / VOXELMAP_WORLD_SIZE[2] * 256);
+	let r = Math.floor(x / BRICKGRID_SIZE[0] * 256);
+	let g = Math.floor(y / BRICKGRID_SIZE[1] * 256);
+	let b = Math.floor(z / BRICKGRID_SIZE[2] * 256);
 	return [r,g,b,1]
 }
 function generateMap(vmap, x, y, z, depth){
 	if(!depth){
 		toplevel = true;
-		let mdepth = Math.max(...VOXELMAP_WORLD_SIZE);
+		let mdepth = Math.max(...BRICKGRID_SIZE);
 		depth = 0;
 		while(mdepth > 1){
 			depth++;
@@ -134,7 +106,7 @@ function generateMap(vmap, x, y, z, depth){
 	for(let lz=0; lz<8; lz++){
 		for(let ly=0; ly<8; ly++){
 			for(let lx=0; lx<8; lx++){
-				if(x+lx >= VOXELMAP_WORLD_SIZE[0] || y+ly >= VOXELMAP_WORLD_SIZE[1] || z+lz >= VOXELMAP_WORLD_SIZE[2])	{
+				if(x+lx >= BRICKGRID_SIZE[0] || y+ly >= BRICKGRID_SIZE[1] || z+lz >= BRICKGRID_SIZE[2])	{
 					brick.setVoxelEmpty(lx, ly, lz);
 					continue;
 				}
