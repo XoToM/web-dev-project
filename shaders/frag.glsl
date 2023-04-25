@@ -12,7 +12,8 @@ out vec4 FragColor;
 
 void main() {
 	vec2 uv = gl_FragCoord.xy / resolution;
-	vec2 pos = uv * 8.0 * 16.0;
+	vec2 pos = uv * 8.0 * 32.0;
+	pos.y = pos.y*1.5;
 
 
 	uvec4 data = texelFetch(voxel_map, ivec3(int(pos.x), int(pos.y), slice_step),0);

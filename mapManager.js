@@ -1,5 +1,5 @@
-const VOXELMAP_CACHE_SIZE = [16, 16, 16];			//	dimensions of the voxelmap brick cache (in bricks)
-let VOXELMAP_WORLD_SIZE = [64, 64, 64];
+const VOXELMAP_CACHE_SIZE = [32, 32+16, 32];			//	dimensions of the voxelmap brick cache (in bricks)
+let VOXELMAP_WORLD_SIZE = [256, 256, 256];
 
 
 //	Use to transfer data to gpu ->	gl.texSubImage3D(gl.TEXTURE_3D, 0, ox, oy, oz, width, height, depth, gl.RGBA, gl.UNSIGNED_BYTE, data);
@@ -59,6 +59,17 @@ class TmpBrick {
 		}
 		return true;
 	}
+	getVoxelColor(lx, ly, lz){
+		let data = this.data;
+		let pointer = 8*8*lz + 8*ly + lx;
+		pointer = pointer*4;
+		let r = data[pointer++];
+		let g = data[pointer++];
+		let b = data[pointer++];
+		let a = data[pointer++];
+		return [r,g,b];
+		
+	}
 }
 
 class VoxelMap {
@@ -111,7 +122,7 @@ function generationFunction(x, y, z){		//	Basic world generation function to cre
 	let ty = y-VOXELMAP_WORLD_SIZE[1]/2;
 	let tz = z-VOXELMAP_WORLD_SIZE[2]/2;
 
-	if(tx*tx+ty*ty+tz*tz>300) return [0,0,0,0];	//	RGB Sphere
+	if(tx*tx+ty*ty+tz*tz>2000) return [0,0,0,0];	//	RGB Sphere
 	//if((tx+ty+tz)%2 == 0) return [0,0,0,0];	//	RGB Checkerboard cube
 
 	let r = Math.floor(x / VOXELMAP_WORLD_SIZE[0] * 256);
@@ -148,12 +159,28 @@ function generateMap(vmap, x, y, z, depth){
 						brick.setVoxelEmpty(lx,ly,lz);
 					}
 				}else{
-					let b = generateMap(vmap, x+lx, y+ly, z+lz, depth-1);
-					if(b.checkIsAllEmpty()){
+					let br = generateMap(vmap, x+lx, y+ly, z+lz, depth-1);
+					if(br.checkIsAllEmpty()){
 						brick.setVoxelEmpty(lx,ly,lz);
-					}else{
+					}else/* if(br.checkIsAllSolid()){
+						let [r,g,b] = [0,0,0];
+						for(let llz=0; llz<8; llz++){
+							for(let lly=0; lly<8; lly++){
+								for(let llx=0; llx<8; llx++){
+									let col = br.getVoxelColor(llx, lly, llz);
+									r += col[0];
+									g += col[1];
+									b += col[2];
+								}
+							}
+						}
+						r /= 8*8*8;
+						g /= 8*8*8;
+						b /= 8*8*8;
+						brick.setVoxelColor(Math.round(r), Math.round(g), Math.round(b));
+					}else */{
 						let location = vmap.allocBrick();
-						vmap.uploadBrick(location, b);
+						vmap.uploadBrick(location, br);
 						brick.setVoxelPointer(lx,ly,lz, location);
 					}
 				}
