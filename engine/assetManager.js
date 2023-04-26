@@ -12,7 +12,11 @@ class AssetManager{
 	}
 
 	loadModel(path, id){
-		let asset = new ModelAsset(manager);
+		if(this.modelMap.has(id)) {
+			let e = async()=>this.modelMap.get(id);
+			return e();
+		}
+		let asset = new ModelAsset(this);
 
 		asset.path = path;
 		asset.loader = fetch(path).then(async (gltf)=>{
@@ -20,6 +24,7 @@ class AssetManager{
 			gltf = await gltf.json();
 			let toLoad = [];
 
+			let bufferViews = [];
 
 			for(let bufferView of gltf.bufferViews){
 				let buf = gltf.buffers[bufferView.buffer];
@@ -29,13 +34,14 @@ class AssetManager{
 				bv.offset = bufferView.byteOffset;
 				bv.length = bufferView.byteLength;
 				bv.stride = bufferView.byteStride;
-				
+
 				if(!buf.onLoad){
 					buf.onLoad = new Promise((resolve, _)=>{buf.resolve = resolve});
 				}
 				buf.onLoad = buf.onLoad.then((b)=>{ bv.buffer = b; return b; });
+				bufferView.push(bv);
 			}
-			
+
 			for(let buffer of gltf.buffers){
 				if(!buffer.target) continue;
 
@@ -56,35 +62,39 @@ class AssetManager{
 			}
 
 			for(let accessor of gltf.accessors){
-				let a = new AssetAccessor();
+				let size;
 				switch(accessor.type){
 					case "SCALAR":
-						a.size = 1;
+						size = 1;
 						break;
 					case "VEC2":
-						a.size = 2;
+						size = 2;
 						break;
 					case "VEC3":
-						a.size = 3;
+						size = 3;
 						break;
 					case "VEC4":
-						a.size = 4;
+						size = 4;
 						break;
 					case "MAT2":
-						a.size = 4;
+						size = 4;
 						break;
 					case "MAT3":
-						a.size = 9;
+						size = 9;
 						break;
 					case "MAT4":
-						a.size = 16;
+						size = 16;
 						break;
+					default:
+						throw new Exception("Unknown type");
 				}
-				a.componentType = accessor.componentType;
-				a.offset = accessor.byteOffset || a.offset;
-				a.elementCount = accessor.count;
-				a.normalized = accessor.normalized || a.normalized;
-				a.bufferView = accessor.bufferView;
+				let componentType = accessor.componentType;
+				let offset = accessor.byteOffset || a.offset;
+				let elementCount = accessor.count;
+				let normalized = accessor.normalized || a.normalized;
+				let bufferView = accessor.bufferView;
+
+				gl.vertexAttribPointer
 			}
 
 			for(let mesh of gltf.meshes){
@@ -155,16 +165,17 @@ class ModelAsset {
 	meshes = [];
 	accessors = [];
 	buffers = [];
+	attributeParamaters = new Map();
 	constructor(manager){
 		this.manager = manager;
 	}
 	initSceneWithProgram(scene, program){
 		let gl = this.manager.gl;
-		let scene = structuredClone(scene);
+		scene = structuredClone(scene);
 
-		for(let [aname, aprop] of this){						//	ToDo: Finish loading models into gpu
+		for(let [aname, aprop] of this.attributeParamaters){						//	ToDo: Finish loading models into gpu
 			let location = gl.getAttribLocation(program, aname);
-			gl.vertexAttribPointer(location, size, type, normalized, stride, offset)	
+			gl.vertexAttribPointer(location, size, type, normalized, stride, offset);
 		}
 
 		return scene;
@@ -206,7 +217,7 @@ class Mesh3dPrimitive {
 
 	}
 }
-class AssetAccessor {
+/*class AssetAccessor {
 	bufferView = null;
 	offset = 0;
 	componentType = 0;
@@ -216,7 +227,7 @@ class AssetAccessor {
 	//max = [];	//	Not needed?
 	//min = [];	//	Not needed?
 	//sparse = null;	//	Not supported yet
-}
+}//*/
 class AssetBufferView{
 	buffer = null;
 	offset = 0;
