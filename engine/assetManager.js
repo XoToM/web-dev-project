@@ -1,3 +1,19 @@
+const WEBGL_DATATYPE_SIZES = {
+	0x1400:1,
+	0x1401:1,
+	0x1402:2,
+	0x1403:2,
+	0x1404:4,
+	0x1405:4,
+	0x1406:4,
+	"SCALAR":1,
+	"VEC2":2,
+	"VEC3":3,
+	"VEC4":4,
+	"MAT2":4,
+	"MAT3":9,
+	"MAT4":16
+}
 let _assetManager = null;
 let _gl = null;
 
@@ -26,96 +42,58 @@ class AssetManager{
 
 			let bufferViews = [];
 
-			for(let bufferView of gltf.bufferViews){
-				let buf = gltf.buffers[bufferView.buffer];
-				if(bufferView.target) buf.target = bufferView.target;
-
-				let bv = new AssetBufferView(bufferView.target);
-				bv.offset = bufferView.byteOffset;
-				bv.length = bufferView.byteLength;
-				bv.stride = bufferView.byteStride;
-
-				if(!buf.onLoad){
-					buf.onLoad = new Promise((resolve, _)=>{buf.resolve = resolve});
-				}
-				buf.onLoad = buf.onLoad.then((b)=>{ bv.buffer = b; return b; });
-				bufferView.push(bv);
-			}
-
-			for(let buffer of gltf.buffers){
-				if(!buffer.target) continue;
-
-				let b = gl.createBuffer();
-				if(!b){
-					throw new Exception("Failed to create buffer");
-				}
-				asset.buffers.push(b);
-				let loader = async ()=>{
-					let data = await(await(await fetch(buffer.uri)).blob()).arrayBuffer();
-
-					gl.bindBuffer(buffer.target, b);
-					gl.bufferData(buffer.target, data, gl.STATIC_DRAW);
-
-					if(buffer.resolve) buffer.resolve(b);
-				};
-				toLoad.push(loader());
-			}
-
 			for(let accessor of gltf.accessors){
-				let size;
-				switch(accessor.type){
-					case "SCALAR":
-						size = 1;
-						break;
-					case "VEC2":
-						size = 2;
-						break;
-					case "VEC3":
-						size = 3;
-						break;
-					case "VEC4":
-						size = 4;
-						break;
-					case "MAT2":
-						size = 4;
-						break;
-					case "MAT3":
-						size = 9;
-						break;
-					case "MAT4":
-						size = 16;
-						break;
-					default:
-						throw new Exception("Unknown type");
+				let view = gltf.bufferViews[accessor.bufferView];
+				let dataBuffer = gltf.buffers[view.buffer];
+
+				if(!dataBuffer.dataReady){
+					dataBuffer.dataReady = async()=>(await (await fetch(dataBuffer.uri)).blob());
 				}
-				let componentType = accessor.componentType;
-				let offset = accessor.byteOffset || a.offset;
-				let elementCount = accessor.count;
-				let normalized = accessor.normalized || a.normalized;
-				let bufferView = accessor.bufferView;
+				let dataSize = WEBGL_DATATYPE_SIZES[accessor.type] * WEBGL_DATATYPE_SIZES[accessor.componentType];
+				let bufferOffset = (view.byteOffset || 0) + (accessor.byteOffset || 0);
+				let stride = view.byteStride || dataSize;
 
-				gl.vertexAttribPointer
-			}
+				accessor.dataReady = dataBuffer.dataReady.then(async(data)=>{
+					let data = data;
+					accessor.data = data;
 
-			for(let mesh of gltf.meshes){
-				let m = new Mesh3d();
+					
+					function* getReader(){
+						let offset = bufferOffset;
+						let count = accessor.count / WEBGL_DATATYPE_SIZES[accessor.type];
 
-				for(let prim of mesh.primitives){
-					let p = new Mesh3dPrimitive();
-
-					p.mode = prim.mode || p.mode;
-					if(prim.material) p.material = prim.material;
-					if(prim.indices) p.indices = asset.accessors[prim.indices];	//	Accessor by id
-					for(let [k,v] of Object.entries(prim.attributes)){
-						p.attributes.set(k, asset.accessors[v]);	//	Accessor by id
+						for(let i=0;i<count;i++){
+							let result = new Uint8Array(dataSize);
+							for(let o=0;o<dataSize;o++){
+								result[o] = data[offset+o];
+							}
+							yield result;
+							offset += stride;
+						}
 					}
+					accessor.getReader = getReader;
+				});
+				accessor.totalBytes = WEBGL_DATATYPE_SIZES[accessor.componentType]*accessor.count;
+				toLoad.push(accessor.dataReady);
+			}
 
-					m.primitives.push(p);
+			await Promise.all(toLoad);
+			toLoad = [];
+			for(let mesh of gltf.meshes){
+				let attribSize = 0;
+				let elementSize = 0;
+				for(let primitive of mesh.primitives){
+					for(let accessor of primitive.attributes) attribSize += accessor.totalBytes;
+
 				}
 
-				if(mesh.weights) m.weights = mesh.weights;
-				asset.meshes.push(m);
+				let attributeBuffer = new Uint8Array();
+				for(let primitive of mesh.primitives){
+					for(let accessor of primitive.attributes){}
+				}
 			}
+
+
 
 			for(let node of gltf.nodes){
 				let n = new Node3D();
