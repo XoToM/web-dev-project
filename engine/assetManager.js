@@ -24,123 +24,16 @@ class AssetManager{
 			gltf = await gltf.json();
 			let toLoad = [];
 
-			let bufferViews = [];
-
-			for(let bufferView of gltf.bufferViews){
-				let buf = gltf.buffers[bufferView.buffer];
-				if(bufferView.target) buf.target = bufferView.target;
-
-				let bv = new AssetBufferView(bufferView.target);
-				bv.offset = bufferView.byteOffset;
-				bv.length = bufferView.byteLength;
-				bv.stride = bufferView.byteStride;
-
-				if(!buf.onLoad){
-					buf.onLoad = new Promise((resolve, _)=>{buf.resolve = resolve});
-				}
-				buf.onLoad = buf.onLoad.then((b)=>{ bv.buffer = b; return b; });
-				bufferView.push(bv);
-			}
-
-			for(let buffer of gltf.buffers){
-				if(!buffer.target) continue;
-
-				let b = gl.createBuffer();
-				if(!b){
-					throw new Exception("Failed to create buffer");
-				}
-				asset.buffers.push(b);
-				let loader = async ()=>{
-					let data = await(await(await fetch(buffer.uri)).blob()).arrayBuffer();
-
-					gl.bindBuffer(buffer.target, b);
-					gl.bufferData(buffer.target, data, gl.STATIC_DRAW);
-
-					if(buffer.resolve) buffer.resolve(b);
-				};
-				toLoad.push(loader());
-			}
-
-			for(let accessor of gltf.accessors){
-				let size;
-				switch(accessor.type){
-					case "SCALAR":
-						size = 1;
-						break;
-					case "VEC2":
-						size = 2;
-						break;
-					case "VEC3":
-						size = 3;
-						break;
-					case "VEC4":
-						size = 4;
-						break;
-					case "MAT2":
-						size = 4;
-						break;
-					case "MAT3":
-						size = 9;
-						break;
-					case "MAT4":
-						size = 16;
-						break;
-					default:
-						throw new Exception("Unknown type");
-				}
-				let componentType = accessor.componentType;
-				let offset = accessor.byteOffset || a.offset;
-				let elementCount = accessor.count;
-				let normalized = accessor.normalized || a.normalized;
-				let bufferView = accessor.bufferView;
-
-				gl.vertexAttribPointer
-			}
+			let buffers = gltf.buffers;
+			let views = gltf.bufferViews;
 
 			for(let mesh of gltf.meshes){
-				let m = new Mesh3d();
+				for(let primitive of mesh.primitives){
 
-				for(let prim of mesh.primitives){
-					let p = new Mesh3dPrimitive();
-
-					p.mode = prim.mode || p.mode;
-					if(prim.material) p.material = prim.material;
-					if(prim.indices) p.indices = asset.accessors[prim.indices];	//	Accessor by id
-					for(let [k,v] of Object.entries(prim.attributes)){
-						p.attributes.set(k, asset.accessors[v]);	//	Accessor by id
-					}
-
-					m.primitives.push(p);
 				}
-
-				if(mesh.weights) m.weights = mesh.weights;
-				asset.meshes.push(m);
+				toLoad.push();//
 			}
 
-			for(let node of gltf.nodes){
-				let n = new Node3D();
-				n.translation = node.translation || n.translation;
-				n.rotation = node.rotation || n.rotation;
-				n.scale = node.scale || n.scale;
-				n.name = node.name;
-				
-				n.children = node.children || [];
-				if(typeof(node.mesh) == "number") n.mesh = asset.meshes[node.mesh];
-				asset.nodes.push(n);
-				//	Load all nodes. Load each node through iterration, then fill in references to their children afterwards to make sure each node is only loaded once, and they are in the correct order.
-				//	Node transforms are not global transformations, meaning that each node is affected by their parent's transformation. They appear to get applied just before a node is rendered
-			}
-			for(let node of asset.nodes){
-				node.children = node.children.map((index)=>asset.nodes[index]);
-			}
-
-
-			for(let scene of gltf.scenes){
-				let s = new Node3D();
-				s.name = scene.name;
-				s.children = scene.nodes.map((index)=>asset.nodes[index]);
-				asset.scenes.push(s);
-			}
 
 			asset.defaultScene = asset.scenes[gltf.scene];
 
