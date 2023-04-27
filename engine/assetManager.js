@@ -50,17 +50,17 @@ class AssetManager{
 					dataBuffer.dataReady = async()=>(await (await fetch(dataBuffer.uri)).blob());
 				}
 				let dataSize = WEBGL_DATATYPE_SIZES[accessor.type] * WEBGL_DATATYPE_SIZES[accessor.componentType];
+				accessor.dataSize = dataSize;
 				let bufferOffset = (view.byteOffset || 0) + (accessor.byteOffset || 0);
 				let stride = view.byteStride || dataSize;
 
 				accessor.dataReady = dataBuffer.dataReady.then(async(data)=>{
-					let data = data;
 					accessor.data = data;
 
-					
-					function* getReader(){
+					function* getReader(max){
 						let offset = bufferOffset;
-						let count = accessor.count / WEBGL_DATATYPE_SIZES[accessor.type];
+						let count = accessor.count;
+						if(max) count = Math.min(count, max);
 
 						for(let i=0;i<count;i++){
 							let result = new Uint8Array(dataSize);
@@ -73,7 +73,7 @@ class AssetManager{
 					}
 					accessor.getReader = getReader;
 				});
-				accessor.totalBytes = WEBGL_DATATYPE_SIZES[accessor.componentType]*accessor.count;
+				accessor.totalBytes = dataSize*accessor.count;
 				toLoad.push(accessor.dataReady);
 			}
 
@@ -83,13 +83,57 @@ class AssetManager{
 				let attribSize = 0;
 				let elementSize = 0;
 				for(let primitive of mesh.primitives){
-					for(let accessor of primitive.attributes) attribSize += accessor.totalBytes;
-
+					primitive.finalCount = Infinity;
+					primitive.attribStride = 0;
+					for(let accessor of primitive.attributes) {
+						attribSize += accessor.totalBytes;				//	Count the total size of the VBO
+						primitive.attribStride += accessor.dataSize;	//	Calculate the stride for this primitive's attributes
+						if(primitive.finalCount > accessor.count) primitive.finalCount = accessor.count;	//	Calculate the amount of verticies stored
+					}
+					if(primitive.indices) elementSize += gltf.accessors[primitive.indices].dataSize;	//	Calculate the size of the EBO
 				}
 
-				let attributeBuffer = new Uint8Array();
+				let attributeBuffer = new Uint8Array(attribSize);
+				let elementBuffer = new Uint8Array(elementSize);
+				let attribPointer = 0;
+				let elemPointer = 0;
+
 				for(let primitive of mesh.primitives){
-					for(let accessor of primitive.attributes){}
+					
+																			//		WARNING!		Apparently vertexAttribPointer requires its offsets to be in multiples of (size of attribute data per vertex) bytes, and its stride cannot be bigger than 255
+																			//		TODO:			Sort attributes in terms of size per vertex (largest first) to make sure each attribute is aligned properly
+																			//		TODO:			Redo attribute stride calculations
+																			//		TODO:			Make sure the offset of each primitive in the VBO is aligned to 16 bytes (to make sure every primitive's base pointer is always aligned properly)
+																			//		TODO:			Redo VBO size calculation
+
+					if(primitive.indices){					//	Set up the EBO for this primitive
+						let indices = gltf.accessors[primitive.indices];
+						primitive.indicesInfo = { offset:elemPointer, type: indices.componentType, count: indices.count};
+						let indgen = indices.getReader(indices.count);
+						for(let bytes of indgen){
+							for(let i=0; i<bytes.length; i++){
+								elementBuffer[elemPointer++] = bytes[i];
+							}
+						}
+					}
+
+					primitive.attribInfo = {};
+					let attribOffset = 0;
+					for(let [accessorName, accessor] of Object.entries(primitive.attributes)){
+						let generator = accessor.getReader(primitive.finalCount);
+						let pointer = elemPointer + attribOffset;
+
+						primitive.attribInfo[accessorName] = {offset:pointer, componentType:accessor.componentType, attribSize:WEBGL_DATATYPE_SIZES[accessor.type], normalized:(accessor.normalized || false), }
+
+						for(let bytes of generator){
+							for(let i=0; i<bytes.length; i++){
+								elementBuffer[pointer+i] = bytes[i];
+							}
+							pointer += primitive.attribStride;
+						}
+						attribOffset += accessor.dataSize;
+					}
+					elemPointer += primitive.attribStride * primitive.finalCount;
 				}
 			}
 
@@ -101,7 +145,7 @@ class AssetManager{
 				n.rotation = node.rotation || n.rotation;
 				n.scale = node.scale || n.scale;
 				n.name = node.name;
-				
+
 				n.children = node.children || [];
 				if(typeof(node.mesh) == "number") n.mesh = asset.meshes[node.mesh];
 				asset.nodes.push(n);
