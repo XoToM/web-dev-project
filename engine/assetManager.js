@@ -48,9 +48,10 @@ class AssetManager{
 				let dataBuffer = gltf.buffers[view.buffer];
 
 				if(!dataBuffer.dataReady){
-					dataBuffer.dataReady = async()=>(await (await fetch(dataBuffer.uri)).blob());
+					dataBuffer.dataReady = (async()=>(await (await fetch(dataBuffer.uri)).blob()))();
 				}
-				let dataSize = WEBGL_DATATYPE_SIZES[accessor.type] * WEBGL_DATATYPE_SIZES[accessor.componentType];
+				accessor.componentSize = WEBGL_DATATYPE_SIZES[accessor.componentType];
+				let dataSize = WEBGL_DATATYPE_SIZES[accessor.type] * accessor.componentSize;
 				accessor.dataSize = dataSize;
 				let bufferOffset = (view.byteOffset || 0) + (accessor.byteOffset || 0);
 				let stride = view.byteStride || dataSize;
@@ -81,19 +82,60 @@ class AssetManager{
 			await Promise.all(toLoad);
 			toLoad = [];
 
+			//	Set up the EBO buffer
+			//		- Repeat the procedure below for EBO
+
+
+			//	Set up the VBO buffers
+			//		- Split accessors by datatype size
+
+			let attributeAllocations = [];
 			for(let mesh of gltf.meshes){
-				//	Set up the EBO buffer
-				//		- Repeat the procedure below for EBO
-				
-				
-				//	Set up the VBO buffers
-				//		- Split accessors by datatype size
-				//		- Calculate aligned bases for each datatype size
-				//		- Allocate accessors to sub-buffers
-				//	Create VBO data buffers
-				//	Populate VBO data buffers
+				for(let primitive of mesh.primitives){
+					let allocations = {};
+					attributeAllocations.push(allocations);
+					primitive.allocations = allocations;
+					for(let [accessorid, accessor] of Object.entries(primitive.attributes)){
+						accessor = gltf.accessors[accessor];
+
+						if (!allocations[accessor.componentSize]){
+							allocations[accessor.componentSize] = { offset: 0, size: 0, accessors: {}};
+						}
+						let allocation = allocations[accessor.componentSize];
+						allocation.accessors[accessorid] = accessor;
+						allocation.size += accessor.dataSize * accessor.count;
+					}
+				}
 			}
 
+			//		- Calculate aligned bases for each datatype size
+			{
+				let datasize_base_pointer = 0;
+				let data_allocated = 0;
+				let pointers = {};
+				let types = [];
+				for(let allocations of attributeAllocations){
+					for(let [k,v] of Object.entries(allocations)){
+						if(!pointers[k]){
+							pointers[k] = {size:0, pointer:0};
+							types.push(+k);
+						}
+						pointers[k].size += v.size;
+					}
+				}
+				types.sort((a,b)=>(b - a));
+				for(let type of types){
+					let aligned_pointer = Math.ceil(datasize_base_pointer/type)*type;
+					data_allocated += aligned_pointer - datasize_base_pointer;
+
+					pointers[type].pointer = aligned_pointer;
+					datasize_base_pointer = aligned_pointer + pointers[type].size;
+				}
+				console.log();
+			}
+			//		- Allocate accessors to sub-buffers
+			//	Create VBO data buffers
+			//	Populate VBO data buffers
 
 
 			for(let node of gltf.nodes){
