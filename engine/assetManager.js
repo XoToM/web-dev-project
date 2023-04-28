@@ -6,6 +6,7 @@ const WEBGL_DATATYPE_SIZES = {
 	0x1404:4,
 	0x1405:4,
 	0x1406:4,
+
 	"SCALAR":1,
 	"VEC2":2,
 	"VEC3":3,
@@ -79,62 +80,18 @@ class AssetManager{
 
 			await Promise.all(toLoad);
 			toLoad = [];
+
 			for(let mesh of gltf.meshes){
-				let attribSize = 0;
-				let elementSize = 0;
-				for(let primitive of mesh.primitives){
-					primitive.finalCount = Infinity;
-					primitive.attribStride = 0;
-					for(let accessor of primitive.attributes) {
-						attribSize += accessor.totalBytes;				//	Count the total size of the VBO
-						primitive.attribStride += accessor.dataSize;	//	Calculate the stride for this primitive's attributes
-						if(primitive.finalCount > accessor.count) primitive.finalCount = accessor.count;	//	Calculate the amount of verticies stored
-					}
-					if(primitive.indices) elementSize += gltf.accessors[primitive.indices].dataSize;	//	Calculate the size of the EBO
-				}
-
-				let attributeBuffer = new Uint8Array(attribSize);
-				let elementBuffer = new Uint8Array(elementSize);
-				let attribPointer = 0;
-				let elemPointer = 0;
-
-				for(let primitive of mesh.primitives){
-					
-																			//		WARNING!		Apparently vertexAttribPointer requires its offsets to be in multiples of (size of attribute data per vertex) bytes, and its stride cannot be bigger than 255
-																			//		TODO:			Sort attributes in terms of size per vertex (largest first) to make sure each attribute is aligned properly
-																			//		TODO:			Redo attribute stride calculations
-																			//		TODO:			Make sure the offset of each primitive in the VBO is aligned to 16 bytes (to make sure every primitive's base pointer is always aligned properly)
-																			//		TODO:			Redo VBO size calculation
-
-					if(primitive.indices){					//	Set up the EBO for this primitive
-						let indices = gltf.accessors[primitive.indices];
-						primitive.indicesInfo = { offset:elemPointer, type: indices.componentType, count: indices.count};
-						let indgen = indices.getReader(indices.count);
-						for(let bytes of indgen){
-							for(let i=0; i<bytes.length; i++){
-								elementBuffer[elemPointer++] = bytes[i];
-							}
-						}
-					}
-
-					primitive.attribInfo = {};
-					let attribOffset = 0;
-					for(let [accessorName, accessor] of Object.entries(primitive.attributes)){
-						let generator = accessor.getReader(primitive.finalCount);
-						let pointer = elemPointer + attribOffset;
-
-						primitive.attribInfo[accessorName] = {offset:pointer, componentType:accessor.componentType, attribSize:WEBGL_DATATYPE_SIZES[accessor.type], normalized:(accessor.normalized || false), }
-
-						for(let bytes of generator){
-							for(let i=0; i<bytes.length; i++){
-								elementBuffer[pointer+i] = bytes[i];
-							}
-							pointer += primitive.attribStride;
-						}
-						attribOffset += accessor.dataSize;
-					}
-					elemPointer += primitive.attribStride * primitive.finalCount;
-				}
+				//	Set up the EBO buffer
+				//		- Repeat the procedure below for EBO
+				
+				
+				//	Set up the VBO buffers
+				//		- Split accessors by datatype size
+				//		- Calculate aligned bases for each datatype size
+				//		- Allocate accessors to sub-buffers
+				//	Create VBO data buffers
+				//	Populate VBO data buffers
 			}
 
 
