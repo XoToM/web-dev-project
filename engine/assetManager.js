@@ -109,31 +109,44 @@ class AssetManager{
 			}
 
 			//		- Calculate aligned bases for each datatype size
-			{
-				let datasize_base_pointer = 0;
-				let data_allocated = 0;
-				let pointers = {};
-				let types = [];
-				for(let allocations of attributeAllocations){
-					for(let [k,v] of Object.entries(allocations)){
-						if(!pointers[k]){
-							pointers[k] = {size:0, pointer:0};
-							types.push(+k);
-						}
-						pointers[k].size += v.size;
+			
+			let datasize_base_pointer = 0;
+			let data_allocated = 0;
+			let pointers = {};
+			let types = [];
+			for(let allocations of attributeAllocations){
+				for(let [k,v] of Object.entries(allocations)){
+					if(!pointers[k]){
+						pointers[k] = {size:0, base:0, pointer:0};
+						types.push(+k);
 					}
+					pointers[k].size += v.size;
 				}
-				types.sort((a,b)=>(b - a));
-				for(let type of types){
-					let aligned_pointer = Math.ceil(datasize_base_pointer/type)*type;
-					data_allocated += aligned_pointer - datasize_base_pointer;
-
-					pointers[type].pointer = aligned_pointer;
-					datasize_base_pointer = aligned_pointer + pointers[type].size;
-				}
-				console.log();
 			}
+			types.sort((a,b)=>(b - a));
+			for(let type of types){
+				let aligned_pointer = Math.ceil(datasize_base_pointer/type)*type;
+				data_allocated += aligned_pointer - datasize_base_pointer;
+
+				pointers[type].base = aligned_pointer;
+				datasize_base_pointer = aligned_pointer + pointers[type].size;
+				data_allocated += pointers[type].size;
+			}
+			for(let allocations of attributeAllocations){
+				for(let [type, allocator] of Object.entries(allocations)){
+					allocator.offset = pointers[type].pointer + pointers[type].base;
+					pointers[type].pointer += allocator.size;
+				}
+			}
+			
 			//		- Allocate accessors to sub-buffers
+			for(let allocations of attributeAllocations){
+				for(let [size, allocationInfo] of Object.entries(allocations)){
+					
+				}
+			}
+
+
 			//	Create VBO data buffers
 			//	Populate VBO data buffers
 

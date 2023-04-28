@@ -1,0 +1,361 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "Blockbench 4.6.5 glTF exporter"
+  },
+  "scenes": [
+    {
+      "nodes": [
+        4
+      ],
+      "name": "blockbench_export"
+    }
+  ],
+  "scene": 0,
+  "nodes": [
+    {
+      "name": "arm1",
+      "mesh": 0
+    },
+    {
+      "name": "arm2",
+      "mesh": 1
+    },
+    {
+      "translation": [
+        0,
+        0.5,
+        0
+      ],
+      "name": "bone2",
+      "children": [
+        1
+      ]
+    },
+    {
+      "name": "bone",
+      "children": [
+        0,
+        2
+      ]
+    },
+    {
+      "children": [
+        3
+      ]
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 288,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 288,
+      "byteLength": 288,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 576,
+      "byteLength": 192,
+      "target": 34962,
+      "byteStride": 8
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 768,
+      "byteLength": 72,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 840,
+      "byteLength": 288,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 1128,
+      "byteLength": 288,
+      "target": 34962,
+      "byteStride": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 1416,
+      "byteLength": 192,
+      "target": 34962,
+      "byteStride": 8
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 1608,
+      "byteLength": 72,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 1680,
+      "byteLength": 12
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 1692,
+      "byteLength": 48
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 1740,
+      "uri": "data:application/octet-stream;base64,AACAPQAAAD8AAIA9AACAPQAAAD8AAIC9AACAPQAAAAAAAIA9AACAPQAAAAAAAIC9AACAvQAAAD8AAIC9AACAvQAAAD8AAIA9AACAvQAAAAAAAIC9AACAvQAAAAAAAIA9AACAvQAAAD8AAIC9AACAPQAAAD8AAIC9AACAvQAAAD8AAIA9AACAPQAAAD8AAIA9AACAvQAAAAAAAIA9AACAPQAAAAAAAIA9AACAvQAAAAAAAIC9AACAPQAAAAAAAIC9AACAvQAAAD8AAIA9AACAPQAAAD8AAIA9AACAvQAAAAAAAIA9AACAPQAAAAAAAIA9AACAPQAAAD8AAIC9AACAvQAAAD8AAIC9AACAPQAAAAAAAIC9AACAvQAAAAAAAIC9AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AADAPgAAgD8AAAA/AACAPwAAwD4AAAA/AAAAPwAAAD8AAAA+AACAPwAAgD4AAIA/AAAAPgAAAD8AAIA+AAAAPwAAAAAAAAA/AAAAPgAAAD8AAAAAAADAPgAAAD4AAMA+AAAAPwAAgD8AACA/AACAPwAAAD8AAGA/AAAgPwAAYD8AAAAAAACAPwAAAD4AAIA/AAAAAAAAAD8AAAA+AAAAPwAAgD4AAIA/AADAPgAAgD8AAIA+AAAAPwAAwD4AAAA/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAACAPQAAAD8AAIA9AACAPQAAAD8AAIC9AACAPQAAAAAAAIA9AACAPQAAAAAAAIC9AACAvQAAAD8AAIC9AACAvQAAAD8AAIA9AACAvQAAAAAAAIC9AACAvQAAAAAAAIA9AACAvQAAAD8AAIC9AACAPQAAAD8AAIC9AACAvQAAAD8AAIA9AACAPQAAAD8AAIA9AACAvQAAAAAAAIA9AACAPQAAAAAAAIA9AACAvQAAAAAAAIC9AACAPQAAAAAAAIC9AACAvQAAAD8AAIA9AACAPQAAAD8AAIA9AACAvQAAAAAAAIA9AACAPQAAAAAAAIA9AACAPQAAAD8AAIC9AACAvQAAAD8AAIC9AACAPQAAAAAAAIC9AACAvQAAAAAAAIC9AACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAPwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAACAvwAAAAAAAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgD8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAgL8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAPgAAgD8AAIA+AACAPwAAAD4AAAA/AACAPgAAAD8AAMA+AACAPwAAAD8AAIA/AADAPgAAAD8AAAA/AAAAPwAAAD4AAMA+AAAAAAAAwD4AAAA+AAAAPwAAAAAAAAA/AAAgPwAAgD8AAAA/AACAPwAAID8AAGA/AAAAPwAAYD8AAIA+AACAPwAAwD4AAIA/AACAPgAAAD8AAMA+AAAAPwAAAAAAAIA/AAAAPgAAgD8AAAAAAAAAPwAAAD4AAAA/AAACAAEAAgADAAEABAAGAAUABgAHAAUACAAKAAkACgALAAkADAAOAA0ADgAPAA0AEAASABEAEgATABEAFAAWABUAFgAXABUAAAAAAAAAgD4AAAA/AAAAAAAAAAAAAAAAAACAPxXvw74AAAAAAAAAAF6DbD8AAAAAAAAAAAAAAAAAAIA/"
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 24,
+      "max": [
+        0.0625,
+        0.5,
+        0.0625
+      ],
+      "min": [
+        -0.0625,
+        0,
+        -0.0625
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 24,
+      "max": [
+        1,
+        1,
+        1
+      ],
+      "min": [
+        -1,
+        -1,
+        -1
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 24,
+      "max": [
+        0.625,
+        1
+      ],
+      "min": [
+        0,
+        0.375
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 36,
+      "max": [
+        23
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 24,
+      "max": [
+        0.0625,
+        0.5,
+        0.0625
+      ],
+      "min": [
+        -0.0625,
+        0,
+        -0.0625
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "count": 24,
+      "max": [
+        1,
+        1,
+        1
+      ],
+      "min": [
+        -1,
+        -1,
+        -1
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "count": 24,
+      "max": [
+        0.625,
+        1
+      ],
+      "min": [
+        0,
+        0.375
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5123,
+      "count": 36,
+      "max": [
+        23
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 8,
+      "componentType": 5126,
+      "count": 3,
+      "max": [
+        0.5
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 9,
+      "componentType": 5126,
+      "count": 3,
+      "max": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "min": [
+        -0.3826834261417389,
+        0,
+        0,
+        0.9238795042037964
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5123,
+      "count": 24,
+      "type": "VEC4"
+    }
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {
+        "metallicFactor": 0,
+        "roughnessFactor": 1,
+        "baseColorTexture": {
+          "index": 0
+        }
+      },
+      "alphaMode": "MASK",
+      "alphaCutoff": 0.05,
+      "doubleSided": true
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0,
+      "name": "texture"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9728,
+      "minFilter": 9728,
+      "wrapS": 33071,
+      "wrapT": 33071
+    }
+  ],
+  "images": [
+    {
+      "mimeType": "image/png",
+      "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAFZJREFUOE9jZKAQMFKon2HUAAYGxi1XHv4HBaSPjjxZ4UG5AdF7voBd8EJnJjhGt359Cqb/rBQB0zxVVXhdxjhqAAPtwyD+9jtwbKyd34M1Ngi6gJABAHRNXhEKOjrmAAAAAElFTkSuQmCC"
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "mode": 4,
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2,
+            "GARBAGE": 10
+          },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "primitives": [
+        {
+          "mode": 4,
+          "attributes": {
+            "POSITION": 4,
+            "NORMAL": 5,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "name": "animation.model.bend",
+      "samplers": [
+        {
+          "input": 8,
+          "output": 9,
+          "interpolation": "LINEAR"
+        }
+      ],
+      "channels": [
+        {
+          "sampler": 0,
+          "target": {
+            "node": 2,
+            "path": "rotation"
+          }
+        }
+      ]
+    }
+  ]
+}
