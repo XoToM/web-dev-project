@@ -93,23 +93,24 @@ class AssetManager{
 			for(let mesh of gltf.meshes){
 				for(let primitive of mesh.primitives){
 					let allocations = {};
+					primitive.attributeInstanceCount = Infinity;
 					attributeAllocations.push(allocations);
 					primitive.allocations = allocations;
 					for(let [accessorid, accessor] of Object.entries(primitive.attributes)){
 						accessor = gltf.accessors[accessor];
 
 						if (!allocations[accessor.componentSize]){
-							allocations[accessor.componentSize] = { offset: 0, size: 0, accessors: {}};
+							allocations[accessor.componentSize] = { offset: 0, size: 0, accessors: {}, primitive};
 						}
 						let allocation = allocations[accessor.componentSize];
 						allocation.accessors[accessorid] = accessor;
 						allocation.size += accessor.dataSize * accessor.count;
+						primitive.attributeInstanceCount = Math.min(primitive.attributeInstanceCount, accessor.count);
 					}
 				}
 			}
 
 			//		- Calculate aligned bases for each datatype size
-			
 			let datasize_base_pointer = 0;
 			let data_allocated = 0;
 			let pointers = {};
@@ -139,10 +140,65 @@ class AssetManager{
 				}
 			}
 			
-			//		- Allocate accessors to sub-buffers
+			//		- Allocate attributes to sub-buffers
 			for(let allocations of attributeAllocations){
 				for(let [size, allocationInfo] of Object.entries(allocations)){
-					
+					allocationInfo.primitive.attributeAllocations = allocationInfo.primitive.attributeAllocations || {};
+					let accessors = Object.entries(allocationInfo.accessors);
+					accessors.sort((a,b)=>{
+						let ai;
+						let bi;
+						switch(a){
+							case "POSITION":
+								ai = 0;
+								break;
+							case "NORMAL":
+								ai = 1;
+								break;
+							case "TANGENT":
+								ai = 2;
+								break;
+							default:
+								ai = 3;
+								break;
+						}
+						switch(b){
+							case "POSITION":
+								bi = 0;
+								break;
+							case "NORMAL":
+								bi = 1;
+								break;
+							case "TANGENT":
+								bi = 2;
+								break;
+							default:
+								bi = 3;
+								break;
+						}
+						return bi-ai;
+					});
+					let offset = 0;
+					for(let i=0;i<accessors.length;i+=16){
+						let chunk = accessors.splice(i,i+16);
+						let localOffset = 0;
+						for(let [name, attribute] of chunk){
+							let alloc = {
+								offset: (offset + localOffset + allocationInfo.offset), 
+								stride: 0,
+								componentType: attribute.componentType,
+								componentCount: WEBGL_DATATYPE_SIZES[attribute.type],
+								normalized: attribute.normalized,
+								accessor: attribute
+							};
+							allocationInfo.primitive.attributeAllocations[name] = alloc;
+							localOffset += attribute.dataSize;
+						}
+						for(let [name, attribute] of chunk){
+							allocationInfo.primitive.attributeAllocations[name].stride = localOffset
+						}
+						offset += localOffset * allocationInfo.primitive.attributeInstanceCount;
+					}
 				}
 			}
 

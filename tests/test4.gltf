@@ -315,7 +315,8 @@
             "POSITION": 0,
             "NORMAL": 1,
             "TEXCOORD_0": 2,
-            "GARBAGE": 10
+            "GARBAGE16": 10,
+            "GARBAGE32": 0
           },
           "indices": 3,
           "material": 0
