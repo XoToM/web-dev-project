@@ -48,7 +48,7 @@ class AssetManager{
 				let dataBuffer = gltf.buffers[view.buffer];
 
 				if(!dataBuffer.dataReady){
-					dataBuffer.dataReady = (async()=>(await (await fetch(dataBuffer.uri)).blob()))();
+					dataBuffer.dataReady = (async()=>(await (await (await fetch(dataBuffer.uri)).blob()).arrayBuffer()))();
 				}
 				accessor.componentSize = WEBGL_DATATYPE_SIZES[accessor.componentType];
 				let dataSize = WEBGL_DATATYPE_SIZES[accessor.type] * accessor.componentSize;
@@ -57,6 +57,7 @@ class AssetManager{
 				let stride = view.byteStride || dataSize;
 
 				accessor.dataReady = dataBuffer.dataReady.then(async(data)=>{
+					data = new Uint8Array(data);
 					accessor.data = data;
 
 					function* getReader(max){
@@ -66,7 +67,7 @@ class AssetManager{
 
 						for(let i=0;i<count;i++){
 							let result = new Uint8Array(dataSize);
-							for(let o=0;o<dataSize;o++){
+							for(let o=0; o<dataSize; o++){
 								result[o] = data[offset+o];
 							}
 							yield result;
@@ -83,7 +84,49 @@ class AssetManager{
 			toLoad = [];
 
 			//	Set up the EBO buffer
-			//		- Repeat the procedure below for EBO
+			//		- Find accessors which need allocation
+			let elementAccessors = new Set();
+			for(let mesh of gltf.meshes){
+				for(let primitive of mesh.primitives){
+					if(primitive.indices) elementAccessors.add(primitive.indices);
+				}
+			}
+			if(elementAccessors.size > 0){
+			//		- Allocate accessors
+				let accessors = Array.from(elementAccessors);
+				accessors.sort((a,b)=>(gltf.accessors[b].dataSize - gltf.accessors[a].dataSize));
+				let pointer = 0;
+				for(let accessorid of accessors){
+					let accessor = gltf.accessors[accessorid];
+					accessor.elementAllocation = {offset:pointer, size: (accessor.dataSize * accessor.count), type:accessor.componentType};
+					pointer += accessor.dataSize * accessor.count;
+				}
+			//		- Populate EBO
+				let dataBuffer = new Uint8Array(pointer);
+				for(let accessorid of accessors){
+					let accessor = gltf.accessors[accessorid];
+					let pointer = accessor.elementAllocation.offset;
+					for(let bytes of accessor.getReader()){
+						for(let i=0; i<accessor.dataSize; i++){
+							dataBuffer[pointer++] = bytes[i];
+						}
+					}
+				}
+			//		- Copy over allocation data into the primitive object
+				for(let mesh of gltf.meshes){
+					for(let primitive of mesh.primitives){
+						if(primitive.indices) {
+							primitive.elementAllocation = gltf.accessors[primitive.indices].elementAllocation;
+							primitive.renderCount = gltf.accessors[primitive.indices].count;
+						}
+					}
+				}
+			//		- Allocate EBO and upload data
+				let ebo = this.gl.createBuffer();
+				this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ebo);
+				this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, dataBuffer, this.gl.STATIC_DRAW);
+				asset.ebo = ebo;
+			}
 
 
 			//	Set up the VBO buffers
@@ -139,7 +182,7 @@ class AssetManager{
 					pointers[type].pointer += allocator.size;
 				}
 			}
-			
+
 			//		- Allocate attributes to sub-buffers
 			for(let allocations of attributeAllocations){
 				for(let [size, allocationInfo] of Object.entries(allocations)){
@@ -184,11 +227,11 @@ class AssetManager{
 						let localOffset = 0;
 						for(let [name, attribute] of chunk){
 							let alloc = {
-								offset: (offset + localOffset + allocationInfo.offset), 
+								offset: (offset + localOffset + allocationInfo.offset),
 								stride: 0,
 								componentType: attribute.componentType,
 								componentCount: WEBGL_DATATYPE_SIZES[attribute.type],
-								normalized: attribute.normalized,
+								normalized: attribute.normalized || false,
 								accessor: attribute
 							};
 							allocationInfo.primitive.attributeAllocations[name] = alloc;
@@ -203,8 +246,25 @@ class AssetManager{
 			}
 
 
-			//	Create VBO data buffers
-			//	Populate VBO data buffers
+			//	Create and populate VBO data buffers
+			let bufferData = new Uint8Array(data_allocated);
+			for(let mesh of gltf.meshes){
+				for(let primitive of mesh.primitives){
+					for(let [name, attribute] of Object.entries(primitive.attributeAllocations)){
+						let offset = attribute.offset;
+						for(let bytes of attribute.accessor.getReader(primitive.attributeInstanceCount)){
+							for(let i=0;i<bytes.byteLength;i++){
+								bufferData[offset+i] = bytes[i];
+							}
+							offset += attribute.stride;
+						}
+					}
+					primitive.renderCount = primitive.renderCount || primitive.attributeInstanceCount;
+				}
+			}
+			asset.vbo = this.gl.createBuffer();
+			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, asset.vbo);
+			this.gl.bufferData(this.gl.ARRAY_BUFFER, bufferData, this.gl.STATIC_DRAW);
 
 
 			for(let node of gltf.nodes){
@@ -235,6 +295,7 @@ class AssetManager{
 			asset.defaultScene = asset.scenes[gltf.scene];
 
 			await Promise.all(toLoad);
+			console.log(gltf);
 			asset.ready = true;
 		});
 
@@ -255,6 +316,8 @@ class ModelAsset {
 	meshes = [];
 	accessors = [];
 	buffers = [];
+	vbo = null;
+	ebo = null;
 	attributeParamaters = new Map();
 	constructor(manager){
 		this.manager = manager;
