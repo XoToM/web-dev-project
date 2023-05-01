@@ -28,7 +28,7 @@ class AssetManager{
 		_assetManager = this;
 	}
 
-	loadModel(path, id){
+	loadModel(path, id, shader){
 		if(this.modelMap.has(id)) {
 			let e = async()=>this.modelMap.get(id);
 			return e();
@@ -291,6 +291,20 @@ class AssetManager{
 				s.children = scene.nodes.map((index)=>asset.nodes[index]);
 				asset.scenes.push(s);
 			}
+			for(let mesh of gltf.meshes){
+				let m = new Mesh3d(asset);
+				for(let primitive of mesh.primitives){
+					let prim = new Mesh3dPrimitive(m);
+					prim.attributes = primitive.attributeAllocations;
+					prim.indices = primitive.elementAllocation || null;
+					prim.material = gltf.materials[primitive.material];
+					prim.primitiveType = primitive.mode || 4;
+					prim.count = primitive.renderCount;
+					if(primitive.targets) console.error("Morph targets for meshes are not supported. Ignoring...");
+					m.primitives.push(prim);
+				}
+				asset.meshes.push(m);
+			}
 
 			asset.defaultScene = asset.scenes[gltf.scene];
 
@@ -309,6 +323,7 @@ class ModelAsset {
 	loader = null;
 	path = null;
 	ready = false;
+	shader = null;
 
 	scenes = [];
 	defaultScene = null;
@@ -322,17 +337,44 @@ class ModelAsset {
 	constructor(manager){
 		this.manager = manager;
 	}
-	initSceneWithProgram(scene, program){
-		let gl = this.manager.gl;
-		scene = structuredClone(scene);
+	bindShader(shader){
+		let attribMap = new Map();
+		let oldAttribMap = new Map();
+		let gl  = this.manager.gl;
 
-		for(let [aname, aprop] of this.attributeParamaters){						//	ToDo: Finish loading models into gpu
-			let location = gl.getAttribLocation(program, aname);
-			gl.vertexAttribPointer(location, size, type, normalized, stride, offset);
+		for(let mesh of this.meshes){
+			for(let prim of mesh.primitives){
+				if(prim.vao === null){
+					prim.vao = gl.createVertexArray();
+					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ebo);
+				}
+				gl.bindVertexArray(prim.vao);
+				gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+
+				for(let [name, attrib] of prim.attributes) {
+					let location = attribMap.get(name);
+					if(location === undefined){
+						location = gl.getAttribLocation(shader, name);
+						attribMap.set(name, location);
+					}
+					if(location == -1){
+						let oldLocation = oldAttribMap.get(name);
+						if(oldLocation === undefined){
+							oldLocation = gl.getAttribLocation(this.shader);
+							oldAttribMap.set(name, oldLocation);
+						}
+						if(oldLocation != -1) gl.disableVertexAttribArray(oldLocation);
+						continue;
+					}
+					gl.enableVertexAttribArray(location);
+					gl.vertexAttribPointer(location, attrib.componentCount, attrib.componentType, attrib.normalized, attrib.stride, attrib.offset);
+				}
+			}
 		}
-
-		return scene;
+		gl.bindVertexArray(null);
+		this.shader = shader;
 	}
+
 }
 class Node3D {
 	name = null;
@@ -361,33 +403,14 @@ class Mesh3d {
 }
 class Mesh3dPrimitive {
 	primitiveType = 4;	//	Describes the type of primitive to render (default 4 for gl.TRIANGLES)
-	attributes = new Map();
+	attributes = {};
 	indices = null;
 	material = null;
 	morphTargets = null;
-
-	render(){
-
-	}
-}
-/*class AssetAccessor {
-	bufferView = null;
-	offset = 0;
-	componentType = 0;
-	normalized = false;
-	elementCount = 0;
-	size = 0;
-	//max = [];	//	Not needed?
-	//min = [];	//	Not needed?
-	//sparse = null;	//	Not supported yet
-}//*/
-class AssetBufferView{
-	buffer = null;
-	offset = 0;
-	length = 0;
-	stride = 0;
-	target = 0;
-	constructor(target){
-		this.target = target || _gl.ARRAY_BUFFER;
+	count = 0;
+	mesh = null;
+	vao = null;
+	constructor(mesh){
+		this.mesh = mesh;
 	}
 }
