@@ -1,5 +1,6 @@
 const canvas = document.getElementById("canvasgl");
 
+const m4 = twgl.m4;
 function logGLCall(functionName, args) {
 	//console.log("gl." + functionName + "(" + WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");	//	Log WebGL calls
 }
@@ -14,32 +15,40 @@ var getFileSync = function(url) {
 	return (req.status == 200) ? req.responseText : null;
 };
 
+new AssetManager(gl);
 
 const programInfo = twgl.createProgramInfo(gl, [getFileSync("shaders/vert.glsl"), getFileSync("shaders/frag.glsl")]);
 
-const arrays = {
-	position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
-};
-const bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
+let asset = _assetManager.loadModel("tests/test1.gltf", "test1", programInfo.program);
 
-let voxelMap = new VoxelMap();
+let waiting = true;
+
+let camera = {position:[0,0,0], rotation:[0,0], renderDistance:200};
+
+
 
 function render(time) {
 	twgl.resizeCanvasToDisplaySize(gl.canvas);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-	const uniforms = {
-	  time: time * 0.001,
-	  resolution: [gl.canvas.width, gl.canvas.height],
-	  voxel_map: voxelMap.voxelMap,
-	  slice_step: +document.getElementById("slice").value
+	let cameraMatrix = m4.identity();
+	m4.perspective(30 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.5, camera.renderDistance, cameraMatrix);
+	m4.translate(cameraMatrix, camera.position, cameraMatrix);
+	m4.rotateZ(cameraMatrix, camera.rotation[1] * (Math.PI/180), cameraMatrix);
+	m4.rotateX(cameraMatrix, camera.rotation[0] * (Math.PI/180), cameraMatrix);
+	//m4.scale(cameraMatrix, [1,1,camera.renderDistance], cameraMatrix);
+
+	const standardUniforms = {
+		resolution: [gl.canvas.width, gl.canvas.height],
+		cameraMatrix,
 	};
 
 	gl.useProgram(programInfo.program);
-	twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
-	twgl.setUniforms(programInfo, uniforms);
-	twgl.drawBufferInfo(gl, bufferInfo);
+	twgl.setUniforms(programInfo, standardUniforms);
+
+	//twgl.drawBufferInfo(gl, bufferInfo);
 
 	requestAnimationFrame(render);
 }
-requestAnimationFrame(render);
+asset.then((a)=>{asset = a; requestAnimationFrame(render); console.log(asset);});
+//requestAnimationFrame(render);
