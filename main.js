@@ -1,5 +1,5 @@
 const canvas = document.getElementById("canvasgl");
-const [posx,posy,posz] = [document.getElementById("posx"),document.getElementById("posy"),document.getElementById("posz")];
+const [posx,posy,posz, rotx,roty] = [document.getElementById("posx"),document.getElementById("posy"),document.getElementById("posz"),document.getElementById("rotx"),document.getElementById("roty")];
 
 const m4 = twgl.m4;
 function logGLCall(functionName, args) {
@@ -33,15 +33,18 @@ function render(time) {
 	camera.position[0] = +posx.value;
 	camera.position[1] = +posy.value;
 	camera.position[2] = +posz.value;
+	camera.rotation[0] = +rotx.value;
+	camera.rotation[1] = +roty.value;
 
 	twgl.resizeCanvasToDisplaySize(gl.canvas);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
 	let cameraMatrix = m4.identity();
 	m4.perspective(30 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.5, camera.renderDistance, cameraMatrix);
-	m4.translate(cameraMatrix, camera.position, cameraMatrix);
-	m4.rotateZ(cameraMatrix, camera.rotation[1] * (Math.PI/180), cameraMatrix);
 	m4.rotateX(cameraMatrix, camera.rotation[0] * (Math.PI/180), cameraMatrix);
+	m4.rotateY(cameraMatrix, camera.rotation[1] * (Math.PI/180), cameraMatrix);
+	m4.rotateZ(cameraMatrix, camera.rotation[2] * (Math.PI/180), cameraMatrix);
+	m4.translate(cameraMatrix, camera.position, cameraMatrix);
 	//m4.scale(cameraMatrix, [1,1,camera.renderDistance], cameraMatrix);
 
 	const standardUniforms = {
