@@ -357,7 +357,7 @@ class ModelAsset {
 		let gl  = this.manager.gl;
 
 		for(let mesh of this.meshes){
-			for(let prim of mesh.primitives){
+			for(let prim of mesh._primitives){
 				if(prim.vao === null){
 					prim.vao = gl.createVertexArray();
 					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ebo);
@@ -365,7 +365,9 @@ class ModelAsset {
 				gl.bindVertexArray(prim.vao);
 				gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
 
+				prim.offset = Infinity;
 				for(let [name, attrib] of Object.entries(prim.attributes)) {
+					prim.offset = Math.min(prim.offset, attrib.offset);
 					let location = attribMap.get(name);
 					if(location === undefined){
 						location = gl.getAttribLocation(shader.program, name);
@@ -421,6 +423,7 @@ class Mesh3d extends Object3 {
 	_primitives = [];
 	_weights = null;
 	constructor(asset){
+		super();
 		this._asset = asset;
 	}
 }
@@ -431,6 +434,7 @@ class Mesh3dPrimitive {
 	material = null;
 	morphTargets = null;
 	count = 0;
+	offset = 0;
 	mesh = null;
 	vao = null;
 	constructor(mesh){

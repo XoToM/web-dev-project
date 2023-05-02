@@ -3,7 +3,7 @@ const v3 = twgl.v3;
 class Object3{
 	position = v3.create(0,0,0);
 	rotation = v3.create(0,0,0);
-	scaling = v3.create(0,0,0);
+	scaling = v3.create(1,1,1);
 
 	children = [];
 	parent = null;
@@ -38,6 +38,6 @@ class Object3{
 		m4.rotateX(matrix, this.rotation[0] * (Math.PI/180), matrix);
 		m4.scaling(matrix, this.scaling, matrix);
 		m4.multiply(parent, matrix, matrix);
-		return cameraMatrix;
+		return matrix;
 	}
 }

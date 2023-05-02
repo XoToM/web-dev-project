@@ -40,7 +40,7 @@ function render(time) {
 
 	const standardUniforms = {
 		resolution: [gl.canvas.width, gl.canvas.height],
-		cameraMatrix,
+		//cameraMatrix,
 	};
 
 	gl.useProgram(programInfo.program);
@@ -48,7 +48,15 @@ function render(time) {
 
 	//twgl.drawBufferInfo(gl, bufferInfo);
 
+	performRender(cameraMatrix);
+
 	requestAnimationFrame(render);
 }
-asset.then((a)=>{asset = a; requestAnimationFrame(render); console.log(asset);});
+asset.then((a)=>{
+	asset = a; 
+	console.log(asset);
+	let tmesh = asset.meshes[0];
+	_globalScene.appendChild(tmesh);
+	requestAnimationFrame(render); 
+});
 //requestAnimationFrame(render);
