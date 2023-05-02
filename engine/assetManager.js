@@ -268,33 +268,41 @@ class AssetManager{
 
 
 			for(let node of gltf.nodes){
-				let n = new Node3D();
+				let n = new AssetNode3D();
 				n.translation = node.translation || n.translation;
 				n.rotation = node.rotation || n.rotation;
 				n.scale = node.scale || n.scale;
 				n.name = node.name;
 
 				n.children = node.children || [];
-				if(typeof(node.mesh) == "number") n.mesh = asset.meshes[node.mesh];
+				if(typeof(node.mesh) == "number") n.mesh = node.mesh;
+				//if(typeof(node.mesh) == "number") n.mesh = asset.meshes[node.mesh];
 				asset.nodes.push(n);
 				//	Load all nodes. Load each node through iterration, then fill in references to their children afterwards to make sure each node is only loaded once, and they are in the correct order.
 				//	Node transforms are not global transformations, meaning that each node is affected by their parent's transformation. They appear to get applied just before a node is rendered
 			}
+
 			for(let node of asset.nodes){
 				node.children = node.children.map((index)=>asset.nodes[index]);
 			}
 
 
 			for(let scene of gltf.scenes){
-				let s = new Node3D();
-				s.name = scene.name;
-				s.children = scene.nodes.map((index)=>asset.nodes[index]);
-				asset.scenes.push(s);
+				if(scene.nodes.length > 1 || (scene.nodes.length === 1 && asset.nodes[scene.nodes[0]].name && scene.name)){
+					let s = new AssetNode3D();
+					s.name = scene.name;
+					s.children = scene.nodes.map((index)=>asset.nodes[index]);
+					asset.scenes.push(s);
+				}else if(scene.nodes.length === 1){
+					let s = asset.nodes[scene.nodes[0]];
+					s.name = s.name || scene.name;
+					asset.scenes.push(s);
+				}
 			}
 			for(let mesh of gltf.meshes){
-				let m = new Mesh3d(asset);
+				let m = new AssetMesh3d(asset);
 				for(let primitive of mesh.primitives){
-					let prim = new Mesh3dPrimitive(m);
+					let prim = new AssetMesh3dPrimitive(m);
 					prim.attributes = primitive.attributeAllocations;
 					prim.indices = primitive.elementAllocation || null;
 					prim.material = gltf.materials[primitive.material];
@@ -304,6 +312,9 @@ class AssetManager{
 					m._primitives.push(prim);
 				}
 				asset.meshes.push(m);
+			}
+			for(let node of asset.nodes){
+				if(node.mesh !== null) node.mesh = asset.meshes[node.mesh];
 			}
 			for(let material of gltf.materials){
 				if(!material.pbrMetallicRoughness){
@@ -317,10 +328,10 @@ class AssetManager{
 				pbr.roughnessFactor = pbr.roughnessFactor || 1;
 			}
 
-			asset.defaultScene = asset.scenes[gltf.scene];
+			asset.defaultScene = gltf.scene;
 
 			await Promise.all(toLoad);
-			
+
 			asset.bindShader(shader);
 
 			//console.log(gltf);
@@ -360,9 +371,9 @@ class ModelAsset {
 			for(let prim of mesh._primitives){
 				if(prim.vao === null){
 					prim.vao = gl.createVertexArray();
-					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ebo);
 				}
 				gl.bindVertexArray(prim.vao);
+				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ebo);
 				gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
 
 				prim.offset = Infinity;
@@ -395,9 +406,25 @@ class ModelAsset {
 		gl.bindVertexArray(null);
 		this.shader = shader;
 	}
+	generateObject3(scene){
+		if(scene === undefined) scene = this.defaultScene;
 
+		function createObject(node){
+			let obj;
+			if(node.mesh){
+				obj = new Mesh3d(node.mesh, {position: node.translation, rotation: node.rotation, scaling: node.scale, name:node.name});
+			}else{
+				obj = new Object3({position: node.translation, rotation: node.rotation, scaling: node.scale, name:node.name});
+			}
+			for(let child of node.children){
+				obj.appendChild(createObject(child));
+			}
+			return obj;
+		}
+		return createObject(this.scenes[scene]);
+	}
 }
-class Node3D {
+class AssetNode3D {
 	name = null;
 	translation = [0, 0, 0];
 	rotation = [0, 0, 0, 1];
@@ -414,20 +441,23 @@ class Node3D {
 		let scal = m4.scaling(this.scale);
 		return m4.mutliply(tran, m4.multiply(rot, scal));
 	}
-	render(){
-		
-	}
 }
-class Mesh3d extends Object3 {
+class AssetMesh3d{
 	_asset = null;
 	_primitives = [];
 	_weights = null;
 	constructor(asset){
-		super();
 		this._asset = asset;
 	}
 }
-class Mesh3dPrimitive {
+class Mesh3d extends Object3 {
+	_mesh = null;
+	constructor(mesh, args){
+		super(args);
+		this._mesh = mesh;
+	}
+}
+class AssetMesh3dPrimitive {
 	primitiveType = 4;	//	Describes the type of primitive to render (default 4 for gl.TRIANGLES)
 	attributes = {};
 	indices = null;

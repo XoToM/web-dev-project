@@ -3,19 +3,21 @@ let _globalScene = new Object3();
 function performRender(cameraMatrix){
 	let materialMap = new Map();
 	function calculateTransforms(object3, parentMatrix){
-		let matrix = object3.calculateMatrix(parentMatrix);
-		if(object3 instanceof Mesh3d){
-			for(let primitive of object3._primitives){
-				let list = materialMap.get(primitive.material);
-				let shader = primitive.mesh._asset.shader;
-				if(list === undefined){
-					list = [];
-					materialMap.set(primitive.material, [list, shader]);
-				}
-				list.push([matrix, primitive]);				
-			}
-		}
 		if(object3 instanceof Object3){
+			if(!object3.renderVisibility) return;
+			let matrix = object3.calculateMatrix(parentMatrix);
+			if(object3 instanceof Mesh3d){
+				for(let primitive of object3._mesh._primitives){
+					let res = materialMap.get(primitive.material);
+
+					if(res === undefined){
+						res = [[], primitive.mesh._asset.shader];
+						materialMap.set(primitive.material, [res[0], res[1]]);
+					}
+					let [list, shader] = res;
+					list.push([matrix, primitive]);
+				}
+			}
 			for(let child of object3.children) {
 				calculateTransforms(child, matrix);
 			}

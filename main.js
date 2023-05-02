@@ -1,4 +1,5 @@
 const canvas = document.getElementById("canvasgl");
+const [posx,posy,posz] = [document.getElementById("posx"),document.getElementById("posy"),document.getElementById("posz")];
 
 const m4 = twgl.m4;
 function logGLCall(functionName, args) {
@@ -25,9 +26,14 @@ let waiting = true;
 
 let camera = {position:[0,0,0], rotation:[0,0], renderDistance:200};
 
+gl.enable(gl.DEPTH_TEST);
 
 
 function render(time) {
+	camera.position[0] = +posx.value;
+	camera.position[1] = +posy.value;
+	camera.position[2] = +posz.value;
+
 	twgl.resizeCanvasToDisplaySize(gl.canvas);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
@@ -53,10 +59,10 @@ function render(time) {
 	requestAnimationFrame(render);
 }
 asset.then((a)=>{
-	asset = a; 
+	asset = a;
 	console.log(asset);
-	let tmesh = asset.meshes[0];
-	_globalScene.appendChild(tmesh);
+	let obj = asset.generateObject3();
+	_globalScene.appendChild(obj);
 	requestAnimationFrame(render); 
 });
 //requestAnimationFrame(render);
