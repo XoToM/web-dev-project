@@ -309,7 +309,10 @@ class AssetManager{
 			asset.defaultScene = asset.scenes[gltf.scene];
 
 			await Promise.all(toLoad);
-			console.log(gltf);
+			
+			asset.bindShader(shader);
+
+			//console.log(gltf);
 			asset.ready = true;
 		});
 
@@ -351,7 +354,7 @@ class ModelAsset {
 				gl.bindVertexArray(prim.vao);
 				gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
 
-				for(let [name, attrib] of prim.attributes) {
+				for(let [name, attrib] of Object.entries(prim.attributes)) {
 					let location = attribMap.get(name);
 					if(location === undefined){
 						location = gl.getAttribLocation(shader, name);
@@ -360,7 +363,12 @@ class ModelAsset {
 					if(location == -1){
 						let oldLocation = oldAttribMap.get(name);
 						if(oldLocation === undefined){
-							oldLocation = gl.getAttribLocation(this.shader);
+							if(this.shader === null){
+								oldLocation = -1;
+								oldAttribMap.set(name, oldLocation);
+								continue;
+							}
+							oldLocation = gl.getAttribLocation(this.shader, name);
 							oldAttribMap.set(name, oldLocation);
 						}
 						if(oldLocation != -1) gl.disableVertexAttribArray(oldLocation);
