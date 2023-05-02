@@ -301,9 +301,20 @@ class AssetManager{
 					prim.primitiveType = primitive.mode || 4;
 					prim.count = primitive.renderCount;
 					if(primitive.targets) console.error("Morph targets for meshes are not supported. Ignoring...");
-					m.primitives.push(prim);
+					m._primitives.push(prim);
 				}
 				asset.meshes.push(m);
+			}
+			for(let material of gltf.materials){
+				if(!material.pbrMetallicRoughness){
+					material.pbrMetallicRoughness = {}
+				}
+				let pbr = material.pbrMetallicRoughness;
+
+				if(!pbr.baseColorTexture && !pbr.baseColorFactor) pbr.baseColorFactor = [1,1,1,1];
+
+				pbr.metallicFactor = pbr.metallicFactor || 1;
+				pbr.roughnessFactor = pbr.roughnessFactor || 1;
 			}
 
 			asset.defaultScene = asset.scenes[gltf.scene];
@@ -357,7 +368,7 @@ class ModelAsset {
 				for(let [name, attrib] of Object.entries(prim.attributes)) {
 					let location = attribMap.get(name);
 					if(location === undefined){
-						location = gl.getAttribLocation(shader, name);
+						location = gl.getAttribLocation(shader.program, name);
 						attribMap.set(name, location);
 					}
 					if(location == -1){
@@ -368,7 +379,7 @@ class ModelAsset {
 								oldAttribMap.set(name, oldLocation);
 								continue;
 							}
-							oldLocation = gl.getAttribLocation(this.shader, name);
+							oldLocation = gl.getAttribLocation(this.shader.program, name);
 							oldAttribMap.set(name, oldLocation);
 						}
 						if(oldLocation != -1) gl.disableVertexAttribArray(oldLocation);
@@ -405,9 +416,13 @@ class Node3D {
 		
 	}
 }
-class Mesh3d {
-	primitives = [];
-	weights = null;
+class Mesh3d extends Object3 {
+	_asset = null;
+	_primitives = [];
+	_weights = null;
+	constructor(asset){
+		this._asset = asset;
+	}
 }
 class Mesh3dPrimitive {
 	primitiveType = 4;	//	Describes the type of primitive to render (default 4 for gl.TRIANGLES)

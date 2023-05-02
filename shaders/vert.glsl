@@ -2,8 +2,8 @@
 
 //attribute vec4 position;
 in vec4 POSITION;
-uniform mat4 cameraMatrix;
+uniform mat4 u_worldTransformMatrix;
 
 void main() {
-  gl_Position = cameraMatrix * POSITION;
+  gl_Position = u_worldTransformMatrix * POSITION;
 }
