@@ -26,7 +26,7 @@ function performRender(cameraMatrix){
 	calculateTransforms(_globalScene, cameraMatrix);
 
 	gl.clearColor(0,0,0,1);
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 	let boundShader = null;
 	for(let [material, [primitiveList,shader]] of materialMap.entries()){
@@ -35,12 +35,18 @@ function performRender(cameraMatrix){
 			boundShader = shader;
 			gl.useProgram(shader.program);
 		}
+		twgl.setUniforms(shader, material.uniforms);
+		if(material.doubleSided){
+			gl.disable(gl.CULL_FACE);
+		}else{
+			gl.enable(gl.CULL_FACE);
+		}
 
 		for(let [matrix, primitive] of primitiveList){
 			let renderUniforms = {
 				u_worldTransformMatrix: matrix
 			};
-			
+
 			twgl.setUniforms(shader, renderUniforms);
 
 			//call draw functions

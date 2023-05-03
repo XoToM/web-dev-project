@@ -19,6 +19,10 @@ let _assetManager = null;
 let _gl = null;
 
 class AssetManager{
+	ALPHA_OPAQUE = 0;
+	ALPHA_MASK = 1;
+	ALPHA_BLEND = 2;
+
 	gl = null;
 	modelMap = new Map();
 
@@ -322,10 +326,24 @@ class AssetManager{
 				}
 				let pbr = material.pbrMetallicRoughness;
 
-				if(!pbr.baseColorTexture && !pbr.baseColorFactor) pbr.baseColorFactor = [1,1,1,1];
-
+				pbr.baseColorFactor = pbr.baseColorFactor || [1,1,1,1];
 				pbr.metallicFactor = pbr.metallicFactor || 1;
 				pbr.roughnessFactor = pbr.roughnessFactor || 1;
+
+				material.alphaMode = this["ALPHA_" + (material.alphaMode || "OPAQUE")];
+				material.alphaCutoff = material.alphaCutoff || 0.5;
+				if(!material.alphaCutoff) material.alphaCutoff = -1;
+				material.doubleSided = material.doubleSided || false;
+				material.emissiveFactor = material.emissiveFactor || [0,0,0];
+
+				material.uniforms = {
+					u_baseColorFactor: pbr.baseColorFactor,
+					u_alphaCutoff: material.alphaCutoff,
+					u_metallicFactor: pbr.metallicFactor,
+					u_roughnessFactor: pbr.roughnessFactor,
+					u_emissiveFactor: material.emissiveFactor,
+				};
+				asset.materials.push(material);
 			}
 
 			asset.defaultScene = gltf.scene;
@@ -356,6 +374,7 @@ class ModelAsset {
 	meshes = [];
 	accessors = [];
 	buffers = [];
+	materials = [];
 	vbo = null;
 	ebo = null;
 	attributeParamaters = new Map();
