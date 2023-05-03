@@ -24,7 +24,7 @@ let asset = _assetManager.loadModel("tests/test1.gltf", "test1", programInfo);
 
 let waiting = true;
 
-let camera = {position:[0,0,0], rotation:[0,0], renderDistance:200};
+let camera = {position:[0,0,0], rotation:[0,0,0], renderDistance:200};
 
 gl.enable(gl.DEPTH_TEST);
 
@@ -35,6 +35,7 @@ function render(time) {
 	camera.position[2] = +posz.value;
 	camera.rotation[0] = +rotx.value;
 	camera.rotation[1] = +roty.value;
+	//camera.rotation[2] = 0;
 
 	twgl.resizeCanvasToDisplaySize(gl.canvas);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);

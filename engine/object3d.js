@@ -78,7 +78,7 @@ class Object3{
 		m4.rotateZ(matrix, this.rotation[2] * (Math.PI/180), matrix);
 		m4.rotateY(matrix, this.rotation[1] * (Math.PI/180), matrix);
 		m4.rotateX(matrix, this.rotation[0] * (Math.PI/180), matrix);
-		m4.scaling(matrix, v3.copy(this.scaling), matrix);
+		m4.scale(matrix, [this.scaling[0], this.scaling[1], this.scaling[2]], matrix);
 		m4.multiply(parent, matrix, matrix);
 		return matrix;
 	}
