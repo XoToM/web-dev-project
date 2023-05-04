@@ -20,7 +20,14 @@ new AssetManager(gl);
 
 const programInfo = twgl.createProgramInfo(gl, [getFileSync("shaders/vert.glsl"), getFileSync("shaders/frag.glsl")]);
 
-let asset = _assetManager.loadModel("tests/test1.gltf", "test1", programInfo);
+let asset = _assetManager.loadModel(
+	"tests/test1.gltf",
+	"test1",
+	programInfo,
+	{
+		position:"a_position",
+		colorTexCoord: "a_colorTexCoord"
+	});
 
 let waiting = true;
 
@@ -67,6 +74,6 @@ asset.then((a)=>{
 	console.log(asset);
 	let obj = asset.generateObject3();
 	_globalScene.appendChild(obj);
-	requestAnimationFrame(render); 
+	requestAnimationFrame(render);
 });
 //requestAnimationFrame(render);

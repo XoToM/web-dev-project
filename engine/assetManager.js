@@ -32,7 +32,7 @@ class AssetManager{
 		_assetManager = this;
 	}
 
-	loadModel(path, id, shader){
+	loadModel(path, id, shader, nameTable){
 		if(this.modelMap.has(id)) {
 			let e = async()=>this.modelMap.get(id);
 			return e();
@@ -82,6 +82,43 @@ class AssetManager{
 				});
 				accessor.totalBytes = dataSize*accessor.count;
 				toLoad.push(accessor.dataReady);
+			}
+
+
+			for(let texture of gltf.textures){
+				let image = gltf.images[texture.source];
+
+				texture.data = new Uint8Array([255,0,255,255]);
+				texture.width = 1;
+				texture.height = 1;
+
+				if(image.loader){
+					let promise = image.loader.then((img)=>{
+						texture.data = img;
+					});
+					toLoad.push(promise);
+					continue;
+				}
+				if(image.uri){
+					let promise = new Promise((resolve,reject)=>{
+						let img = new Image();
+						img.src = image.uri;
+						img.onload = ()=>{
+							texture.data = img;
+							texture.width = img.width;
+							texture.height = img.height;
+							resolve(img);
+						}
+						img.onerror = (e)=>{
+							console.error("Failed to load texture: "+e);
+							reject(e);
+						}
+					});
+					image.loader = promise;
+					toLoad.push(promise);
+					continue;
+				}
+				console.error("Image data stored in an unsupported format.");
 			}
 
 			await Promise.all(toLoad);
@@ -270,6 +307,37 @@ class AssetManager{
 			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, asset.vbo);
 			this.gl.bufferData(this.gl.ARRAY_BUFFER, bufferData, this.gl.STATIC_DRAW);
 
+			for(let texture of gltf.textures){
+				let sampler = gltf.samplers[texture.sampler];
+				texture.sampler = sampler;
+				let tex = this.gl.createTexture();	//	Create webgl texture
+				sampler.texture = tex;
+
+				this.gl.bindTexture(this.gl.TEXTURE_2D, tex);	//	Upload image to texture
+				this.gl.texImage2D(
+					this.gl.TEXTURE_2D,
+					0,
+					this.gl.RGBA,
+					texture.width,
+					texture.height,
+					0,					//	This can be set to any value as long as this value is 0 - WebGL api
+					this.gl.RGBA,
+					this.gl.UNSIGNED_BYTE,
+					texture.data);
+				
+				function isPowerOf2(value) {
+					return (value & (value - 1)) === 0;
+				}
+
+				if(isPowerOf2(texture.width) && isPowerOf2(texture.height)){
+					this.gl.generateMipmap(this.gl.TEXTURE_2D);		//	Generate mipmaps for texture if its dimensions are powers of 2
+				}
+				//this.gl.texParameteri(this.gl.TEXTURE_2D, );			//	Use samplers instead? 
+				sampler.sampler = this.gl.createSampler();
+				//gl.samplerParameteri()
+
+				//gl.bindSampler when binding the texture
+			}
 
 			for(let node of gltf.nodes){
 				let n = new AssetNode3D();
@@ -320,6 +388,11 @@ class AssetManager{
 			for(let node of asset.nodes){
 				if(node.mesh !== null) node.mesh = asset.meshes[node.mesh];
 			}
+
+			for(let texture of gltf.textures){
+				if(texture.data) asset.textures.push(texture);	//	Load data into webgl here
+			}
+
 			for(let material of gltf.materials){
 				if(!material.pbrMetallicRoughness){
 					material.pbrMetallicRoughness = {}
@@ -350,7 +423,7 @@ class AssetManager{
 
 			await Promise.all(toLoad);
 
-			asset.bindShader(shader);
+			asset.bindShader(shader, nameTable);
 
 			//console.log(gltf);
 			asset.ready = true;
@@ -375,19 +448,27 @@ class ModelAsset {
 	accessors = [];
 	buffers = [];
 	materials = [];
+	textures=[];
 	vbo = null;
 	ebo = null;
 	attributeParamaters = new Map();
 	constructor(manager){
 		this.manager = manager;
 	}
-	bindShader(shader){
+	bindShader(shader, nameTable){
+		nameTable = nameTable || {};
 		let attribMap = new Map();
 		let oldAttribMap = new Map();
-		let gl  = this.manager.gl;
+		let gl = this.manager.gl;
+		let attribNameTable = new Map();
+		if(nameTable.position) attribNameTable.set("POSITION", nameTable.position);
+		if(nameTable.normal) attribNameTable.set("NORMAL", nameTable.normal);
+		if(nameTable.tangent) attribNameTable.set("TANGENT", nameTable.tangent);
 
 		for(let mesh of this.meshes){
 			for(let prim of mesh._primitives){
+				if(nameTable.colorTexCoord && prim.material.pbrMetallicRoughness.baseColorTexture) attribNameTable.set("TEXCOORD_"+(prim.material.pbrMetallicRoughness.baseColorTexture.texCoord || 0), nameTable.colorTexCoord);
+
 				if(prim.vao === null){
 					prim.vao = gl.createVertexArray();
 				}
@@ -396,7 +477,8 @@ class ModelAsset {
 				gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
 
 				prim.offset = Infinity;
-				for(let [name, attrib] of Object.entries(prim.attributes)) {
+				for(let [aname, attrib] of Object.entries(prim.attributes)) {
+					let name = attribNameTable.get(aname) || aname;
 					prim.offset = Math.min(prim.offset, attrib.offset);
 					let location = attribMap.get(name);
 					if(location === undefined){
