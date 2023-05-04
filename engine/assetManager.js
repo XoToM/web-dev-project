@@ -32,7 +32,7 @@ class AssetManager{
 		_assetManager = this;
 	}
 
-	loadModel(path, id, shader, nameTable){
+	loadModel(path, id, shader, shaderInfo){
 		if(this.modelMap.has(id)) {
 			let e = async()=>this.modelMap.get(id);
 			return e();
@@ -332,10 +332,15 @@ class AssetManager{
 				if(isPowerOf2(texture.width) && isPowerOf2(texture.height)){
 					this.gl.generateMipmap(this.gl.TEXTURE_2D);		//	Generate mipmaps for texture if its dimensions are powers of 2
 				}
-				//this.gl.texParameteri(this.gl.TEXTURE_2D, );			//	Use samplers instead? 
-				sampler.sampler = this.gl.createSampler();
-				//gl.samplerParameteri()
-
+				
+				if(sampler.sampler === undefined){
+					sampler.sampler = this.gl.createSampler();
+					this.gl.samplerParameteri(sampler.sampler, this.gl.TEXTURE_WRAP_S, sampler.wrapS || 10497);
+					this.gl.samplerParameteri(sampler.sampler, this.gl.TEXTURE_WRAP_T, sampler.wrapT || 10497);
+					if(sampler.magFilter) this.gl.samplerParameteri(sampler.sampler, this.gl.TEXTURE_MAG_FILTER, sampler.magFilter);
+					if(sampler.minFilter) this.gl.samplerParameteri(sampler.sampler, this.gl.TEXTURE_MIN_FILTER, sampler.minFilter);
+				}
+				texture.texture = tex;
 				//gl.bindSampler when binding the texture
 			}
 
@@ -416,6 +421,26 @@ class AssetManager{
 					u_roughnessFactor: pbr.roughnessFactor,
 					u_emissiveFactor: material.emissiveFactor,
 				};
+
+				material.textures = {};
+				if(pbr.baseColorTexture){
+					let unit = pbr.baseColorTexture.texCoord || 0;
+					let texture = gltf.textures[unit];
+
+					let textureInfo = {
+						unit,
+						samplerUniform: null,
+						texture: texture.texture, 
+						sampler: texture.sampler.sampler,
+						samplerUniform: shaderInfo.colorSampler || "u_colorSampler"
+					};
+					material.textures.color = textureInfo;
+					material.textureInfos = material.textureInfos || [];
+					material.textureInfos.push(textureInfo);
+					//material.uniforms[textureInfo.samplerUniform || "u_colorSampler"] = textureInfo.unit;
+					
+					shaderInfo.colorSampler = null;
+				}
 				asset.materials.push(material);
 			}
 
@@ -423,7 +448,7 @@ class AssetManager{
 
 			await Promise.all(toLoad);
 
-			asset.bindShader(shader, nameTable);
+			asset.bindShader(shader, shaderInfo);
 
 			//console.log(gltf);
 			asset.ready = true;
@@ -501,6 +526,13 @@ class ModelAsset {
 					}
 					gl.enableVertexAttribArray(location);
 					gl.vertexAttribPointer(location, attrib.componentCount, attrib.componentType, attrib.normalized, attrib.stride, attrib.offset);
+				}
+			}
+		}
+		for(let material of this.materials){
+			for(let texInfo of material.textureInfos){
+				if(typeof(texInfo.samplerUniform)=="string"){
+					texInfo.samplerUniform = gl.getUniformLocation(shader.program, texInfo.samplerUniform);
 				}
 			}
 		}

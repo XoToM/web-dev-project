@@ -25,8 +25,9 @@ let asset = _assetManager.loadModel(
 	"test1",
 	programInfo,
 	{
-		position:"a_position",
-		colorTexCoord: "a_colorTexCoord"
+		position: "a_position",
+		colorTexCoord: "a_colorTexCoord",
+		colorSampler: "u_colorTexture",
 	});
 
 let waiting = true;
@@ -52,7 +53,7 @@ function render(time) {
 	m4.rotateX(cameraMatrix, camera.rotation[0] * (Math.PI/180), cameraMatrix);
 	m4.rotateY(cameraMatrix, camera.rotation[1] * (Math.PI/180), cameraMatrix);
 	m4.rotateZ(cameraMatrix, camera.rotation[2] * (Math.PI/180), cameraMatrix);
-	m4.translate(cameraMatrix, camera.position, cameraMatrix);
+	m4.translate(cameraMatrix, [-camera.position[0], -camera.position[1], camera.position[2]], cameraMatrix);
 	//m4.scale(cameraMatrix, [1,1,camera.renderDistance], cameraMatrix);
 
 	const standardUniforms = {

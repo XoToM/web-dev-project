@@ -35,6 +35,14 @@ function performRender(cameraMatrix){
 			boundShader = shader;
 			gl.useProgram(shader.program);
 		}
+
+		for(let [texName, texInfo] of Object.entries(material.textures)){
+			gl.activeTexture(gl.TEXTURE0 + texInfo.unit);
+			gl.bindTexture(gl.TEXTURE_2D, texInfo.texture);
+			gl.bindSampler(texInfo.unit, texInfo.sampler);
+			gl.uniform1i(texInfo.samplerUniform, texInfo.unit);
+		}
+
 		twgl.setUniforms(shader, material.uniforms);
 		if(material.doubleSided){
 			gl.disable(gl.CULL_FACE);
@@ -48,6 +56,8 @@ function performRender(cameraMatrix){
 			};
 
 			twgl.setUniforms(shader, renderUniforms);
+
+
 
 			//call draw functions
 			gl.bindVertexArray(primitive.vao);
