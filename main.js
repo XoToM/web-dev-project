@@ -21,8 +21,8 @@ new AssetManager(gl);
 const programInfo = twgl.createProgramInfo(gl, [getFileSync("shaders/vert.glsl"), getFileSync("shaders/frag.glsl")]);
 
 let asset = _assetManager.loadModel(
-	"tests/test1.gltf",
-	"test1",
+	"tests/test5.gltf",
+	"test5",
 	programInfo,
 	{
 		position: "a_position",

@@ -437,8 +437,7 @@ class AssetManager{
 					material.textures.color = textureInfo;
 					material.textureInfos = material.textureInfos || [];
 					material.textureInfos.push(textureInfo);
-					//material.uniforms[textureInfo.samplerUniform || "u_colorSampler"] = textureInfo.unit;
-					
+
 					shaderInfo.colorSampler = null;
 				}
 				asset.materials.push(material);
@@ -450,7 +449,6 @@ class AssetManager{
 
 			asset.bindShader(shader, shaderInfo);
 
-			//console.log(gltf);
 			asset.ready = true;
 		});
 
