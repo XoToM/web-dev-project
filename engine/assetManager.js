@@ -324,7 +324,7 @@ class AssetManager{
 					this.gl.RGBA,
 					this.gl.UNSIGNED_BYTE,
 					texture.data);
-				
+
 				function isPowerOf2(value) {
 					return (value & (value - 1)) === 0;
 				}
@@ -332,7 +332,7 @@ class AssetManager{
 				if(isPowerOf2(texture.width) && isPowerOf2(texture.height)){
 					this.gl.generateMipmap(this.gl.TEXTURE_2D);		//	Generate mipmaps for texture if its dimensions are powers of 2
 				}
-				
+
 				if(sampler.sampler === undefined){
 					sampler.sampler = this.gl.createSampler();
 					this.gl.samplerParameteri(sampler.sampler, this.gl.TEXTURE_WRAP_S, sampler.wrapS || 10497);
@@ -430,7 +430,7 @@ class AssetManager{
 					let textureInfo = {
 						unit,
 						samplerUniform: null,
-						texture: texture.texture, 
+						texture: texture.texture,
 						sampler: texture.sampler.sampler,
 						samplerUniform: shaderInfo.colorSampler || "u_colorSampler"
 					};
