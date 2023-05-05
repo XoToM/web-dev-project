@@ -26,6 +26,7 @@ let asset = _assetManager.loadModel(
 	programInfo,
 	{
 		position: "a_position",
+		normal: "a_normal",
 		colorTexCoord: "a_colorTexCoord",
 		colorSampler: "u_colorTexture",
 	});
@@ -52,8 +53,9 @@ function _render(time) {
 
 
 	let cameraMatrix = m4.identity();
+	let projectionMatrix = m4.identity();
 	m4.identity(cameraMatrix);
-	m4.perspective(40 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, +(0.01), Camera.renderDistance, cameraMatrix);
+	m4.perspective(40 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, +(0.01), Camera.renderDistance, projectionMatrix);
 	m4.rotateX(cameraMatrix, Camera.rotation[0] * (Math.PI/180), cameraMatrix);
 	m4.rotateY(cameraMatrix, Camera.rotation[1] * (Math.PI/180), cameraMatrix);
 	m4.rotateZ(cameraMatrix, Camera.rotation[2] * (Math.PI/180), cameraMatrix);
@@ -62,10 +64,15 @@ function _render(time) {
 
 	const standardUniforms = {
 		resolution: [gl.canvas.width, gl.canvas.height],
-		//cameraMatrix,
+		u_ambientLight: [1,1,1,0.2],
+		u_lightPosition: [5, 4, 4],
+		u_lightColor: [1, 1, 1],
+		u_specularStrength: 1,
+		u_shininess: 32,
+		u_projectionMatrix: projectionMatrix,
+		u_cameraPosition: v3.create(Camera.position[0], Camera.position[1], -Camera.position[2])
 	};
 
-	gl.useProgram(programInfo.program);
 	twgl.setUniforms(programInfo, standardUniforms);
 
 	//twgl.drawBufferInfo(gl, bufferInfo);

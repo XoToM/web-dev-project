@@ -25,7 +25,7 @@ function performRender(cameraMatrix){
 			}
 		}
 	}
-	calculateTransforms(_globalScene, cameraMatrix);
+	calculateTransforms(_globalScene, m4.identity());
 
 	gl.clearColor(0,0,0,1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -55,6 +55,7 @@ function performRender(cameraMatrix){
 		for(let [matrix, primitive, normalMatrix] of primitiveList){
 			let renderUniforms = {
 				u_modelMatrix: matrix,
+				u_viewMatrix: cameraMatrix,
 				u_normalMatrix: normalMatrix
 			};
 
