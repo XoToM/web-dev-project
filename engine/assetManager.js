@@ -110,7 +110,7 @@ class AssetManager{
 							resolve(img);
 						}
 						img.onerror = (e)=>{
-							console.error("Failed to load texture: "+e);
+							console.error("Failed to load texture: ",e);
 							reject(e);
 						}
 					});

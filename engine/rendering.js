@@ -15,7 +15,9 @@ function performRender(cameraMatrix){
 						materialMap.set(primitive.material, [res[0], res[1]]);
 					}
 					let [list, shader] = res;
-					list.push([matrix, primitive]);
+					let normalMatrix = m4.inverse(matrix);
+					m4.transpose(normalMatrix, normalMatrix);
+					list.push([matrix, primitive, normalMatrix]);
 				}
 			}
 			for(let child of object3.children) {
@@ -50,9 +52,10 @@ function performRender(cameraMatrix){
 			gl.enable(gl.CULL_FACE);
 		}
 
-		for(let [matrix, primitive] of primitiveList){
+		for(let [matrix, primitive, normalMatrix] of primitiveList){
 			let renderUniforms = {
-				u_worldTransformMatrix: matrix
+				u_modelMatrix: matrix,
+				u_normalMatrix: normalMatrix
 			};
 
 			twgl.setUniforms(shader, renderUniforms);
