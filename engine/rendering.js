@@ -38,7 +38,7 @@ function performRender(cameraMatrix, standardUniforms){
 			boundShader = shader;
 			gl.useProgram(shader.program);
 
-			twgl.setUniforms(programInfo, standardUniforms);
+			twgl.setUniforms(shader, standardUniforms);
 		}
 
 		for(let [texName, texInfo] of Object.entries(material.textures)){
@@ -56,7 +56,6 @@ function performRender(cameraMatrix, standardUniforms){
 		}
 
 		for(let [matrix, primitive, normalMatrix] of primitiveList){
-			
 
 			let renderUniforms = {
 				u_modelMatrix: matrix,

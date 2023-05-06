@@ -6,7 +6,7 @@ function logGLCall(functionName, args) {
 	//console.log("gl." + functionName + "(" + WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");	//	Log WebGL calls
 }
 let gl = canvas.getContext("webgl2");
-//let gl = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl2"), undefined, logGLCall);	//	Get a WebGL 2 context. WebGL 1 doesn't have 3d textures, and has many other limitations
+//let gl = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl2"), undefined, logGLCall);	//	Get a WebGL 2 context. WebGL 1 is very limited, and most devices support it by now anyway
 
 
 var getFileSync = function(url) {
@@ -18,23 +18,11 @@ var getFileSync = function(url) {
 
 new AssetManager(gl);
 
-const programInfo = twgl.createProgramInfo(gl, [getFileSync("shaders/vert.glsl"), getFileSync("shaders/frag.glsl")]);
 
-let asset = _assetManager.loadModel(
-	//"tests/blender_monkey.gltf",
-	"tests/default_cube.gltf",
-	"cube",
-	programInfo,
-	{
-		position: "a_position",
-		normal: "a_normal",
-		colorTexCoord: "a_colorTexCoord",
-		colorSampler: "u_colorTexture",
-	});
 
 let waiting = true;
 
-let Camera = {position:[0,0,-5], rotation:[0,0,0], renderDistance:200, specularEnable:true, ambientEnable:true, diffuseEnable:true};
+let Camera = {position:[0,5,-5], rotation:[0,0,0], renderDistance:200, specularEnable:true, ambientEnable:true, diffuseEnable:true};
 
 gl.enable(gl.DEPTH_TEST);
 
@@ -73,18 +61,9 @@ function _render(time) {
 		u_cameraPosition: v3.create(Camera.position[0], Camera.position[1], -Camera.position[2])
 	};
 
-	//twgl.drawBufferInfo(gl, bufferInfo);
-
 	performRender(cameraMatrix, standardUniforms);
 
 	_LastRenderTime = time;
 	requestAnimationFrame(_render);
 }
-asset.then((a)=>{
-	asset = a;
-	console.log(asset);
-	let obj = asset.generateObject3();
-	_globalScene.appendChild(obj);
-	requestAnimationFrame(_render);
-});
-//requestAnimationFrame(render);
+requestAnimationFrame(_render);

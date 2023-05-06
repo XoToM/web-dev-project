@@ -45,8 +45,6 @@ class AssetManager{
 			gltf = await gltf.json();
 			let toLoad = [];
 
-			let bufferViews = [];
-
 			for(let accessor of gltf.accessors){
 				let view = gltf.bufferViews[accessor.bufferView];
 				let dataBuffer = gltf.buffers[view.buffer];
@@ -451,11 +449,24 @@ class AssetManager{
 			asset.bindShader(shader, shaderInfo);
 
 			asset.ready = true;
+			asset.loader = null;
 		});
 
 		this.modelMap.set(id, asset);
-
 		return asset.loader.then(()=>asset);
+	}
+	async generateObject3(asset_id, scene){
+		let asset = this.modelMap.get(asset_id);
+		//console.log(structuredClone(asset));
+		if(asset.loader) await asset.loader;
+		return asset.generateObject3(scene);
+	}
+	async finishedLoading(){
+		let toLoad = [];
+		for(let [k, asset] of this.modelMap.entries()){
+			if(asset.loader) toLoad.push(asset.loader);
+		}
+		await Promise.all(toLoad);
 	}
 }
 
