@@ -38,13 +38,16 @@ function render(deltaTime){
 	_globalScene.appendChild(cube1);
 	_globalScene.appendChild(cube2);
 	_globalScene.appendChild(cube3);
+	let plane = new Object3();
 	for(let z=-10;z<10;z++){
 		for(let x=-10;x<10;x++){
 			let ground = await _assetManager.generateObject3("ground_plane");
 			ground.position[0] = 4*x;
 			ground.position[1] = -10;
 			ground.position[2] = 4*z;
-			_globalScene.appendChild(ground);
+			plane.appendChild(ground);
 		}
 	}
+	_globalScene.appendChild(plane);
+	console.log(cube1);
 })()

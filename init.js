@@ -5,7 +5,7 @@ const m4 = twgl.m4;
 function logGLCall(functionName, args) {
 	//console.log("gl." + functionName + "(" + WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");	//	Log WebGL calls
 }
-let gl = canvas.getContext("webgl2");
+let gl = canvas.getContext("webgl2", {antialias:false});	//	Firefox seems to get better results with antialiasing disabled. When its enabled there might be some gaps between faces
 //let gl = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl2"), undefined, logGLCall);	//	Get a WebGL 2 context. WebGL 1 is very limited, and most devices support it by now anyway
 
 
@@ -22,7 +22,7 @@ new AssetManager(gl);
 
 let waiting = true;
 
-let Camera = {position:[0,5,-5], rotation:[0,0,0], renderDistance:200, specularEnable:true, ambientEnable:true, diffuseEnable:true};
+let Camera = {position:[0,0,-5], rotation:[0,0,0], renderDistance:200, specularEnable:true, ambientEnable:true, diffuseEnable:true};
 
 gl.enable(gl.DEPTH_TEST);
 

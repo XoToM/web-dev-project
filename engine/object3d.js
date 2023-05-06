@@ -8,6 +8,7 @@ class Object3{
 	children = [];
 	parent = null;
 	name = null;
+	animationPlayer = null;
 	renderVisibility = true;
 
 	constructor({position = null, rotation = null, scaling = null, name = null}={}){

@@ -444,6 +444,50 @@ class AssetManager{
 
 			asset.defaultScene = gltf.scene;
 
+			//	Load Animations
+
+			for(let animation of (gltf.animations || [])){
+				for(let sampler of animation.samplers){
+					let input = gltf.accessors[sampler.input];
+					let ab = new ArrayBuffer(input.dataSize * input.count);
+					let keyframes_data = new Uint8Array(ab);
+					let pointer = 0;
+					for(let bytes of input.getReader()){
+						for(let b of bytes){
+							keyframes_data[pointer++] = b;
+						}
+					}
+					sampler.keyframes = new Float32Array(ab);
+
+					let output = gltf.accessors[sampler.output];
+					ab = new ArrayBuffer(output.dataSize * output.count);
+					sampler.stride = output.componentSize;
+
+					keyframes_data = new Uint8Array(ab);
+					pointer = 0;
+					for(let bytes of output.getReader()){
+						for(let b of bytes){
+							keyframes_data[pointer++] = b;
+						}
+					}
+					sampler.values = new Float32Array(ab);
+				}
+			}
+
+			for(let animation of (gltf.animations || [])){
+				let anim = new Map();
+				for(let achannel of animation.channels){
+					let target = achannel.target;
+					let node = asset.nodes[target.node];
+					let animInfo = anim.get(node) || {};
+					animInfo[target.path] = animation.samplers[achannel.sampler];
+
+					anim.set(node, animInfo);
+				}
+				asset.animations.set(animation.name, anim);
+			}
+
+
 			await Promise.all(toLoad);
 
 			asset.bindShader(shader, shaderInfo);
@@ -481,6 +525,7 @@ class ModelAsset {
 	defaultScene = null;
 	nodes = [];
 	meshes = [];
+	animations = new Map();
 	accessors = [];
 	buffers = [];
 	materials = [];
@@ -553,6 +598,8 @@ class ModelAsset {
 	generateObject3(scene){
 		if(scene === undefined) scene = this.defaultScene;
 
+		let nodeMap = new Map();
+
 		function createObject(node){
 			let obj;
 			if(node.mesh){
@@ -560,12 +607,33 @@ class ModelAsset {
 			}else{
 				obj = new Object3({position: node.translation, rotation: node.rotation, scaling: node.scale, name:node.name});
 			}
+			nodeMap.set(node, obj);
 			for(let child of node.children){
 				obj.appendChild(createObject(child));
 			}
 			return obj;
 		}
-		return createObject(this.scenes[scene]);
+
+		let result = createObject(this.scenes[scene]);
+		if(this.animations.size){
+			let animations = new Map();
+			for(let [name, animation] of this.animations.entries()){
+				let sequences = new Map();
+
+				for(let [node, sequence] of animation.entries()){
+					let obj = animation.get(node);
+					if(!obj) continue;
+
+					sequences.set(obj, sequence);
+				}
+
+				animations.set(name, sequences);
+			}
+			let player = new AnimationPlayer(result, animations);
+			result.animationPlayer = player;
+		}
+
+		return result;
 	}
 }
 class AssetNode3D {
