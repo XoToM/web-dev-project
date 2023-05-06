@@ -1,7 +1,10 @@
 let _globalScene = new Object3();
 
-function performRender(cameraMatrix){
+function performRender(cameraMatrix, standardUniforms){
 	let materialMap = new Map();
+	gl.clearColor(0,0,0,1);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
 	function calculateTransforms(object3, parentMatrix){
 		if(object3 instanceof Object3){
 			if(!object3.renderVisibility) return;
@@ -27,8 +30,6 @@ function performRender(cameraMatrix){
 	}
 	calculateTransforms(_globalScene, m4.identity());
 
-	gl.clearColor(0,0,0,1);
-	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 	let boundShader = null;
 	for(let [material, [primitiveList,shader]] of materialMap.entries()){
@@ -36,6 +37,8 @@ function performRender(cameraMatrix){
 		if(boundShader !== shader){
 			boundShader = shader;
 			gl.useProgram(shader.program);
+
+			twgl.setUniforms(programInfo, standardUniforms);
 		}
 
 		for(let [texName, texInfo] of Object.entries(material.textures)){
@@ -53,6 +56,8 @@ function performRender(cameraMatrix){
 		}
 
 		for(let [matrix, primitive, normalMatrix] of primitiveList){
+			
+
 			let renderUniforms = {
 				u_modelMatrix: matrix,
 				u_viewMatrix: cameraMatrix,
@@ -65,11 +70,12 @@ function performRender(cameraMatrix){
 
 			//call draw functions
 			gl.bindVertexArray(primitive.vao);
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, primitive.mesh._asset.ebo);
 
 			if(primitive.indices){
 				gl.drawElements(primitive.primitiveType, primitive.count, primitive.indices.type, primitive.indices.offset)
 			}else{
-				gl.drawArrays(primitive.primitiveType, primitive.offset, primitive.count);
+				//gl.drawArrays(primitive.primitiveType, primitive.offset, primitive.count);
 			}
 		}
 	}

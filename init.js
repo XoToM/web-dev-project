@@ -21,6 +21,7 @@ new AssetManager(gl);
 const programInfo = twgl.createProgramInfo(gl, [getFileSync("shaders/vert.glsl"), getFileSync("shaders/frag.glsl")]);
 
 let asset = _assetManager.loadModel(
+	//"tests/blender_monkey.gltf",
 	"tests/default_cube.gltf",
 	"cube",
 	programInfo,
@@ -33,7 +34,7 @@ let asset = _assetManager.loadModel(
 
 let waiting = true;
 
-let Camera = {position:[0,0,-5], rotation:[0,0,0], renderDistance:200};
+let Camera = {position:[0,0,-5], rotation:[0,0,0], renderDistance:200, specularEnable:true, ambientEnable:true, diffuseEnable:true};
 
 gl.enable(gl.DEPTH_TEST);
 
@@ -48,8 +49,6 @@ function _render(time) {
 	if(typeof(render) != "undefined"){
 		render(deltaTime);
 	}
-
-	
 
 
 	let cameraMatrix = m4.identity();
@@ -69,15 +68,14 @@ function _render(time) {
 		u_lightColor: [1, 1, 1],
 		u_specularStrength: 1,
 		u_shininess: 32,
+		u_renderSettings: Camera.specularEnable * 4 + Camera.ambientEnable + Camera.diffuseEnable*2,
 		u_projectionMatrix: projectionMatrix,
 		u_cameraPosition: v3.create(Camera.position[0], Camera.position[1], -Camera.position[2])
 	};
 
-	twgl.setUniforms(programInfo, standardUniforms);
-
 	//twgl.drawBufferInfo(gl, bufferInfo);
 
-	performRender(cameraMatrix);
+	performRender(cameraMatrix, standardUniforms);
 
 	_LastRenderTime = time;
 	requestAnimationFrame(_render);

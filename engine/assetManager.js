@@ -123,6 +123,7 @@ class AssetManager{
 
 			await Promise.all(toLoad);
 			toLoad = [];
+			gl.bindVertexArray(null);	//	Prevent this function from overwriting VAOs which could still be bound
 
 			//	Set up the EBO buffer
 			//		- Find accessors which need allocation
@@ -457,6 +458,7 @@ class AssetManager{
 		return asset.loader.then(()=>asset);
 	}
 }
+
 class ModelAsset {
 	manager = null;
 	loader = null;

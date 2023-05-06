@@ -11,6 +11,7 @@ uniform vec3 u_lightColor;
 uniform vec3 u_cameraPosition;
 uniform float u_specularStrength;
 uniform float u_shininess;
+uniform int u_renderSettings;
 
 in vec2 v_colorCoord;
 in vec3 v_normal;
@@ -34,7 +35,20 @@ void main() {
 	float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), u_shininess);
 	vec3 specular = u_specularStrength * spec * u_lightColor;
 
+	if(bool(u_renderSettings & 1)) {
+		ambient = vec3(0);
+	}
+	if(bool(u_renderSettings & 2)) {
+		diffuse = vec3(0);
+	}
+	if(bool(u_renderSettings & 4)) {
+		specular = vec3(0);
+	}
+	if((u_renderSettings & 7) == 7) {
+		ambient = vec3(1);
+	}
+
 // +specular
-	vec3 result = (ambient + diffuse) * materialColor;				//	Combine the lights and the material color to get the final color of this pixel
-	FragColor =  vec4(result,1.0);
+	vec3 result = (ambient + diffuse + specular) * materialColor;				//	Combine the lights and the material color to get the final color of this pixel
+	FragColor =  vec4(result, 1.0);
 }
