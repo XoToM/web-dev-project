@@ -5,10 +5,20 @@ function performRender(cameraMatrix, standardUniforms){
 	gl.clearColor(0,0,0,1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+	let animators = [];
+
 	function calculateTransforms(object3, parentMatrix){
 		if(object3 instanceof Object3){
 			if(!object3.renderVisibility) return;
-			let matrix = object3.calculateMatrix(parentMatrix);
+			if(object3.animationPlayer) animators.push(object3.animationPlayer);
+
+			let adjust;
+			for(let animator of animators){
+				adjust = animator.calculateAdjust(object3, adjust);
+			}
+
+			let matrix = object3.calculateMatrix(parentMatrix, adjust);
+
 			if(object3 instanceof Mesh3d){
 				for(let primitive of object3._mesh._primitives){
 					let res = materialMap.get(primitive.material);
@@ -26,6 +36,7 @@ function performRender(cameraMatrix, standardUniforms){
 			for(let child of object3.children) {
 				calculateTransforms(child, matrix);
 			}
+			if(object3.animationPlayer) animators.pop();
 		}
 	}
 	calculateTransforms(_globalScene, m4.identity());

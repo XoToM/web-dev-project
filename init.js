@@ -1,4 +1,5 @@
 const canvas = document.getElementById("canvasgl");
+const timer_elem = document.getElementById("timer");
 
 
 const m4 = twgl.m4;
@@ -28,11 +29,14 @@ gl.enable(gl.DEPTH_TEST);
 
 
 let _LastRenderTime = 0;
+let counter = 0;
 
 function _render(time) {
 	twgl.resizeCanvasToDisplaySize(gl.canvas);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-	let deltaTime = (time - _LastRenderTime)/100;
+	let deltaTime = (time - _LastRenderTime)/1000;
+	counter +=deltaTime;
+	timer_elem.innerText = counter;
 
 	if(typeof(render) != "undefined"){
 		render(deltaTime);
@@ -60,6 +64,8 @@ function _render(time) {
 		u_projectionMatrix: projectionMatrix,
 		u_cameraPosition: v3.create(Camera.position[0], Camera.position[1], -Camera.position[2])
 	};
+
+	__ANIMATION_PLAYERS.forEach((ap)=>ap.stepAnimations(deltaTime));
 
 	performRender(cameraMatrix, standardUniforms);
 

@@ -39,15 +39,20 @@ function render(deltaTime){
 	_globalScene.appendChild(cube2);
 	_globalScene.appendChild(cube3);
 	let plane = new Object3();
-	for(let z=-10;z<10;z++){
-		for(let x=-10;x<10;x++){
-			let ground = await _assetManager.generateObject3("ground_plane");
-			ground.position[0] = 4*x;
-			ground.position[1] = -10;
-			ground.position[2] = 4*z;
-			plane.appendChild(ground);
-		}
-	}
+
+	let ground = await _assetManager.generateObject3("ground_plane");
+	ground.scaling[0] = 50;
+	ground.position[1] = -10;
+	ground.scaling[2] = 50;
+	plane.appendChild(ground);
+
 	_globalScene.appendChild(plane);
 	console.log(cube1);
-})()
+
+	let animate = ()=>{
+		let promise = cube1.animationPlayer.play("cube.spin");
+		promise.then(animate)
+		console.log("Restarting animation");
+	}
+	animate();
+})();

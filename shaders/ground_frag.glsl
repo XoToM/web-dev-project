@@ -21,7 +21,9 @@ out vec4 FragColor;
 
 void main() {
 	//vec2 uv = gl_FragCoord;
-	vec3 materialColor = texture(u_colorTexture, v_colorCoord).xyz;
+	//vec3 materialColor = texture(u_colorTexture, v_colorCoord).xyz;
+	vec3 materialColor = texture(u_colorTexture, vec2(mod(v_fragPos.x, 1.0),mod(v_fragPos.z, 1.0))).xyz;
+	//v_fragPos
 	vec3 normal = normalize(v_normal);
 
 	vec3 ambient = u_ambientLight.xyz * u_ambientLight.w;		//	Calculate ambient lighting

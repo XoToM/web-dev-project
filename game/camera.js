@@ -2,7 +2,7 @@
 const [posx,posy,posz, rotx,roty,rotz] = [document.getElementById("posx"), document.getElementById("posy"), document.getElementById("posz"), document.getElementById("rotx"), document.getElementById("roty"), document.getElementById("rotz")];
 
 let MOUSE_SENSITIVITY = 15;
-let CAMERA_MOVEMENT_SPEED = 0.5;
+let CAMERA_MOVEMENT_SPEED = 5;
 
 canvas.addEventListener("click", async () => {
 	if (!document.pointerLockElement) {

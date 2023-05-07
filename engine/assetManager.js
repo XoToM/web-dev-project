@@ -449,6 +449,7 @@ class AssetManager{
 			for(let animation of (gltf.animations || [])){
 				for(let sampler of animation.samplers){
 					let input = gltf.accessors[sampler.input];
+
 					let ab = new ArrayBuffer(input.dataSize * input.count);
 					let keyframes_data = new Uint8Array(ab);
 					let pointer = 0;
@@ -458,6 +459,14 @@ class AssetManager{
 						}
 					}
 					sampler.keyframes = new Float32Array(ab);
+					if(input.max){
+						sampler.playTime = input.max[0];
+					}else{
+						sampler.playTime = 0;
+						for(let timeStamp of sampler.keyframes){
+							sampler.playTime = Math.max(timeStamp, sampler.playTime);
+						}
+					}
 
 					let output = gltf.accessors[sampler.output];
 					ab = new ArrayBuffer(output.dataSize * output.count);
@@ -476,11 +485,14 @@ class AssetManager{
 
 			for(let animation of (gltf.animations || [])){
 				let anim = new Map();
+				anim.playTime = 0;
 				for(let achannel of animation.channels){
 					let target = achannel.target;
 					let node = asset.nodes[target.node];
 					let animInfo = anim.get(node) || {};
-					animInfo[target.path] = animation.samplers[achannel.sampler];
+					let sampler = animation.samplers[achannel.sampler];
+					anim.playTime = Math.max(sampler.playTime, anim.playTime);
+					animInfo[target.path] = sampler;
 
 					anim.set(node, animInfo);
 				}
@@ -619,9 +631,10 @@ class ModelAsset {
 			let animations = new Map();
 			for(let [name, animation] of this.animations.entries()){
 				let sequences = new Map();
+				sequences.playTime = animation.playTime;
 
 				for(let [node, sequence] of animation.entries()){
-					let obj = animation.get(node);
+					let obj = nodeMap.get(node);
 					if(!obj) continue;
 
 					sequences.set(obj, sequence);
