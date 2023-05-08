@@ -28,11 +28,12 @@ function render(deltaTime){
 		}
 	);
 }
+let cube1,cube2,cube3;
 (async ()=>{
 	await _assetManager.finishedLoading();
-	let cube1 = await _assetManager.generateObject3("default_cube");
-	let cube2 = await _assetManager.generateObject3("default_cube");
-	let cube3 = await _assetManager.generateObject3("default_cube");
+	cube1 = await _assetManager.generateObject3("default_cube");
+	cube2 = await _assetManager.generateObject3("default_cube");
+	cube3 = await _assetManager.generateObject3("default_cube");
 	cube2.position[0] -= 1;
 	cube3.position[0] += 1;
 	_globalScene.appendChild(cube1);
@@ -54,5 +55,5 @@ function render(deltaTime){
 		promise.then(animate)
 		console.log("Restarting animation");
 	}
-	animate();
+	//animate();
 })();

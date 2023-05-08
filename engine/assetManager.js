@@ -470,7 +470,7 @@ class AssetManager{
 
 					let output = gltf.accessors[sampler.output];
 					ab = new ArrayBuffer(output.dataSize * output.count);
-					sampler.stride = output.componentSize;
+					sampler.stride = output.dataSize / output.componentSize;
 
 					keyframes_data = new Uint8Array(ab);
 					pointer = 0;
@@ -492,6 +492,7 @@ class AssetManager{
 					let animInfo = anim.get(node) || {};
 					let sampler = animation.samplers[achannel.sampler];
 					anim.playTime = Math.max(sampler.playTime, anim.playTime);
+					if(target.path == "translation")target.path = "position";
 					animInfo[target.path] = sampler;
 
 					anim.set(node, animInfo);

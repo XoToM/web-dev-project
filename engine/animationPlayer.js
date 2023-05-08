@@ -9,7 +9,7 @@ const __ANIMATION_HELPERS = {
 	step: (ax,ay,az, bx,by,bz,t)=>{
 		return [bx,by,bz];
 	},
-	slerp: (ax,ay,az, bx,by,bz, t)=>{	//	horrible, horrible, horrible implementation of the SLERP function. Works by performing linear interpolation on the angles. I don't know how the better solution works yet, so I implemented this instead.
+	slerp: (bx,by,bz, ax,ay,az, t)=>{	//	horrible, horrible, horrible implementation of the SLERP function. Works by performing linear interpolation on the angles. I don't know how the better solution works yet, so I implemented this instead.
 		let rx,ry,rz;
 		if(Math.abs(ax-bx) < Math.abs((ax+TWO_PI)-bx)){
 			rx = ax-bx;
@@ -31,9 +31,9 @@ const __ANIMATION_HELPERS = {
 		ry *= t;
 		rz *= t;
 
-		return [ax+rx, ay+ry, az+rz];
+		return [bx+rx, by+ry, bz+rz];
 	},
-	quaternion_to_euler_angles: (qx,qy,qz,qw)=>{
+	quaternion_to_euler_angles: (qx,qy,qz,qw)=>{	//	This function is causing issues. Either redo all of rotation interpolation or figure out a way of fixing this
 		// roll (y-axis rotation)
 		let sinr_cosp = 2 * (qw * qx + qy * qz);
 		let cosr_cosp = 1 - 2 * (qx * qx + qy * qy);
@@ -65,7 +65,7 @@ const __ANIMATION_HELPERS = {
 			let mid = ((end-start)>>1)+start;
 
 			if(array[mid] <= time && array[mid+1] >= time){
-				return [mid+1, mid]
+				return [mid, mid+1]
 			}
 			if(array[mid]<time){
 				start = mid;
@@ -144,6 +144,7 @@ class AnimationPlayer{
 		}
 	}
 	stepAnimations(deltaTime){
+		deltaTime = 0.001;	//	Fixed delta time for animation debugging
 		let toCleanUp = [];
 		for(let anim of this.playing){
 			if(anim.playing) anim.time += deltaTime;
@@ -181,13 +182,13 @@ class AnimationPlayer{
 				}else{
 					let a;
 					let progress = (animationInfo.time - keyframes[kfa])/(keyframes[kfb]-keyframes[kfa]);
-					pointer = kfb*channels.position.stride;
+					pointer = kfa*channels.position.stride;
 					switch(channels.position.interpolation){
 						case "LINEAR":
-							a = __ANIMATION_HELPERS.lerp(pointer++,pointer++,pointer++,pointer++,pointer++,pointer, progress);
+							a = __ANIMATION_HELPERS.lerp(values[pointer++],values[pointer++],values[pointer++],values[pointer++],values[pointer++],values[pointer], progress);
 							break;
 						case "STEP":
-							a = __ANIMATION_HELPERS.step(pointer++,pointer++,pointer++,pointer++,pointer++,pointer, progress);
+							a = __ANIMATION_HELPERS.step(values[pointer++],values[pointer++],values[pointer++],values[pointer++],values[pointer++],values[pointer], progress);
 							break;
 						case "CUBICSPLINE":
 							console.error("Cubic interpolation is not supported yet");
@@ -216,13 +217,13 @@ class AnimationPlayer{
 				}else{
 					let a;
 					let progress = (animationInfo.time - keyframes[kfa])/(keyframes[kfb]-keyframes[kfa]);
-					pointer = kfb*channels.scale.stride;
+					pointer = kfa*channels.scale.stride;
 					switch(channels.scale.interpolation){
 						case "LINEAR":
-							a = __ANIMATION_HELPERS.lerp(pointer++,pointer++,pointer++,pointer++,pointer++,pointer, progress);
+							a = __ANIMATION_HELPERS.lerp(values[pointer++],values[pointer++],values[pointer++],values[pointer++],values[pointer++],values[pointer], progress);
 							break;
 						case "STEP":
-							a = __ANIMATION_HELPERS.step(pointer++,pointer++,pointer++,pointer++,pointer++,pointer, progress);
+							a = __ANIMATION_HELPERS.step(values[pointer++],values[pointer++],values[pointer++],values[pointer++],values[pointer++],values[pointer], progress);
 							break;
 						case "CUBICSPLINE":
 							console.error("Cubic interpolation is not supported yet");
@@ -242,7 +243,7 @@ class AnimationPlayer{
 
 				let values = channels.rotation.values;
 				let keyframes = channels.rotation.keyframes;
-				let pointer = kfb*channels.rotation.stride;
+				let pointer = kfa*channels.rotation.stride;
 				let kfda = __ANIMATION_HELPERS.quaternion_to_euler_angles(values[pointer++],values[pointer++],values[pointer++],values[pointer++]);
 				if(kfa === kfb){
 					adjustment.rotation[0] += kfda[0];
