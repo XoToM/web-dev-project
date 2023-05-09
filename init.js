@@ -60,7 +60,7 @@ function _render(time) {
 		u_lightColor: [1, 1, 1],
 		u_specularStrength: 1,
 		u_shininess: 32,
-		u_renderSettings: Camera.specularEnable * 4 + Camera.ambientEnable + Camera.diffuseEnable*2,
+		u_renderSettings: (!Camera.specularEnable) * 4 + (!Camera.ambientEnable) + (!Camera.diffuseEnable)*2,
 		u_projectionMatrix: projectionMatrix,
 		u_cameraPosition: v3.create(Camera.position[0], Camera.position[1], -Camera.position[2])
 	};
