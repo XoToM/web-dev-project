@@ -9,46 +9,24 @@ const __ANIMATION_HELPERS = {
 	step: (ax,ay,az, bx,by,bz,t)=>{
 		return [bx,by,bz];
 	},
-	slerp: (bx,by,bz, ax,ay,az, t)=>{	//	horrible, horrible, horrible implementation of the SLERP function. Works by performing linear interpolation on the angles. I don't know how the better solution works yet, so I implemented this instead.
-		let rx,ry,rz;
-		if(Math.abs(ax-bx) < Math.abs((ax+TWO_PI)-bx)){
-			rx = ax-bx;
-		}else{
-			rx = (TWO_PI+ax)-bx;
-		}
-		if(Math.abs(ay-by) < Math.abs((ay+TWO_PI)-by)){
-			ry = ay-by;
-		}else{
-			ry = (TWO_PI+ay)-by;
-		}
-		if(Math.abs(az-bz) < Math.abs((az+TWO_PI)-bz)){
-			rz = az-bz;
-		}else{
-			rz = (TWO_PI+az)-bz;
+	slerp: (ax,ay,az,aw, bx,by,bz,bw, t)=>{
+		let cosHalfTheta = ax*bx + ay*by + az*bz + aw*bw;
+
+		if(Math.abs(cosHalfTheta) >= 1.0){
+			return [ax,ay,az,aw];
 		}
 
-		rx *= t;
-		ry *= t;
-		rz *= t;
+		let halfTheta = Math.acos(cosHalfTheta);
+		let sinHalfTheta = Math.sqrt(1 - cosHalfTheta * cosHalfTheta);
 
-		return [bx+rx, by+ry, bz+rz];
-	},
-	quaternion_to_euler_angles: (qx,qy,qz,qw)=>{	//	This function is causing issues. Either redo all of rotation interpolation or figure out a way of fixing this
-		// roll (y-axis rotation)
-		let sinr_cosp = 2 * (qw * qx + qy * qz);
-		let cosr_cosp = 1 - 2 * (qx * qx + qy * qy);
-		let roll = Math.atan2(sinr_cosp, cosr_cosp);
+		if(Math.abs(sinHalfTheta) < 0.001){
+			return [ax*0.5+bx*0.5, ay*0.5+by*0.5, az*0.5+bz*0.5, aw*0.5+bw*0.5];
+		}
 
-		// pitch (y-axis rotation)
-		let sinp = Math.sqrt(1 + 2 * (qw * qy - qx * qz));
-		let cosp = Math.sqrt(1 - 2 * (qw * qy - qx * qz));
-		let pitch = 2 * Math.atan2(sinp, cosp) - Math.PI / 2;
+		let ratioA = Math.sin((1-t)*halfTheta)/sinHalfTheta;
+		let ratioB = Math.sin(t*halfTheta)/sinHalfTheta;
 
-		// yaw (z-axis rotation)
-		let siny_cosp = 2 * (qw * qz + qx * qy);
-		let cosy_cosp = 1 - 2 * (qy * qy + qz * qz);
-		let yaw = Math.atan2(siny_cosp, cosy_cosp);
-		return [roll, pitch, yaw];
+		return [ax*ratioA+bx*ratioB, ay*ratioA+by*ratioB, az*ratioA+bz*ratioB, aw*ratioA+bw*ratioB];
 	},
 	keyframeBinarySearch: (array, time)=>{
 		let start = 0;
@@ -73,6 +51,12 @@ const __ANIMATION_HELPERS = {
 				end = mid;
 			}
 		}
+	},
+	quaternion_to_axis_angle: (qx,qy,qz,qw)=>{
+		let length = Math.sqrt(qx*qx+qy*qy+qz*qz);
+		let inverse_length = 1/length;
+
+		return [qx*inverse_length,qy*inverse_length,qz*inverse_length, 2*Math.atan2(length, qw)];
 	}
 };
 const __ANIMATION_PLAYERS = new Set();
@@ -144,7 +128,7 @@ class AnimationPlayer{
 		}
 	}
 	stepAnimations(deltaTime){
-		deltaTime = 0.001;	//	Fixed delta time for animation debugging
+		//deltaTime = 0.001;	//	Fixed delta time for animation debugging
 		let toCleanUp = [];
 		for(let anim of this.playing){
 			if(anim.playing) anim.time += deltaTime;
@@ -161,6 +145,7 @@ class AnimationPlayer{
 	}
 	calculateAdjust(obj, adjustment){
 		adjustment = adjustment || {};
+
 
 		for(let animationInfo of this.playing){
 			let animation = animationInfo.animation;
@@ -238,27 +223,28 @@ class AnimationPlayer{
 				}
 			}
 			if(channels.rotation){
-				adjustment.rotation = adjustment.rotation || [0,0,0];
+				adjustment.rotation = adjustment.rotation || m4.identity();
 				let [kfa, kfb] = __ANIMATION_HELPERS.keyframeBinarySearch(channels.rotation.keyframes, animationInfo.time);
 
 				let values = channels.rotation.values;
 				let keyframes = channels.rotation.keyframes;
 				let pointer = kfa*channels.rotation.stride;
-				let kfda = __ANIMATION_HELPERS.quaternion_to_euler_angles(values[pointer++],values[pointer++],values[pointer++],values[pointer++]);
+				let kfda = [values[pointer++],values[pointer++],values[pointer++],values[pointer++]];
+
+
+				let result;
 				if(kfa === kfb){
-					adjustment.rotation[0] += kfda[0];
-					adjustment.rotation[1] += kfda[0];
-					adjustment.rotation[2] += kfda[0];
+					result = kfda;
 				}else{
-					let kfdb = __ANIMATION_HELPERS.quaternion_to_euler_angles(values[pointer++],values[pointer++],values[pointer++],values[pointer]);
+					let kfdb = [values[pointer++],values[pointer++],values[pointer++],values[pointer]];
 					let a;
 					let progress = (animationInfo.time - keyframes[kfa])/(keyframes[kfb]-keyframes[kfa]);
 					switch(channels.rotation.interpolation){
 						case "LINEAR":
-							a = __ANIMATION_HELPERS.slerp(kfda[0],kfda[1],kfda[2], kfdb[0],kfdb[1],kfdb[2], progress);
+							result = __ANIMATION_HELPERS.slerp(kfda[0],kfda[1],kfda[2], kfda[3], kfdb[0],kfdb[1],kfdb[2],kfdb[3], progress);
 							break;
 						case "STEP":
-							a = __ANIMATION_HELPERS.step(kfda[0],kfda[1],kfda[2], kfdb[0],kfdb[1],kfdb[2], progress);
+							result = kfdb;
 							break;
 						case "CUBICSPLINE":
 							console.error("Cubic interpolation is not supported yet");
@@ -267,9 +253,10 @@ class AnimationPlayer{
 							console.error("Unknown value: ", animation.interpolation);
 							break;
 					}
-					adjustment.rotation[0] += a[0];
-					adjustment.rotation[1] += a[1];
-					adjustment.rotation[2] += a[2];
+
+					let [axisX,axisY,axisZ,axisAngle] = __ANIMATION_HELPERS.quaternion_to_axis_angle(result[0],result[1],result[2],result[3]);
+
+					m4.axisRotate(adjustment.rotation, [axisX,axisY,axisZ],axisAngle, adjustment.rotation);
 				}
 			}
 		}

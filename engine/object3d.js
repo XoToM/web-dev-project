@@ -88,14 +88,17 @@ class Object3{
 		vector[0] *= (Math.PI/180);
 		vector[1] *= (Math.PI/180);
 		vector[2] *= (Math.PI/180);
-		if(adjustment.rotation){
-			vector[0] += adjustment.rotation[0];
-			vector[1] += adjustment.rotation[1];
-			vector[2] += adjustment.rotation[2];
-		}
+		
 		m4.rotateZ(matrix, vector[2], matrix);
 		m4.rotateY(matrix, vector[1], matrix);
 		m4.rotateX(matrix, vector[0], matrix);
+
+		if(adjustment.rotation){
+			//vector[0] += adjustment.rotation[0];
+			//vector[1] += adjustment.rotation[1];
+			//vector[2] += adjustment.rotation[2];
+			m4.multiply(matrix,adjustment.rotation,matrix);
+		}
 
 		v3.copy(this.scaling, vector);
 		if(adjustment.scale){
