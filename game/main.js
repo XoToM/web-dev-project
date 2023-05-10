@@ -57,6 +57,19 @@ function render(deltaTime){
 			colorSampler: "u_colorTexture",
 		});
 	_assetManager.loadModel(
+		"tests/blender_monkey.gltf",
+		"blender_monkey",
+		default_shader_program,
+		{
+			position: "a_position",
+			normal: "a_normal",
+			colorTexCoord: "a_colorTexCoord",
+			colorSampler: "u_colorTexture",
+		}
+	);
+
+
+	_assetManager.loadModel(
 		"tests/ground_plane.gltf",
 		"ground_plane",
 		ground_shader_program,
@@ -68,7 +81,7 @@ function render(deltaTime){
 		}
 	);
 }
-let cube1,cube2,cube3;
+let cube1,cube2,cube3,blender_monkey;
 (async ()=>{
 	await _assetManager.finishedLoading();
 	cube1_spin = await _assetManager.generateObject3("default_cube");
@@ -82,8 +95,11 @@ let cube1,cube2,cube3;
 	test3 = await _assetManager.generateObject3("test3");
 	test4 = await _assetManager.generateObject3("test4");
 	test5 = await _assetManager.generateObject3("test5");
+	blender_monkey = await _assetManager.generateObject3("blender_monkey");
 	
-	cube1_spain.position[2] -= 3;
+	blender_monkey.position[0] += 5;
+	blender_monkey.position[2] -= 5;
+	/*cube1_spain.position[2] -= 3;
 	cube1_pain.position[2] -= 6;
 	cube1_mlinear.position[2] -= 9;
 	cube1_mstep.position[2] -= 12;
@@ -106,6 +122,8 @@ let cube1,cube2,cube3;
 	_globalScene.appendChild(test3);
 	_globalScene.appendChild(test4);
 	_globalScene.appendChild(test5);
+	//*/
+	_globalScene.appendChild(blender_monkey);
 	let plane = new Object3();
 
 	let ground = await _assetManager.generateObject3("ground_plane");
@@ -164,6 +182,13 @@ let cube1,cube2,cube3;
 		let promise = test5.animationPlayer.play("animation.model.bend");
 		promise.then(animate5);
 	}
+	let animate_manual = ()=>{
+		let promise = new Promise((resolve)=>{
+			blender_monkey.rotation[1] = ((blender_monkey.rotation[1]+180.5)%360) - 180;
+			setTimeout(resolve,25);
+		});
+		promise.then(animate_manual);
+	}
 
 	animatec1();
 	animatec2();
@@ -175,4 +200,5 @@ let cube1,cube2,cube3;
 	animate3();
 	animate4();
 	animate5();
+	animate_manual();
 })();
