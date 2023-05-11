@@ -98,8 +98,8 @@ let cube1,cube2,cube3,blender_monkey;
 	blender_monkey = await _assetManager.generateObject3("blender_monkey");
 	
 	blender_monkey.position[0] += 5;
-	blender_monkey.position[2] -= 5;
-	/*cube1_spain.position[2] -= 3;
+	blender_monkey.position[2] -= 7.5;
+	cube1_spain.position[2] -= 3;
 	cube1_pain.position[2] -= 6;
 	cube1_mlinear.position[2] -= 9;
 	cube1_mstep.position[2] -= 12;
