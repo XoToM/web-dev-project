@@ -5,7 +5,18 @@ function render(deltaTime){
 	const vert_shader = getFileSync("shaders/vert.glsl");
 	const default_shader_program = twgl.createProgramInfo(gl, [vert_shader, getFileSync("shaders/frag.glsl")]);
 	const ground_shader_program = twgl.createProgramInfo(gl, [vert_shader, getFileSync("shaders/ground_frag.glsl")]);
+	const light_cube_shader_program = twgl.createProgramInfo(gl, [vert_shader, getFileSync("shaders/light_cube_frag.glsl")]);
 
+	_assetManager.loadModel(
+		"tests/light_cube.gltf",
+		"light_cube",
+		light_cube_shader_program,
+		{
+			position: "a_position",
+			normal: "a_normal",
+			colorTexCoord: "a_colorTexCoord",
+			colorSampler: "u_colorTexture",
+		});
 	_assetManager.loadModel(
 		"tests/default_cube.gltf",
 		"default_cube",
@@ -96,7 +107,7 @@ let cube1,cube2,cube3,blender_monkey;
 	test4 = await _assetManager.generateObject3("test4");
 	test5 = await _assetManager.generateObject3("test5");
 	blender_monkey = await _assetManager.generateObject3("blender_monkey");
-	
+
 	blender_monkey.position[0] += 5;
 	blender_monkey.position[2] -= 7.5;
 	cube1_spain.position[2] -= 3;
@@ -109,6 +120,32 @@ let cube1,cube2,cube3,blender_monkey;
 	test3.position[0] += 4;
 	test4.position[0] += 5;
 	test5.position[0] += 6;
+
+	let plight1 = new PointLight3D({position:[2,-2,-8]});
+	let pldc1 = await _assetManager.generateObject3("light_cube");
+	//pldc1.scaling = v3.create(0.25,0.25,0.25);
+	plight1.appendChild(pldc1);
+	_globalScene.appendChild(plight1);
+
+	let plight2 = new PointLight3D({position:[2,-2,2]});
+	plight2.lightColor = [1.0,0.0,0.0];
+	let pldc2 = await _assetManager.generateObject3("light_cube");
+	//pldc2.scaling = v3.create(0.25,0.25,0.25);
+	plight2.appendChild(pldc2);
+	_globalScene.appendChild(plight2);
+
+	for(let i=0; i<32; i++){
+		let plight3 = new PointLight3D({position:[-4,-4,4+(i*-3)]});
+		let col = [Math.random(),Math.random(),Math.random()];
+		let max = Math.max(...col);
+		plight3.lightColor = [col[0]/max, col[1]/max, col[2]/max];
+		console.log(plight3.lightColor);
+		let pldc3 = await _assetManager.generateObject3("light_cube");
+		//pldc3.scaling = v3.create(0.25,0.25,0.25);
+		plight3.appendChild(pldc3);
+		_globalScene.appendChild(plight3);
+	}
+
 	_globalScene.appendChild(cube1_spin);
 	_globalScene.appendChild(cube1_spain);
 	_globalScene.appendChild(cube1_pain);

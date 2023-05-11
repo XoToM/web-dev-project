@@ -1,9 +1,12 @@
 let _globalScene = new Object3();
+const MAX_POINT_LIGHTS = 16;
 
-function performRender(cameraMatrix, standardUniforms){
+function performRender(cameraMatrix,cameraPos, standardUniforms){
 	let materialMap = new Map();
 	gl.clearColor(0,0,0,1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+	cameraPos[2] *= -1;
 
 	let animators = [];
 
@@ -41,6 +44,23 @@ function performRender(cameraMatrix, standardUniforms){
 	}
 	calculateTransforms(_globalScene, m4.identity());
 
+	let pointLights = [...__LightManager.point];
+	pointLights.sort((a,b)=>(v3.distanceSq(a.position, v3.copy(cameraPos)) - v3.distanceSq(b.position, v3.copy(cameraPos))));	//	Optimisation based on the assumption that if the camera is far enough the detail wont matter as much. This will often be completely invisible if the world is split into rooms, with only a couple lights in each room
+	let pointLights_ready = [];
+	for(let i=0; i<Math.min(pointLights.length, MAX_POINT_LIGHTS); i++){
+		let pl = pointLights[i];
+		if(pl.renderVisibility) pointLights_ready.push(pl.generateData());
+	}
+
+	let lightUniforms = {
+		u_dlight_color: __LightManager.directional.lightColor,
+		u_dlight_direction: __LightManager.directional.direction,
+		u_dlight_power: __LightManager.directional.power,
+		u_pointLights: pointLights_ready,
+		u_pointLightCount: pointLights_ready.length
+	};
+
+
 
 	let boundShader = null;
 	for(let [material, [primitiveList,shader]] of materialMap.entries()){
@@ -50,6 +70,7 @@ function performRender(cameraMatrix, standardUniforms){
 			gl.useProgram(shader.program);
 
 			twgl.setUniforms(shader, standardUniforms);
+			twgl.setUniforms(shader, lightUniforms);
 		}
 
 		for(let [texName, texInfo] of Object.entries(material.textures)){

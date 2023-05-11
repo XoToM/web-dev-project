@@ -1,16 +1,42 @@
 class LightSource3D extends Object3 {
-	lightPower = 1;
+	lightTypeInfluence = { ambient:0.1, diffuse: 0.7, specular:0.7 };
+	lightColor = [1,1,1];
 
 }
 class PointLight3D extends LightSource3D {
+	attenuation = { constant:1, linear:0.14, quadratic:0.07 };
+	//attenuation = { constant:1, linear:0.09, quadratic:0.032 };
+	//attenuation = { constant:1, linear:0.07, quadratic:0.017 };
 
+	onChildAdded(parent){
+		__LightManager.point.push(this);
+	}
+	onChildRemoved(parent){
+		for(let i=0; i<__LightManager.point.length; i++){
+			if(__LightManager.point[i] === child){
+				let popped = __LightManager.point.pop();
+				if(i !== __LightManager.point.length) {
+					__LightManager.point[i] = popped;
+				}
+				return;
+			}
+		}
+	}
+	generateData(){
+		return {
+			position: this.position,
+			lightColor: this.lightColor,
+			lightPowers: [this.lightTypeInfluence.ambient, this.lightTypeInfluence.diffuse, this.lightTypeInfluence.specular],
+			attenuation: [this.attenuation.constant, this.attenuation.linear, this.attenuation.quadratic]
+		};
+	}
 }
 class SpotLight3D extends LightSource3D {
 
 }
 const __LightManager = {
 	directional:{
-		power: v3.create(0.1, 0.6, 0.6),	//	influence of the different light components (after calculation they are multiplied by this). The order is x:ambient, y:diffuse, z:specular
+		power: v3.create(0.1, 0.7, 0.7),	//	influence of the different light components (after calculation they are multiplied by this). The order is x:ambient, y:diffuse, z:specular
 		direction: v3.create(0,0.5,0.5),
 		lightColor: v3.create(1,1,1)
 	},

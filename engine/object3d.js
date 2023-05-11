@@ -35,12 +35,14 @@ class Object3{
 			if(child.parent) child.parent.removeChild(child);
 			child.parent = this;
 			this.children.push(child);
+			if(child.onChildAdded) child.onChildAdded(this);
 		}
 	}
 
 	removeChild(child) {
 		if(child instanceof Object3){
 			child.parent = null;
+			if(child.onChildRemoved) child.onChildRemoved(this);
 		}
 		for(let i=0; i<this.children.length; i++){
 			if(this.children[i] === child){
@@ -110,4 +112,6 @@ class Object3{
 		m4.multiply(parent, matrix, matrix);
 		return matrix;
 	}
+	//onChildAdded = null;
+	//onChildRemoved = null;
 }

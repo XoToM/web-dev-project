@@ -53,24 +53,18 @@ function _render(time) {
 	m4.translate(cameraMatrix, [-Camera.position[0], -Camera.position[1], Camera.position[2]], cameraMatrix);
 	//m4.scale(cameraMatrix, [1,1,camera.renderDistance], cameraMatrix);
 
-	let directional_light = __LightManager.directional;
-
 	const standardUniforms = {
 		u_resolution: [gl.canvas.width, gl.canvas.height],
 		u_renderSettings: (!Camera.specularEnable) * 4 + (!Camera.ambientEnable) + (!Camera.diffuseEnable)*2,
 		u_projectionMatrix: projectionMatrix,
 		u_cameraPosition: v3.create(Camera.position[0], Camera.position[1], -Camera.position[2]),
-		
-		u_shininess: 32,
 
-		u_dlight_color: directional_light.lightColor,
-		u_dlight_direction: directional_light.direction,
-		u_dlight_power: directional_light.power,
+		u_shininess: 32,
 	};
 
 	__ANIMATION_PLAYERS.forEach((ap)=>ap.stepAnimations(deltaTime));
 
-	performRender(cameraMatrix, standardUniforms);
+	performRender(cameraMatrix, v3.copy(Camera.position), standardUniforms);
 
 	_LastRenderTime = time;
 	requestAnimationFrame(_render);
