@@ -14,4 +14,5 @@ const __LightManager = {
 		direction: v3.create(0,0.5,0.5),
 		lightColor: v3.create(1,1,1)
 	},
+	point:[]
 };
