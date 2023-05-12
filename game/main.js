@@ -194,7 +194,7 @@ let cube1,cube2,cube3,blender_monkey,player;
 	cube1_mlinear.animationPlayer.play("cube.move.linear", {mode:ANIMATION_MODES.LOOP});
 	cube1_mstep.animationPlayer.play("cube.move.step", {mode:ANIMATION_MODES.LOOP});
 
-	test1.animationPlayer.play("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
+	test1.playAnimation("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
 	test3.animationPlayer.play("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
 	test4.animationPlayer.play("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
 	test5.animationPlayer.play("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
