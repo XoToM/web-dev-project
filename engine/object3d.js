@@ -112,6 +112,9 @@ class Object3{
 		m4.multiply(parent, matrix, matrix);
 		return matrix;
 	}
+	playAnimation(name){
+		if(this.animationPlayer) this.animationPlayer.play(name);
+	}
 	//onChildAdded = null;
 	//onChildRemoved = null;
 }

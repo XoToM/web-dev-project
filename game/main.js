@@ -98,7 +98,7 @@ function render(deltaTime){
 		}
 	);
 }
-let cube1,cube2,cube3,blender_monkey;
+let cube1,cube2,cube3,blender_monkey,player;
 (async ()=>{
 	await _assetManager.finishedLoading();
 	cube1_spin = await _assetManager.generateObject3("default_cube");
