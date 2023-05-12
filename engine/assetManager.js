@@ -513,11 +513,11 @@ class AssetManager{
 		this.modelMap.set(id, asset);
 		return asset.loader.then(()=>asset);
 	}
-	async generateObject3(asset_id, scene){
+	async generateObject3(asset_id, scene, params){
 		let asset = this.modelMap.get(asset_id);
 		//console.log(structuredClone(asset));
 		if(asset.loader) await asset.loader;
-		return asset.generateObject3(scene);
+		return asset.generateObject3(scene, params);
 	}
 	async finishedLoading(){
 		let toLoad = [];
@@ -609,17 +609,18 @@ class ModelAsset {
 		gl.bindVertexArray(null);
 		this.shader = shader;
 	}
-	generateObject3(scene){
+	generateObject3(scene, params){
 		if(scene === undefined) scene = this.defaultScene;
 
 		let nodeMap = new Map();
 
-		function createObject(node){
+		function createObject(node, params){
 			let obj;
+			let parameters = params || {position: node.translation, rotation: node.rotation, scaling: node.scale, name:node.name};
 			if(node.mesh){
-				obj = new Mesh3d(node.mesh, {position: node.translation, rotation: node.rotation, scaling: node.scale, name:node.name});
+				obj = new Mesh3d(node.mesh, parameters);
 			}else{
-				obj = new Object3({position: node.translation, rotation: node.rotation, scaling: node.scale, name:node.name});
+				obj = new Object3(parameters);
 			}
 			nodeMap.set(node, obj);
 			for(let child of node.children){
@@ -628,7 +629,7 @@ class ModelAsset {
 			return obj;
 		}
 
-		let result = createObject(this.scenes[scene]);
+		let result = createObject(this.scenes[scene], params);
 		if(this.animations.size){
 			let animations = new Map();
 			for(let [name, animation] of this.animations.entries()){
