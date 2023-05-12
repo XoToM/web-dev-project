@@ -179,55 +179,7 @@ let cube1,cube2,cube3,blender_monkey,player;
 	plane.appendChild(ground);
 
 	_globalScene.appendChild(plane);
-	//console.log(cube1);
 
-	let animatec1 = ()=>{
-		let promise = cube1_spin.animationPlayer.play("cube.spin");
-		promise.then(animatec1);
-		//console.log("Restarting animation");
-	}
-	let animatec2 = ()=>{
-		let promise = cube1_spain.animationPlayer.play("cube.spain");
-		promise.then(animatec2);
-		//console.log("Restarting animation");
-	}
-	let animatec3 = ()=>{
-		let promise = cube1_pain.animationPlayer.play("cube.pain");
-		promise.then(animatec3);
-		//console.log("Restarting animation");
-	}
-	let animatec4 = ()=>{
-		let promise = cube1_mlinear.animationPlayer.play("cube.move.linear");
-		promise.then(animatec4);
-		//console.log("Restarting animation");
-	}
-	let animatec5 = ()=>{
-		let promise = cube1_mstep.animationPlayer.play("cube.move.step");
-		promise.then(animatec5);
-		//console.log("Restarting animation");
-	}
-	let animatec = ()=>{
-		let promise = cube1.animationPlayer.play("cube.spin");
-		promise.then(animatec);
-		//console.log("Restarting animation");
-	}
-
-	let animate1 = ()=>{
-		let promise = test1.animationPlayer.play("animation.model.bend");
-		promise.then(animate1);
-	}
-	let animate3 = ()=>{
-		let promise = test3.animationPlayer.play("animation.model.bend");
-		promise.then(animate3);
-	}
-	let animate4 = ()=>{
-		let promise = test4.animationPlayer.play("animation.model.bend");
-		promise.then(animate4);
-	}
-	let animate5 = ()=>{
-		let promise = test5.animationPlayer.play("animation.model.bend");
-		promise.then(animate5);
-	}
 	let animate_manual = ()=>{
 		let promise = new Promise((resolve)=>{
 			blender_monkey.rotation[1] = ((blender_monkey.rotation[1]+180.5)%360) - 180;
@@ -236,15 +188,17 @@ let cube1,cube2,cube3,blender_monkey,player;
 		promise.then(animate_manual);
 	}
 
-	animatec1();
-	animatec2();
-	animatec3();
-	animatec4();
-	animatec5();
+	cube1_spin.animationPlayer.play("cube.spin", {mode:ANIMATION_MODES.LOOP});
+	cube1_spain.animationPlayer.play("cube.spain", {mode:ANIMATION_MODES.LOOP});
+	cube1_pain.animationPlayer.play("cube.pain", {mode:ANIMATION_MODES.LOOP});
+	cube1_mlinear.animationPlayer.play("cube.move.linear", {mode:ANIMATION_MODES.LOOP});
+	cube1_mstep.animationPlayer.play("cube.move.step", {mode:ANIMATION_MODES.LOOP});
 
-	animate1();
-	animate3();
-	animate4();
-	animate5();
+	test1.animationPlayer.play("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
+	test3.animationPlayer.play("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
+	test4.animationPlayer.play("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
+	test5.animationPlayer.play("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
 	animate_manual();
+
+	player.playAnimation("player.flop", {mode:ANIMATION_MODES.PLAY_CLAMP});
 })();
