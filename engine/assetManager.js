@@ -424,7 +424,7 @@ class AssetManager{
 				material.textures = {};
 				if(pbr.baseColorTexture){
 					let unit = pbr.baseColorTexture.texCoord || 0;
-					let texture = gltf.textures[unit];
+					let texture = gltf.textures[pbr.baseColorTexture.index];
 
 					let textureInfo = {
 						unit,
@@ -507,6 +507,7 @@ class AssetManager{
 
 			asset.ready = true;
 			asset.loader = null;
+			console.log(gltf);
 		});
 
 		this.modelMap.set(id, asset);

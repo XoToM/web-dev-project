@@ -78,6 +78,12 @@ function render(deltaTime){
 			colorSampler: "u_colorTexture",
 		}
 	);
+	_assetManager.loadModel("game/models/player.gltf","player", default_shader_program, {
+		position: "a_position",
+		normal: "a_normal",
+		colorTexCoord: "a_colorTexCoord",
+		colorSampler: "u_colorTexture",
+	})
 
 
 	_assetManager.loadModel(
@@ -107,6 +113,7 @@ let cube1,cube2,cube3,blender_monkey;
 	test4 = await _assetManager.generateObject3("test4");
 	test5 = await _assetManager.generateObject3("test5");
 	blender_monkey = await _assetManager.generateObject3("blender_monkey");
+	player = await _assetManager.generateObject3("player");
 
 	blender_monkey.position[0] += 5;
 	blender_monkey.position[2] -= 7.5;
@@ -120,6 +127,7 @@ let cube1,cube2,cube3,blender_monkey;
 	test3.position[0] += 4;
 	test4.position[0] += 5;
 	test5.position[0] += 6;
+	player.position[0] -= 3;
 
 	let plight1 = new PointLight3D({position:[2,-2,-8]});
 	let pldc1 = await _assetManager.generateObject3("light_cube");
@@ -139,7 +147,7 @@ let cube1,cube2,cube3,blender_monkey;
 		let col = [Math.random(),Math.random(),Math.random()];
 		let max = Math.max(...col);
 		plight3.lightColor = [col[0]/max, col[1]/max, col[2]/max];
-		console.log(plight3.lightColor);
+		//console.log(plight3.lightColor);
 		let pldc3 = await _assetManager.generateObject3("light_cube");
 		//pldc3.scaling = v3.create(0.25,0.25,0.25);
 		plight3.appendChild(pldc3);
@@ -161,6 +169,7 @@ let cube1,cube2,cube3,blender_monkey;
 	_globalScene.appendChild(test5);
 	//*/
 	_globalScene.appendChild(blender_monkey);
+	_globalScene.appendChild(player);
 	let plane = new Object3();
 
 	let ground = await _assetManager.generateObject3("ground_plane");
