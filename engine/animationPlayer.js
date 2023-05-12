@@ -1,4 +1,5 @@
 const TWO_PI = Math.PI * 2;
+const ANIMATION_MODES = {PLAY_ONCE:0, LOOP:1, PLAY_CLAMP:2};
 const __ANIMATION_HELPERS = {
 	lerp: (ax,ay,az, bx,by,bz, t)=>{
 		let rx = (1-t)*ax + t*bx;
@@ -72,12 +73,15 @@ class AnimationPlayer{
 		this.animationRoot = obj;
 		this.animationMap = animations;
 	}
-	play(name, timestamp){
+	play(name, params){
+		if(!params) params = {};
+		let timestamp = params.timestamp || 0;
+		let mode = params.mode || ANIMATION_MODES.PLAY_ONCE;
 		__ANIMATION_PLAYERS.add(this);
 		let anim = this.animationMap.get(name);
 		if(anim){
 			let promise = new Promise((resolve,reject)=>{
-				this.playing.push({name, onFinish:resolve, onStop:reject, time: (timestamp || 0), playTime:anim.playTime, playing:true, animation:this.animationMap.get(name)});
+				this.playing.push({name,mode, onFinish:resolve, onStop:reject, time: (timestamp || 0), playTime:anim.playTime, playing:true, animation:this.animationMap.get(name)});
 			});
 			return promise;
 		}
@@ -131,12 +135,24 @@ class AnimationPlayer{
 		//deltaTime = 0.001;	//	Fixed delta time for animation debugging
 		let toCleanUp = [];
 		for(let anim of this.playing){
-			if(anim.playing) anim.time += deltaTime;
+			if(!anim.playing) continue;
+			anim.time += deltaTime;
 
 			if(anim.playTime <= anim.time){
-				toCleanUp.push(anim);
-				anim.onStop = null;
-				anim.onFinish(anim.time - anim.playTime);
+				switch(anim.mode){
+					case ANIMATION_MODES.PLAY_ONCE:
+						toCleanUp.push(anim);
+						anim.onStop = null;
+						anim.onFinish(anim.time - anim.playTime);
+						break;
+					case ANIMATION_MODES.LOOP:
+						anim.time -= anim.playTime;
+						break;
+					case ANIMATION_MODES.PLAY_CLAMP:
+						anim.playing = false;
+						anim.time = anim.playTime;
+						break;
+				}
 			}
 		}
 		while(toCleanUp.length){
@@ -253,11 +269,11 @@ class AnimationPlayer{
 							console.error("Unknown value: ", animation.interpolation);
 							break;
 					}
-
-					let [axisX,axisY,axisZ,axisAngle] = __ANIMATION_HELPERS.quaternion_to_axis_angle(result[0],result[1],result[2],result[3]);
-
-					m4.axisRotate(adjustment.rotation, [axisX,axisY,axisZ],axisAngle, adjustment.rotation);
 				}
+
+				let [axisX,axisY,axisZ,axisAngle] = __ANIMATION_HELPERS.quaternion_to_axis_angle(result[0],result[1],result[2],result[3]);
+
+				m4.axisRotate(adjustment.rotation, [axisX,axisY,axisZ],axisAngle, adjustment.rotation);
 			}
 		}
 
