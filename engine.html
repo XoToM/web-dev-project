@@ -16,23 +16,29 @@
 		<!--	Game Code	-->
 		<script src="game/camera.js" defer></script>
 		<script src="game/main.js" defer></script>
-		<style>
-			a {
-				font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-				color:white;
-			}
-		</style>
+		<script src="overlay.js" defer></script>
+
+		<link rel="stylesheet" href="engine-styles.css">
 	</head>
 	<body>
-		<div style="position:absolute;top:1cm;left:1em;">
-			<a id="timer"></a><br/>
-			<a id="posx"></a>
-			<a id="posy"></a>
-			<a id="posz"></a><br/>
-			<a id="rotx"></a>
-			<a id="roty"></a>
-			<a id="rotz"></a>
+		<canvas id="canvasgl"></canvas>
+		<div class="overlay">
+			<span id="timer"></span><br/>
+			<span id="posx"></span>
+			<span id="posy"></span>
+			<span id="posz"></span><br/>
+			<span id="rotx"></span>
+			<span id="roty"></span>
+			<span id="rotz"></span>
 		</div>
-		<canvas id="canvasgl" style="height: 100vh; width: 100vw; display: block; margin: -0.5em;"></canvas>
+		<div class="draggables">
+			<div class="window">
+				<div class="header">
+					Window Title
+				</div>
+				Text<br/>
+				Text on line 2
+			</div>
+		</div>
 	</body>
 </html>
