@@ -2,6 +2,11 @@ function addWindow(elem){
 	let header = elem.querySelector(".header");
 
 	let mouseX, mouseY;
+	let moved = 0;
+
+	function onClick(e){
+		elem.classList.toggle("window-minimized");
+	}
 
 	function onDragStart(e){
 		document.onmousemove = onDrag;
@@ -10,10 +15,14 @@ function addWindow(elem){
 		mouseX = e.clientX;
 		mouseY = e.clientY;
 		e.preventDefault();
+		moved = 0;
 	}
 	function onDrag(e){
-		elem.style.top = (elem.offsetTop + (e.clientY - mouseY)) + "px";
-		elem.style.left = (elem.offsetLeft + (e.clientX - mouseX)) + "px";
+		let ny = (e.clientY - mouseY);
+		let nx = (e.clientX - mouseX);
+		moved += Math.abs(nx) + Math.abs(ny);
+		elem.style.top = (elem.offsetTop + ny) + "px";
+		elem.style.left = (elem.offsetLeft + nx) + "px";
 		mouseX = e.clientX;
 		mouseY = e.clientY;
 		e.preventDefault();
@@ -21,6 +30,9 @@ function addWindow(elem){
 	function onDragEnd(e){
 		document.onmouseup = null;
 		document.onmousemove = null;
+		if(moved === 0){
+			onClick(e);
+		}
 	}
 	header.onmousedown = onDragStart;
 }
