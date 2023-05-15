@@ -29,32 +29,21 @@ canvas {
 	position: absolute;
 	width: fit-content;
 }
-.window .header {
+.window>summary {
 	padding: 0.2em 0.5em;
 	/*margin: -0.5em -0.5em 0.1em -0.5em;*/
 	background-color: rgba(0, 64, 128, 0.75);
 	border-color: black;
 	border-width: 0.3em;
-	border-radius: 0.5em 0.5em 0px 0px;
+	border-radius: 0.5em;
 	border-style: double;
 	width: max-content;
 	cursor: grab;
 }
-.window .header::after {
-	content: "\25BC";
-	display: inline-block;
-	margin-left: 1em;
+.window[open]>summary {
+	border-radius: 0.5em 0.5em 0px 0px;
 }
-.window-minimized .header::after {
-	transform: rotate(-90deg);
-}
-.window-minimized .header {
-	border-radius: 0.5em;
-}
-.window-minimized .content {
-	transform: scale(1, 0);
-}
-.window .content {
+.window>.content {
 	background-color: rgba(44, 44, 44, 0.75);
 	border-color: black;
 	border-width: 0px 0.3em 0.3em 0.3em;

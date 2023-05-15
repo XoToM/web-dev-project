@@ -1,11 +1,16 @@
 function addWindow(elem){
-	let header = elem.querySelector(".header");
+	let header = elem.querySelector("summary");
 
 	let mouseX, mouseY;
 	let moved = 0;
+	let last = true;
 
 	function onClick(e){
-		elem.classList.toggle("window-minimized");
+		if(moved > 0){
+			e.preventDefault();
+			elem.open = last;
+			return false;
+		}
 	}
 
 	function onDragStart(e){
@@ -14,8 +19,10 @@ function addWindow(elem){
 
 		mouseX = e.clientX;
 		mouseY = e.clientY;
-		e.preventDefault();
+		last = elem.open;
 		moved = 0;
+
+		e.preventDefault();
 	}
 	function onDrag(e){
 		let ny = (e.clientY - mouseY);
@@ -30,11 +37,13 @@ function addWindow(elem){
 	function onDragEnd(e){
 		document.onmouseup = null;
 		document.onmousemove = null;
-		if(moved === 0){
-			onClick(e);
+		if(moved > 0){
+			e.preventDefault();
+			elem.open = last;
 		}
 	}
 	header.onmousedown = onDragStart;
+	elem.addEventListener("click", onClick);
 }
 
 {	//	New scope because these are only needed for initialization
