@@ -22,6 +22,7 @@ class AssetManager{
 	ALPHA_OPAQUE = 0;
 	ALPHA_MASK = 1;
 	ALPHA_BLEND = 2;
+	objectHandler = {};
 
 	gl = null;
 	modelMap = new Map();
@@ -30,6 +31,11 @@ class AssetManager{
 		this.gl = gl;
 		_gl = gl;
 		_assetManager = this;
+	}
+	correctObject(obj){
+		let proxy = new Proxy(obj, this.objectHandler);
+		obj._proxy = proxy;
+		return proxy;
 	}
 
 	loadModel(path, id, shader, shaderInfo){
@@ -609,6 +615,7 @@ class ModelAsset {
 		gl.bindVertexArray(null);
 		this.shader = shader;
 	}
+	
 	generateObject3(scene, params){
 		if(scene === undefined) scene = this.defaultScene;
 
@@ -622,6 +629,7 @@ class ModelAsset {
 			}else{
 				obj = new Object3(parameters);
 			}
+			obj = _assetManager.correctObject(obj);
 			nodeMap.set(node, obj);
 			for(let child of node.children){
 				obj.appendChild(createObject(child));

@@ -41,13 +41,41 @@ canvas {
 	cursor: grab;
 }
 .window[open]>summary {
+	width: 100%;
+	min-width: max-content;
 	border-radius: 0.5em 0.5em 0px 0px;
 }
 .window>.content {
+	width: 100%;
 	background-color: rgba(44, 44, 44, 0.75);
 	border-color: black;
 	border-width: 0px 0.3em 0.3em 0.3em;
 	border-radius: 0px 0px 0.5em 0.5em;
 	border-style: double;
 	padding: 0.5em;
+}
+.object_descriptor {
+	border-style: solid;
+	border-width: 1px 1px 1px 3px;
+	padding: 0.1em 0.2em 0.1em 0.3em;
+}
+.object_descriptor>summary {
+	border-style: none;
+	margin-left: 0.2em;
+	padding-left: 0.5em;
+}
+.editable_vector_display{
+	display: grid;
+	width: 100%;
+	grid-template-columns: auto 1fr auto auto auto;
+}
+.editable_vector_display>*:first-child{
+	margin-right: 1em;
+}
+.editable_vector_display>input:first-of-type {
+	grid-column: 3;
+}
+.editable_vector_display>input {
+	width: 6ch;
+	margin: 0em -0.1em
 }

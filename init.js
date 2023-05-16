@@ -18,6 +18,7 @@ var getFileSync = function(url) {
 };
 
 new AssetManager(gl);
+_globalScene = _assetManager.correctObject(_globalScene);
 
 
 
