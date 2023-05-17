@@ -29,8 +29,10 @@ canvas {
 	position: absolute;
 	width: fit-content;
 }
-.window>summary {
+.window>*{
 	padding: 0.2em 0.5em;
+}
+.window>summary {
 	/*margin: -0.5em -0.5em 0.1em -0.5em;*/
 	background-color: rgba(0, 64, 128, 0.75);
 	border-color: black;
