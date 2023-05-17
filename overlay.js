@@ -50,117 +50,88 @@ function addWindow(elem){
 	let meshId = 0;
 	let objId = 0;
 	let lightId = 0;
-	const object_descriptor_template = document.getElementById("object_descriptor_template").content.children[0];
-	let objectMap = new Map();
-	
-	function createObject3Descriptor(obj){
-		let node = object_descriptor_template.cloneNode(true);
-		objectMap.set(obj._proxy, node);
-		obj.position = obj.position;
-		obj.rotation = obj.rotation;
-		
-		let positions = node.querySelectorAll(".object_position input");
-		for(let i=0; i<positions.length; i++){
-			let element = positions[i];
-			element.addEventListener("change", (event) => { 
-				if(event.target.valueAsNumber != NaN) obj.position[i] = event.target.valueAsNumber;
-				return true;
-			});
-		}
-		let rotations = node.querySelectorAll(".object_rotation input");
-		for(let i=0; i<rotations.length; i++){
-			let element = rotations[i];
-			element.addEventListener("change", (event) => { 
-				if(event.target.valueAsNumber != NaN) obj.rotation[i] = event.target.valueAsNumber;
-				return true;
-			});
-		}
-		
+	//const object_descriptor_template = document.getElementById("object_descriptor_template").content.children[0];
+	const vector_descriptor_template = document.getElementById("v3_descriptor_template").content.children[0];
 
-		let children_node = node.querySelector(".children_list");
-		for(let child of obj.children){
-			let n = objectMap.get(child);
-			if(!n){
-				n = createObject3Descriptor(child);
-			}
-			children_node.appendChild(n);
-		}
+	let propertyNodeMap = new Map();
+	let propertyHandlerMap = new Map();
+	let nodeChangeListeners = new Map();
 
-		return node;
-	}
+	function createProxyDescriptor(obj, container){
+		for(let [prop_name, prop_value] of Object.entries(obj)){
+			if(prop_name.startsWith("_")) continue;
 
-	_assetManager.objectHandler.set = (obj, prop, value) => {
-		let elem;
-		let proxy;
-		switch(prop){
-			case "position":
-				elem = objectMap.get(obj._proxy);
-				if(!elem) break;
-				let positions = elem.querySelector(".object_position");
+			if((prop_value instanceof Float32Array) && (prop_value.length <= 3)){
+				let node = propertyNodeMap.get(prop_value) || vector_descriptor_template.cloneNode(true);
 
-				proxy = new Proxy(value, {
-					set: (o,prop,value)=>{
-						if(+prop !== NaN){
-							positions.children[+prop+1].value = value;
-							o[prop] = value;
-						}
-						return true;
+				node.querySelector(".property_name").innerText = prop_name;
+				let values = node.querySelectorAll("input");
+
+
+				for(let i=0; i<3; i++){
+					let listener = nodeChangeListeners.get(values[i]);
+					if(listener){
+						values[i].removeEventListener("change", listener);
 					}
-				});
-				proxy[0] = proxy[0];
-				proxy[1] = proxy[1];
-				proxy[2] = proxy[2];
-
-				break;
-			case "rotation":
-				elem = objectMap.get(obj._proxy);
-				if(!elem) break;
-				let rotations = elem.querySelector(".object_rotation");
-				proxy = new Proxy(value, {
-					set: (o,prop,value)=>{
-						if(+prop !== NaN){
-							rotations.children[+prop+1].value = value;
-							o[prop] = value;
-						}
-						return true;
+					listener = (event)=>{
+						prop_value[i] = event.target.valueAsNumber;
 					}
-				});
-				proxy[0] = proxy[0];
-				proxy[1] = proxy[1];
-				proxy[2] = proxy[2];
-
-				break;
-			case "name":
-				elem = objectMap.get(obj._proxy);
-				if(!elem) break;
-				if(!value){
-					if(obj instanceof Mesh3d){
-						value = "Mesh "+(meshId++);
-					}else{
-						if(obj instanceof Mesh3d){
-							value = "Light "+(lightId++);
-						}else{
-							if(obj instanceof Object3){
-								value = "Object "+(meshId++);
-							}
-						}
-					}
-					
+					nodeChangeListeners.set(values[i], listener);
+					values[i].valueAsNumber = prop_value[i];
+					values[i].addEventListener("change", listener, { passive:true });
 				}
-				let title = elem.querySelector(".object_name");
-				title.innerText = value;
-				obj.name = value;
-				break;
+
+				let handler = propertyHandlerMap.get(node);
+				if(!handler){
+					handler = {set:(o,name,val)=>{
+						if(+name != NaN) {
+							values[name].valueAsNumber = val;
+						}
+						o[name] = val;
+						return true;
+					}};
+					let proxy = new Proxy(prop_value, handler);
+					obj[prop_name] = proxy;
+					prop_value = proxy;
+					propertyHandlerMap.set(node, handler);
+				}
+
+				propertyNodeMap.set(prop_value, node);
+				container.appendChild(node);
+			}
 		}
-		obj[prop] = proxy || value;
-		return true;
-	};
+	}
+	function cleanProxyMaps(){
+		let toClean = [];
+		for(let [proxy, node] of propertyNodeMap.entries()){
+			if(!document.contains(node)){
+				toClean.push(proxy);
+				propertyHandlerMap.get(node).set = undefined;
+				propertyHandlerMap.delete(node);
+			}
+		}
+		while(toClean.length){
+			let proxy = toClean.pop();
+			propertyNodeMap.delete(proxy);
+		}
+
+		for(let node of nodeChangeListeners.keys()){
+			if(!document.contains(node)) toClean.push(node);
+		}
+		while(toClean.length){
+			let node = toClean.pop();
+			nodeChangeListeners.delete(node);
+		}
+	}
 
 	let windows = document.querySelectorAll(".window");
 	for(let i=0; i<windows.length; i++){
 		addWindow(windows[i]);
 	}
 
+	setInterval(cleanProxyMaps, 5000);
+
 	let oc = document.getElementById("object_children");
-	oc.appendChild(createObject3Descriptor(_globalScene));
+	createProxyDescriptor(_globalScene, oc);
+	//oc.appendChild(createObject3Descriptor(_globalScene));
 	_globalScene.name = "Scene Parent";
