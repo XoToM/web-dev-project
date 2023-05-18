@@ -50,15 +50,20 @@ function addWindow(elem){
 	let meshId = 0;
 	let objId = 0;
 	let lightId = 0;
+	const object_property_descriptor_template = document.getElementById("object_property_descriptor_template").content.children[0];
 	const object_descriptor_template = document.getElementById("object_descriptor_template").content.children[0];
 	const vector_descriptor_template = document.getElementById("v3_descriptor_template").content.children[0];
 	const single_descriptor_template = document.getElementById("single_descriptor_template").content.children[0];
+
+	const default_object3_property_blacklist = new Set(["parent"]);
+	const empty_property_blacklist = new Set();
 
 	let propertyNodeMap = new Map();
 	let propertyHandlerMap = new Map();
 	let nodeChangeListeners = new Map();
 
-	function createProxyDescriptor(obj, container){
+	function createProxyDescriptor(obj, container, propertyBlacklist, onTitleChange, titleProperty){
+		propertyBlacklist =  propertyBlacklist || empty_property_blacklist;
 		let obj_change_map = new Map();
 		let obj_handler = {
 			set: (o, name, val)=>{
@@ -71,6 +76,7 @@ function addWindow(elem){
 		obj = new Proxy(obj, obj_handler);
 		for(let [prop_name, prop_value] of Object.entries(obj)){
 			if(prop_name.startsWith("_")) continue;
+			if(propertyBlacklist.has(prop_name)) continue;
 
 			switch(typeof(prop_value)){
 				case "boolean":		//	The switch statement doesn't need curly brackets for its cases, but I'm using them here anyway to put different cases in separate scopes
@@ -106,12 +112,26 @@ function addWindow(elem){
 						let	listener = (event)=>{
 							obj[prop_name] = event.target.valueAsNumber;
 						}
+						if(onTitleChange && prop_name === titleProperty) {
+							listener = (event)=>{
+								obj[prop_name] = event.target.valueAsNumber;
+								onTitleChange(event.target.valueAsNumber);
+							};
+						}
 
 						nodeChangeListeners.set(inp, listener);
 						inp.valueAsNumber = prop_value;
 						inp.addEventListener("change", listener, { passive:true });
 
-						let handler = (val)=>{inp.valueAsNumber = val;};
+						let handler = (val)=>{
+							inp.valueAsNumber = val;
+						};
+						if(onTitleChange && prop_name === titleProperty) {
+							handler = (val)=>{
+								inp.valueAsNumber = val;
+								onTitleChange(val);
+							};
+						};
 						obj_change_map.set(prop_name, handler);
 
 						container.appendChild(node);
@@ -127,13 +147,27 @@ function addWindow(elem){
 
 						let	listener = (event)=>{
 							obj[prop_name] = event.target.value;
+						};
+						if(onTitleChange && prop_name === titleProperty) {
+							listener = (event)=>{
+								obj[prop_name] = event.target.value;
+								onTitleChange(event.target.value);
+							};
 						}
 
 						nodeChangeListeners.set(inp, listener);
 						inp.value = prop_value;
 						inp.addEventListener("change", listener, { passive:true });
 
-						let handler = (val)=>{inp.value = val;};
+						let handler = (val)=>{
+							inp.value = val;
+						};
+						if(onTitleChange && prop_name === titleProperty) {
+							handler = (val)=>{
+								inp.value = val;
+								onTitleChange(val);
+							};
+						};
 						obj_change_map.set(prop_name, handler);
 
 						container.appendChild(node);
@@ -143,13 +177,14 @@ function addWindow(elem){
 					break;
 				default:
 					{
+						if(!prop_value) break;
 						if((prop_value instanceof Float32Array) && (prop_value.length <= 3)){
 							let node = propertyNodeMap.get(prop_value) || vector_descriptor_template.cloneNode(true);
-			
+
 							node.querySelector(".property_name").innerText = prop_name;
 							let values = node.querySelectorAll("input");
-			
-			
+
+
 							for(let i=0; i<3; i++){
 								let listener = nodeChangeListeners.get(values[i]);
 								if(listener){
@@ -162,7 +197,7 @@ function addWindow(elem){
 								values[i].valueAsNumber = prop_value[i];
 								values[i].addEventListener("change", listener, { passive:true });
 							}
-			
+
 							let handler = propertyHandlerMap.get(node);
 							if(!handler){
 								handler = {set:(o,name,val)=>{
@@ -178,13 +213,40 @@ function addWindow(elem){
 								prop_value = proxy;
 								propertyHandlerMap.set(node, handler);
 							}
-			
+							//	ToDo: Add a handler for detecting when the entire vector object gets replaced
+
+							propertyNodeMap.set(prop_value, node);
+							container.appendChild(node);
+							break;
+						}
+						//if(prop_value instanceof Object3)
+						{
+							let node = propertyNodeMap.get(prop_value) || object_property_descriptor_template.cloneNode(true);
+
+							node.querySelector(".property_name").innerText = prop_name;
+							let object_name_node = node.querySelector(".object_name");
+							let object_properties = node.querySelector(".object_properties");
+							if(!prop_value.name) prop_value.name = "Object " + (objId++);
+							object_name_node.innerText = prop_value.name;
+
+							prop_value = createProxyDescriptor(prop_value, object_properties, default_object3_property_blacklist, (val)=>{ object_name_node.innerText = val; }, "name");
+
+							let handler = (val)=>{
+								while(object_properties.firstChild){
+									object_properties.removeChild(object_properties.lastChild);
+								}
+								val = createProxyDescriptor(val, object_properties, default_object3_property_blacklist, (val)=>{ object_name_node.innerText = val; }, "name");
+								obj[prop_name] = val;
+								propertyNodeMap.set(val, node);
+							};
+							obj_change_map.set(prop_name, handler);
+
 							propertyNodeMap.set(prop_value, node);
 							container.appendChild(node);
 						}
+						break;
 					}
 			}
-			
 		}
 		return obj;
 	}
