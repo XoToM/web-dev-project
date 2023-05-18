@@ -42,37 +42,18 @@
 				</div>
 			</details>
 		</div>
-		<!--<template id="object_descriptor_template">
-			<details class="object_descriptor" open>
-				<summary class="object_name">Test</summary>
-				<div>
-					<div class="editable_vector_display object_position">
-						<span>
-							Position:
-						</span>
-						<input type="number" placeholder="X" size="">
-						<input type="number" placeholder="Y" size="">
-						<input type="number" placeholder="Z" size="">
-					</div>
-					<div class="editable_vector_display object_rotation">
-						<span>
-							Rotation:
-						</span>
-						<input type="number" placeholder="X" size="">
-						<input type="number" placeholder="Y" size="">
-						<input type="number" placeholder="Z" size="">
-					</div>
-					<div class="children_list">
-
-					</div>
-				</div>
-		</template>-->
 		<template id="v3_descriptor_template">
-			<div class="editable_vector_display">
+			<div class="property_display vector_property_display">
 				<span class="property_name"></span>
 				<input type="number" placeholder="X" size="">
 				<input type="number" placeholder="Y" size="">
 				<input type="number" placeholder="Z" size="">
+			</div>
+		</template>
+		<template id="single_descriptor_template">
+			<div class="property_display">
+				<span class="property_name"></span>
+				<input type="checkbox">
 			</div>
 		</template>
 	</body>

@@ -2,6 +2,7 @@ let _globalScene = new Object3();
 const MAX_POINT_LIGHTS = 16;
 
 function performRender(cameraMatrix,cameraPos, standardUniforms){
+	if(document.hidden) return;
 	let materialMap = new Map();
 	gl.clearColor(0,0,0,1);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

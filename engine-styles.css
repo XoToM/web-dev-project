@@ -56,6 +56,7 @@ canvas {
 	border-style: double;
 	padding: 0.5em;
 }
+
 .object_descriptor {
 	border-style: solid;
 	border-width: 1px 1px 1px 3px;
@@ -66,18 +67,19 @@ canvas {
 	margin-left: 0.2em;
 	padding-left: 0.5em;
 }
-.editable_vector_display{
-	display: grid;
-	width: 100%;
-	grid-template-columns: auto 1fr auto auto auto;
+
+.property_display {
+	height: fit-content;
+	display: flex;
 }
-.editable_vector_display>*:first-child{
-	margin-right: 1em;
+.property_display span:first-child {
+	flex-grow: 1;
 }
-.editable_vector_display>input:first-of-type {
-	grid-column: 3;
+.property_display>input {
+	width: fit-content;
+	display: inline-block;
 }
-.editable_vector_display>input {
-	width: 6ch;
-	margin: 0em -0.1em
+
+.vector_property_display>input {
+	width: 3em;
 }

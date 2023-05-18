@@ -22,17 +22,26 @@ document.addEventListener("pointerlockchange", ()=>{
 		document.addEventListener("mousemove", _onMouseMove, false);
 	} else {
 		document.removeEventListener("mousemove", _onMouseMove, false);
+		for(let [key, _] of Object.entries(_KeyboardStatus)){
+			_KeyboardStatus[key] = false;
+		}
 	}
 }, false);
 let _KeyboardStatus = {};
 document.addEventListener("keydown", (e)=>{
-	_KeyboardStatus[e.code] = true;
+	if(document.pointerLockElement === canvas){
+		_KeyboardStatus[e.code] = true;
+		e.preventDefault();
+	}
+	//_KeyboardStatus[e.code] = true;
 	//console.log(e.code);
-	e.preventDefault();
+	//e.preventDefault();
 });
 document.addEventListener("keyup", (e)=>{
-	_KeyboardStatus[e.code] = false;
-	e.preventDefault();
+	if(document.pointerLockElement === canvas){
+		_KeyboardStatus[e.code] = false;
+		e.preventDefault();
+	}
 });
 
 
