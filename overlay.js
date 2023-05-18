@@ -139,6 +139,8 @@ function addWindow(elem){
 						container.appendChild(node);
 						break;
 					}
+				case "function":
+					break;
 				default:
 					{
 						if((prop_value instanceof Float32Array) && (prop_value.length <= 3)){
