@@ -50,7 +50,7 @@ function addWindow(elem){
 	let meshId = 0;
 	let objId = 0;
 	let lightId = 0;
-	//const object_descriptor_template = document.getElementById("object_descriptor_template").content.children[0];
+	const object_descriptor_template = document.getElementById("object_descriptor_template").content.children[0];
 	const vector_descriptor_template = document.getElementById("v3_descriptor_template").content.children[0];
 	const single_descriptor_template = document.getElementById("single_descriptor_template").content.children[0];
 
