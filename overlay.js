@@ -59,10 +59,10 @@ function addWindow(elem){
 	let proxy_map = new Map();
 
 	function generateDescriptor(obj, container){	//	Assumes container is controlled by this function alone
-		let proxy, node, prop_map, redo;
+		let proxy, prop_map, redo;
 		let proxy_data = proxy_map.get(obj);
 		if(proxy_data){
-			[node, prop_map, redo] = proxy_data;
+			[prop_map, redo, _] = proxy_data;
 			proxy = obj;
 		}else{
 			prop_map = new Map();	//	key: name,  value: onUpdate()
@@ -72,6 +72,7 @@ function addWindow(elem){
 				let onUpdate;
 				let prop_name_descriptor;
 				let skip = false;
+				let node;
 				switch(typeof(prop_value)){
 					case "number":
 						{
@@ -144,8 +145,26 @@ function addWindow(elem){
 			};
 			proxy = new Proxy(obj, handler);
 		}
-		proxy_map.set(proxy, [node, prop_map, redo]);
+		redo = ()=>{
+			while(container.firstChild){
+				container.removeChild(container.lastChild);
+			}
+			generateDescriptor(proxy, container);
+		};
+		proxy_map.set(proxy, [prop_map, redo, container]);
 		return proxy;
+	}
+	
+	function cleanProxyMaps(){
+		let toClean = [];
+		for(let [proxy, [prop_map, redo, container]] of Object.entries(proxy_map)){
+			if(!document.contains(container)){
+				toClean.push(proxy);
+			}
+		}
+		while(toClean.length){
+			proxy_map.delete(toClean.pop());
+		}
 	}
 
 	let windows = document.querySelectorAll(".window");
@@ -153,7 +172,7 @@ function addWindow(elem){
 		addWindow(windows[i]);
 	}
 
-	//setInterval(cleanProxyMaps, 5000);
+	setInterval(cleanProxyMaps, 5000);
 
 	let oc = document.getElementById("object_children");
 	_globalScene.name = "Scene Parent";
