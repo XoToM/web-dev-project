@@ -70,7 +70,6 @@ function addWindow(elem){
 			for(let [prop_name, prop_value] of Object.entries(obj)){
 				if(prop_name.startsWith("_")) continue;
 				let onUpdate;
-				let prop_name_descriptor;
 				let skip = false;
 				let node;
 				switch(typeof(prop_value)){
@@ -78,7 +77,7 @@ function addWindow(elem){
 						{
 							node = single_descriptor_template.cloneNode(true);
 							let inp = node.querySelector("input");
-							prop_name_descriptor = node.querySelector(".property_name");
+							node.querySelector(".property_name").innerText = prop_name;
 							inp.type = "number";
 							onUpdate = ()=>{
 								inp.valueAsNumber = +obj[prop_name];
@@ -93,7 +92,7 @@ function addWindow(elem){
 						{
 							node = single_descriptor_template.cloneNode(true);
 							let inp = node.querySelector("input");
-							prop_name_descriptor = node.querySelector(".property_name");
+							node.querySelector(".property_name").innerText = prop_name;
 							inp.type = "text";
 							onUpdate = ()=>{
 								inp.value = obj[prop_name];
@@ -108,7 +107,7 @@ function addWindow(elem){
 						{
 							node = single_descriptor_template.cloneNode(true);
 							let inp = node.querySelector("input");
-							prop_name_descriptor = node.querySelector(".property_name");
+							node.querySelector(".property_name").innerText = prop_name;
 							inp.type = "checkbox";
 							onUpdate = ()=>{
 								inp.checked = obj[prop_name];
@@ -119,23 +118,74 @@ function addWindow(elem){
 							inp.addEventListener("change", changeListener, { passive:true });
 						}
 						break;
+					case "function":
+						skip = true;
+						break;
 					default:
+						if(prop_value instanceof Float32Array && prop_value.length === 3){
+							onUpdate = ()=>{
+								let lastNode = node;
+								node = vector_descriptor_template.cloneNode(true);
+								let inputs = node.querySelectorAll("input");
+								node.querySelector(".property_name").innerText = prop_name;
+
+								inputs[0].valueAsNumber = +obj[prop_name][0];
+								inputs[1].valueAsNumber = +obj[prop_name][1];
+								inputs[2].valueAsNumber = +obj[prop_name][2];
+
+								let vector_proxy = new Proxy(obj[prop_name], {
+									set: (o,n,v) => {
+										o[n] = v;
+										switch(n) {
+											case "0":
+												inputs[0].valueAsNumber = v;
+												break;
+											case "1":
+												inputs[1].valueAsNumber = v;
+												break;
+											case "2":
+												inputs[2].valueAsNumber = v;
+												break;
+										}
+										return true;
+									}
+								});
+								
+								for(let i=0; i<3; i++){
+									let inp = inputs[i];
+									let changeListener = (event)=>{
+										let val = event.target.valueAsNumber;
+										if(!Number.isNaN(val)) obj[prop_name][i] = val;
+									};
+									inp.addEventListener("change", changeListener, { passive:true });
+								}
+								obj[prop_name] = vector_proxy;
+								
+								if(lastNode){
+									lastNode.replaceWith(node);
+								}
+							};
+							break;
+						}
 						skip = true;
 						break;
 				}
 				if(skip) continue;
-				prop_map.set(prop_name, onUpdate);
-				prop_name_descriptor.innerText = prop_name;
-				onUpdate();
+				if(onUpdate) {
+					prop_map.set(prop_name, onUpdate);
+					onUpdate();
+				}
 				container.appendChild(node);
 			}
 
 
 			let handler = {
 				set: (o, name, val)=>{
+					let old = o[name];
 					o[name] = val;
+					if(old === val) return true;
 					let onUpdate = prop_map.get(name);
-					if(!onUpdate || val === undefined){
+					if(!onUpdate || val === undefined || old === undefined || val.__proto__ !== old.__proto__){
 						redo();
 					}else{
 						onUpdate();
@@ -154,7 +204,7 @@ function addWindow(elem){
 		proxy_map.set(proxy, [prop_map, redo, container]);
 		return proxy;
 	}
-	
+
 	function cleanProxyMaps(){
 		let toClean = [];
 		for(let [proxy, [prop_map, redo, container]] of Object.entries(proxy_map)){
@@ -176,7 +226,8 @@ function addWindow(elem){
 
 	let oc = document.getElementById("object_children");
 	_globalScene.name = "Scene Parent";
-	//_globalScene = createProxyDescriptor(_globalScene, oc);
+	_globalScene = generateDescriptor(_globalScene, oc);
 	let abc = {a:1, b:"lol", c:true};
-	abc = generateDescriptor(abc, oc);
+	//abc = generateDescriptor(abc, oc);
+
 	//oc.appendChild(createObject3Descriptor(_globalScene));
