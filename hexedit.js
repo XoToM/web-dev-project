@@ -199,11 +199,3 @@ function loadHex(hex_id, data, defaultAddrPadding){
 	hex.render();
 	return proxy;
 }
-let hex;
-window.addEventListener('load', ()=>{
-	let data = [];
-	for(let i=0;i<256;i++){
-		data.push(i);
-	}
-	hex = loadHex("memory", data, 4);
-});

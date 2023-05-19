@@ -16,6 +16,7 @@
     position: sticky;
     top: 0px;
     background: silver;
+    z-index: 1;
 }
 .hexedit .top-labels {
     display: grid;
@@ -24,15 +25,38 @@
 .hexedit .data {
     display: grid;
     grid-template-columns: repeat(16, 1.6em);
-    z-index: -1;
 }
 .hexedit .data *{
     background: white;
     /*border-left: dotted 1px black;*/
 }
-/*.hexedit .data span:nth-child(16n-15){
-    border-left: none;
-}*/
+
 .hexedit .data *:nth-child(even){
-    filter:brightness(92.5%);
+    filter: brightness(92.5%);
+}
+#memory .data * {
+    border-bottom: 1px;
+    border-bottom-style: dashed;
+}
+body {
+    height: 100vh;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+#memory {
+    margin: auto;
+    width: auto;
+    height: auto;
+    grid-column: 2;
+}
+
+main {
+    margin:auto;
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    overflow: visible scroll;
+    font-size: xx-large;
 }
