@@ -51,29 +51,41 @@ function addWindow(elem){
 	let objId = 0;
 	let lightId = 0;
 	const object_property_descriptor_template = document.getElementById("object_property_descriptor_template").content.children[0];
+	const array_property_descriptor_template = document.getElementById("array_property_descriptor_template").content.children[0];
 	const object_descriptor_template = document.getElementById("object_descriptor_template").content.children[0];
 	const vector_descriptor_template = document.getElementById("v3_descriptor_template").content.children[0];
 	const single_descriptor_template = document.getElementById("single_descriptor_template").content.children[0];
 
 	const default_object3_property_blacklist = new Set(["parent"]);
+	const default_array_property_blacklist = new Set(["length"]);
 	const empty_property_blacklist = new Set();
 
 	let propertyNodeMap = new Map();
 	let propertyHandlerMap = new Map();
 	let nodeChangeListeners = new Map();
+	let objGlobalMap = new Map();
 
-	function createProxyDescriptor(obj, container, propertyBlacklist, onTitleChange, titleProperty){
+	function createProxyDescriptor(obj, container, propertyBlacklist, onTitleChange, titleProperty, toAdd){
 		propertyBlacklist =  propertyBlacklist || empty_property_blacklist;
-		let obj_change_map = new Map();
-		let obj_handler = {
-			set: (o, name, val)=>{
-				o[name] = val;
-				let changeHandler = obj_change_map.get(name);
-				if(changeHandler) changeHandler(val);
-				return true;
-			}
+		let obj_change_map = new Map(toAdd);
+		let obj_handler;
+
+		let node;
+		let lobj = objGlobalMap.get(obj);
+		if(lobj) {
+			obj_handler = lobj[1];
+		} else{
+			obj_handler = {};
+			obj = new Proxy(obj, obj_handler);
+		}
+		obj_handler.set = (o, name, val)=>{
+			console.log(...arguments);
+			o[name] = val;
+			let changeHandler = obj_change_map.get(name);
+			if(changeHandler) changeHandler(val);
+			return true;
 		};
-		obj = new Proxy(obj, obj_handler);
+
 		for(let [prop_name, prop_value] of Object.entries(obj)){
 			if(prop_name.startsWith("_")) continue;
 			if(propertyBlacklist.has(prop_name)) continue;
@@ -81,7 +93,7 @@ function addWindow(elem){
 			switch(typeof(prop_value)){
 				case "boolean":		//	The switch statement doesn't need curly brackets for its cases, but I'm using them here anyway to put different cases in separate scopes
 					{
-						let node = single_descriptor_template.cloneNode(true);
+						node = single_descriptor_template.cloneNode(true);
 
 						node.querySelector(".property_name").innerText = prop_name;
 						let inp = node.querySelector("input");
@@ -103,7 +115,7 @@ function addWindow(elem){
 					}
 				case "number":
 					{
-						let node = single_descriptor_template.cloneNode(true);
+						node = single_descriptor_template.cloneNode(true);
 
 						node.querySelector(".property_name").innerText = prop_name;
 						let inp = node.querySelector("input");
@@ -139,7 +151,7 @@ function addWindow(elem){
 					}
 				case "string":
 					{
-						let node = single_descriptor_template.cloneNode(true);
+						node = single_descriptor_template.cloneNode(true);
 
 						node.querySelector(".property_name").innerText = prop_name;
 						let inp = node.querySelector("input");
@@ -179,7 +191,7 @@ function addWindow(elem){
 					{
 						if(!prop_value) break;
 						if((prop_value instanceof Float32Array) && (prop_value.length <= 3)){
-							let node = propertyNodeMap.get(prop_value) || vector_descriptor_template.cloneNode(true);
+							node = propertyNodeMap.get(prop_value) || vector_descriptor_template.cloneNode(true);
 
 							node.querySelector(".property_name").innerText = prop_name;
 							let values = node.querySelectorAll("input");
@@ -219,9 +231,49 @@ function addWindow(elem){
 							container.appendChild(node);
 							break;
 						}
+						break;
+						if(prop_value instanceof Array)
+						{
+							node = propertyNodeMap.get(prop_value) || array_property_descriptor_template.cloneNode(true);
+							container.appendChild(node);
+
+							node.querySelector(".property_name").innerText = prop_name;
+							let array_length_node = node.querySelector(".array_length");
+							let object_properties = node.querySelector(".object_properties");
+							array_length_node.innerText = prop_value.length;
+
+							let update = ()=>{
+								array_length_node.innerText = prop_value.length;
+								while(object_properties.firstChild){
+									object_properties.removeChild(object_properties.lastChild);
+								}
+								prop_value = createProxyDescriptor(prop_value, object_properties, default_array_property_blacklist, update, "length", [["length", update]]);
+								obj[prop_name] = prop_value;
+								propertyNodeMap.set(prop_value, node);
+							};
+
+							prop_value = createProxyDescriptor(prop_value, object_properties, default_array_property_blacklist, update, "length", [["length", update]]);
+							
+							obj[prop_name] = prop_value;
+
+							let handler = (val)=>{
+								update();
+								//array_length_node.innerText = val;
+								//while(object_properties.firstChild){
+								//	object_properties.removeChild(object_properties.lastChild);
+								//}
+								//val = createProxyDescriptor(val, object_properties, default_array_property_blacklist, updateTitle, "length", [["length", updateTitle]]);
+								//obj[prop_name] = val;
+								//propertyNodeMap.set(val, node);
+							};
+							obj_change_map.set(prop_name, handler);
+
+							propertyNodeMap.set(prop_value, node);
+							break;
+						}
 						//if(prop_value instanceof Object3)
 						{
-							let node = propertyNodeMap.get(prop_value) || object_property_descriptor_template.cloneNode(true);
+							node = propertyNodeMap.get(prop_value) || object_property_descriptor_template.cloneNode(true);
 
 							node.querySelector(".property_name").innerText = prop_name;
 							let object_name_node = node.querySelector(".object_name");
@@ -243,11 +295,13 @@ function addWindow(elem){
 
 							propertyNodeMap.set(prop_value, node);
 							container.appendChild(node);
+							break;
 						}
 						break;
 					}
 			}
 		}
+		objGlobalMap.set(obj, [node, obj_handler]);
 		return obj;
 	}
 	function cleanProxyMaps(){
