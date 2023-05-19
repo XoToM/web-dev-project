@@ -55,13 +55,14 @@ function addWindow(elem){
 	const object_descriptor_template = document.getElementById("object_descriptor_template").content.children[0];
 	const vector_descriptor_template = document.getElementById("v3_descriptor_template").content.children[0];
 	const single_descriptor_template = document.getElementById("single_descriptor_template").content.children[0];
+	const null_descriptor_template = document.getElementById("null_descriptor_template").content.children[0];
 
 	let proxy_map = new Map();
 
-	function generateDescriptor(obj, container){	//	Assumes container is controlled by this function alone
+	function generateDescriptor(obj, container, reset){	//	Assumes container is controlled by this function alone
 		let proxy, prop_map, redo;
 		let proxy_data = proxy_map.get(obj);
-		if(proxy_data){
+		if(proxy_data && !reset){
 			[prop_map, redo, _] = proxy_data;
 			proxy = obj;
 		}else{
@@ -122,8 +123,20 @@ function addWindow(elem){
 						skip = true;
 						break;
 					default:
+						if(prop_value === null){
+							node = null_descriptor_template.cloneNode(true);
+							node.querySelector(".property_name").innerText = prop_name;
+							break;
+						}
 						if(prop_value instanceof Float32Array && prop_value.length === 3){
 							onUpdate = ()=>{
+								let vector_proxy_handler = prop_value["__proxyHandler"] || {};
+								let originalObject = prop_value["__originalObject"];
+								if(originalObject){
+									obj[prop_name] = originalObject;
+									prop_value = originalObject;
+								}
+
 								let lastNode = node;
 								node = vector_descriptor_template.cloneNode(true);
 								let inputs = node.querySelectorAll("input");
@@ -133,8 +146,8 @@ function addWindow(elem){
 								inputs[1].valueAsNumber = +obj[prop_name][1];
 								inputs[2].valueAsNumber = +obj[prop_name][2];
 
-								let vector_proxy = new Proxy(obj[prop_name], {
-									set: (o,n,v) => {
+								
+								vector_proxy_handler.set = (o,n,v) => {
 										o[n] = v;
 										switch(n) {
 											case "0":
@@ -148,8 +161,19 @@ function addWindow(elem){
 												break;
 										}
 										return true;
-									}
-								});
+									};
+								
+								vector_proxy_handler.get = (o,n)=>{
+										switch(n){
+											case "__originalObject":
+												return o;
+											case "__proxyHandler":
+												return vector_proxy_handler;
+											default:
+												return o[n];
+										};
+									};
+								let vector_proxy = new Proxy(obj[prop_name], vector_proxy_handler);
 								
 								for(let i=0; i<3; i++){
 									let inp = inputs[i];
@@ -199,7 +223,7 @@ function addWindow(elem){
 			while(container.firstChild){
 				container.removeChild(container.lastChild);
 			}
-			generateDescriptor(proxy, container);
+			generateDescriptor(proxy, container, true);
 		};
 		proxy_map.set(proxy, [prop_map, redo, container]);
 		return proxy;

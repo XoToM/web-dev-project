@@ -61,6 +61,13 @@ canvas {
 	border-style: solid;
 	border-width: 1px 1px 1px 3px;
 	padding: 0.1em 0.2em 0.1em 0.3em;
+	
+	display: flex;
+	flex-direction: column;
+	gap: 0.1em;
+}
+.object_descriptor em {
+	color: lightgray
 }
 .object_descriptor>summary {
 	border-style: none;
