@@ -1,6 +1,6 @@
 function genHexPalette(num,size){
 	let palette = [];
-	for(let i=0;i<num;i++){
+	for(let i = 0; i < num; i++){
 		palette.push(i.toString(16).padStart(size,'0').toUpperCase());
 	}
 	return palette;
@@ -35,7 +35,7 @@ function loadHex(hex_id, data, defaultAddrPadding){
 		}
 		grid.appendChild(hex.labels);
 		grid.appendChild(hex.values);
-		
+
 	}else{
 		for (let i = 0; i < grid.childNodes.length; i++) {
 			if (grid.childNodes[i].className == "labels") {
@@ -43,8 +43,8 @@ function loadHex(hex_id, data, defaultAddrPadding){
 			  break;
 			}
 		}
-		
-	
+
+
 		for (let i = 0; i < grid.childNodes.length; i++) {
 			if (grid.childNodes[i].className == "top-labels") {
 			  hex.top_labels = grid.childNodes[i];
@@ -69,14 +69,14 @@ function loadHex(hex_id, data, defaultAddrPadding){
 	hex.set = function(obj, prop, val){
 		if(!isNaN(prop)){
 			//let hex = obj.hex;
-			if(hex.changes.length==0) setTimeout(hex.render, 5);
+			if(hex.changes.length == 0) setTimeout(hex.render, 5);
 	
 			val = Math.floor(Math.min(255, Math.max(0, val)));
 
 			hex.changes.push(+prop);
 
-		}else if(prop=="length"){
-			if(hex.changes.length==0) setTimeout(hex.render, 5);
+		}else if(prop == "length"){
+			if(hex.changes.length == 0) setTimeout(hex.render, 5);
 			hex.changes.push(0);
 		}
 		data[prop] = val;
@@ -142,26 +142,27 @@ function loadHex(hex_id, data, defaultAddrPadding){
 	function applyHighlight(highlight){
 		let [start, count, style] = highlight;
 
-		for(let i=start; i < Math.min(start + count, hex.values.childNodes.length); i++){
+		for(let i = start; i < Math.min(start + count, hex.values.childNodes.length); i++){
 			hex.values.childNodes[i].classList.add(style);
 		}
 	}
+
 	function removeHighlightCell(address, style){
 		let toAppend = [];
 		let toRemove = [];
-		for(let i=0;i<hex.highlights.length;i++){
+		for(let i = 0; i < hex.highlights.length; i++){
 			let highlight = hex.highlights[i];
-			if(highlight[0] > address || highlight[0]+highlight[1] < address && style==highlight[2]) continue;
+			if(highlight[0] > address || highlight[0] + highlight[1] < address && style == highlight[2]) continue;
 
 			let [start, count, s] = highlight;
 			let index = address-start;
 
 			highlight[1] = index;
 
-			let rest = [address + 1, count-index-1, style];
+			let rest = [address + 1, count- index - 1, style];
 			if(rest[1] > 0) toAppend.push(rest);
-			
-			if(highlight[1]==0){
+
+			if(highlight[1] == 0){
 				toRemove.push(highlight);
 			}
 		}
@@ -175,7 +176,7 @@ function loadHex(hex_id, data, defaultAddrPadding){
 	}
 
 	data.highlight = function(start, count, style){
-		if(typeof count=="string"){
+		if(typeof count == "string"){
 			style = count;
 			count = 1;
 		}
@@ -188,7 +189,7 @@ function loadHex(hex_id, data, defaultAddrPadding){
 			style = count;
 			count = 1;
 		}
-		for(let i=start; i<start+count; i++){
+		for(let i = start; i < start + count; i++){
 			removeHighlightCell(i, style);
 		}
 	}
