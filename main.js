@@ -8,20 +8,38 @@ let hex;
 	hex = loadHex("memory", data, 4);
 }
 
-function loadFile(event){
+function onFileHover(event){
+	event.preventDefault();
+}
+
+//	Fetch and load file from path
+async function loadHexFile(path){
+	let response = await fetch(path);
+	let buffer = await response.arrayBuffer;
+	await loadBuffer(buffer);
+}
+
+//	Load dropped file
+async function loadFile(event){
 	console.log("File(s) dropped");
 	event.preventDefault();
 
-	if(event.dataTransfer.items){
-		for(let item of event.dataTransfer.items){
-			console.log(item, item.kind);
+	if(event.dataTransfer.files && event.dataTransfer.files.length){
+		let file = event.dataTransfer.files[0];
+		let ab = await file.arrayBuffer();
+		await loadBuffer(ab);
+		//
 
-			//	Breakpoint here to see the items contents
-			
-		}
 		//hex = loadHex("memory", data, 4);
 	}
 }
-function onFileHover(event){
-	event.preventDefault();
+
+//Load file from buffer
+async function loadBuffer(data){
+	hex.length = 0;
+	let data = new Uint8Array(data);
+
+	for(let i=0; i<data.length; i++){
+		hex.push((+data[i])&0b11111111);
+	}
 }
