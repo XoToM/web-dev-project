@@ -1,7 +1,9 @@
 class LightSource3D extends Object3 {
-	lightTypeInfluence = { ambient:0.1, diffuse: 0.7, specular:0.7 };
-	lightColor = [1,1,1];
-
+	lightColor = new Float32Array([1,1,1]);
+	ambientInfluence = 0.1;
+	diffuseInfluence = 0.7;
+	specularInfluence = 0.7;
+	self = this;
 }
 class PointLight3D extends LightSource3D {
 	attenuation = { constant:1, linear:0.14, quadratic:0.07 };
@@ -13,7 +15,7 @@ class PointLight3D extends LightSource3D {
 	}
 	onChildRemoved(parent){
 		for(let i=0; i<__LightManager.point.length; i++){
-			if(__LightManager.point[i] === child){
+			if(__LightManager.point[i] === this.self){
 				let popped = __LightManager.point.pop();
 				if(i !== __LightManager.point.length) {
 					__LightManager.point[i] = popped;
@@ -24,9 +26,9 @@ class PointLight3D extends LightSource3D {
 	}
 	generateData(){
 		return {
-			position: this.position,
-			lightColor: this.lightColor,
-			lightPowers: [this.lightTypeInfluence.ambient, this.lightTypeInfluence.diffuse, this.lightTypeInfluence.specular],
+			position: v3.copy(this.position),
+			lightColor: v3.copy(this.lightColor),
+			lightPowers: [this.ambientInfluence, this.diffuseInfluence, this.specularInfluence],
 			attenuation: [this.attenuation.constant, this.attenuation.linear, this.attenuation.quadratic]
 		};
 	}

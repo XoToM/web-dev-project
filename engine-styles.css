@@ -90,3 +90,10 @@ canvas {
 .vector_property_display>input {
 	width: 3em;
 }
+.delete_object_button {
+	background-color: darkred;
+	color:white;
+	border-color: red;
+	border-radius: 0.2em;
+
+}

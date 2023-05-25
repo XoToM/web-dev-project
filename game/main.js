@@ -129,6 +129,9 @@ let cube1,cube2,cube3,blender_monkey,player;
 	test5.position[0] += 6;
 	player.position[0] -= 3;
 
+	blender_monkey.name = "Suzanne";
+
+
 	let plight1 = new PointLight3D({position:[2,-2,-8]});
 	let pldc1 = await _assetManager.generateObject3("light_cube");
 	//pldc1.scaling = v3.create(0.25,0.25,0.25);
@@ -136,7 +139,7 @@ let cube1,cube2,cube3,blender_monkey,player;
 	_globalScene.appendChild(plight1);
 
 	let plight2 = new PointLight3D({position:[2,-2,2]});
-	plight2.lightColor = [1.0,0.0,0.0];
+	plight2.lightColor = new Float32Array([1.0,0.0,0.0]);
 	let pldc2 = await _assetManager.generateObject3("light_cube");
 	//pldc2.scaling = v3.create(0.25,0.25,0.25);
 	plight2.appendChild(pldc2);
@@ -146,7 +149,7 @@ let cube1,cube2,cube3,blender_monkey,player;
 		let plight3 = new PointLight3D({position:[-4,-4,4+(i*-3)]});
 		let col = [Math.random(),Math.random(),Math.random()];
 		let max = Math.max(...col);
-		plight3.lightColor = [col[0]/max, col[1]/max, col[2]/max];
+		plight3.lightColor = new Float32Array([col[0]/max, col[1]/max, col[2]/max]);
 		//console.log(plight3.lightColor);
 		let pldc3 = await _assetManager.generateObject3("light_cube");
 		//pldc3.scaling = v3.create(0.25,0.25,0.25);
