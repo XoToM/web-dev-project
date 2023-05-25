@@ -5,9 +5,17 @@
 		<script src="hexedit.js"></script>
 		<script src="main.js" defer></script>
 	</head>
-	<body ondrop="loadFile(event)" ondragover="onFileHover(event)">
+	<body ondrop="loadFile(event);onDragEnd(event)" ondragover="onFileHover(event)" ondragenter="onDragStart(event)">
+		<nav>
+			<h1>Hex Viewer</h1>
+			<h4>Drag and drop files here to open them</h4>
+		</nav>
 		<main>
 			<div id="memory" class="hexedit"></div>
+			
+			<div id="drag_overlay" ondragleave="onDragEnd(event)">
+				<h1>Drop file here to open</h1>
+			</div>
 		</main>
 	</body>
 </html>

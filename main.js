@@ -11,6 +11,16 @@ let hex;
 function onFileHover(event){
 	event.preventDefault();
 }
+function onDragStart(event){
+	if(event.dataTransfer.items.length && event.dataTransfer.items[0].kind === "file"){
+		document.getElementById("drag_overlay").style.opacity = 100;
+		document.getElementById("drag_overlay").style.zIndex = 100;
+	}
+}
+function onDragEnd(event){
+	document.getElementById("drag_overlay").style.opacity = 0;
+	document.getElementById("drag_overlay").style.zIndex = -100;
+}
 
 //	Fetch and load file from path
 async function loadHexFile(path){
@@ -37,7 +47,7 @@ async function loadFile(event){
 //Load file from buffer
 async function loadBuffer(data){
 	hex.length = 0;
-	let data = new Uint8Array(data);
+	data = new Uint8Array(data);
 
 	for(let i=0; i<data.length; i++){
 		hex.push((+data[i])&0b11111111);

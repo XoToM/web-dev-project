@@ -21,12 +21,14 @@ function loadHex(hex_id, data, defaultAddrPadding){
 		hex.labels = document.createElement("DIV");
 		hex.top_labels = document.createElement("DIV");
 		hex.values = document.createElement("DIV");
+		hex.padding = document.createElement("DIV");
 
 		hex.top_labels.classList.add("top-labels");
 		hex.labels.classList.add("labels");
 		hex.values.classList.add("data");
+		hex.padding.classList.add("padding");
 
-		grid.appendChild(document.createElement("DIV"));
+		grid.appendChild(hex.padding);
 		grid.appendChild(hex.top_labels);
 		for(let i = 0; i < 16; i++){
 			let elem = document.createElement("SPAN");
