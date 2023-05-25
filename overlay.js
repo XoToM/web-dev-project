@@ -11,6 +11,7 @@ function addWindow(elem){
 			elem.open = last;
 			return false;
 		}
+		//bringFront();
 	}
 
 	function onDragStart(e){
@@ -37,10 +38,16 @@ function addWindow(elem){
 	function onDragEnd(e){
 		document.onmouseup = null;
 		document.onmousemove = null;
+		//bringFront();
 		if(moved > 0){
 			e.preventDefault();
 			elem.open = last;
 		}
+	}
+	function bringFront(){		//	Bring to front breaks minimizing windows
+		let parent = elem.parentNode;
+		parent.removeChild(elem);
+		parent.appendChild(elem);
 	}
 	header.onmousedown = onDragStart;
 	header.addEventListener("click", onClick);
