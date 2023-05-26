@@ -179,6 +179,7 @@ let cube1,cube2,cube3,blender_monkey,player;
 	ground.scaling[0] = 50;
 	ground.position[1] = -10;
 	ground.scaling[2] = 50;
+	plane.name = "Ground grid plane";
 	plane.appendChild(ground);
 
 	_globalScene.appendChild(plane);

@@ -1,3 +1,15 @@
+@keyframes showcase-flash {
+	0% {
+		background-color: initial;
+	}
+	50% {
+		background-color: rgba(0, 255, 255, 0.75);
+	}
+	100% {
+		background-color: initial;
+	}
+}
+
 body{
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	color:white;
@@ -56,6 +68,17 @@ canvas {
 	border-style: double;
 	padding: 0.5em;
 }
+.window .close_window_button {
+	float: right;
+	margin-left: 2em;
+	font-weight: bolder;
+	padding: 0em 0.1em;
+	color: white;
+	background: rgba(44, 44, 44, 0.75);
+	border-radius: 0.3em;
+}
+
+
 
 .object_descriptor {
 	border-style: solid;

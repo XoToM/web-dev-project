@@ -1,3 +1,4 @@
+let __focusCounter = 1;
 function addWindow(elem){
 	let header = elem.querySelector(":scope>summary");
 
@@ -6,6 +7,7 @@ function addWindow(elem){
 	let last = true;
 
 	function onClick(e){
+		bringFront();
 		if(moved > 0){
 			e.preventDefault();
 			elem.open = last;
@@ -15,6 +17,7 @@ function addWindow(elem){
 	}
 
 	function onDragStart(e){
+		bringFront();
 		document.onmousemove = onDrag;
 		document.onmouseup = onDragEnd;
 
@@ -38,19 +41,50 @@ function addWindow(elem){
 	function onDragEnd(e){
 		document.onmouseup = null;
 		document.onmousemove = null;
-		//bringFront();
 		if(moved > 0){
 			e.preventDefault();
 			elem.open = last;
 		}
 	}
 	function bringFront(){		//	Bring to front breaks minimizing windows
-		let parent = elem.parentNode;
-		parent.removeChild(elem);
-		parent.appendChild(elem);
+		//let parent = elem.parentNode;
+		//parent.removeChild(elem);
+		//parent.appendChild(elem);
+		if(__focusCounter !== elem.style.zIndex) {
+			__focusCounter++;
+			elem.style.zIndex = __focusCounter;
+		}
 	}
+	elem.bringToFront = bringFront;
+	elem.showWindow = ()=>{
+		elem.hidden = false;
+	};
+	elem.hideWindow = ()=>{
+		elem.hidden = "until-found";
+	};
+	elem.showcaseWindow = ()=>{
+		elem.open = true;
+		elem.showWindow();
+		elem.bringToFront();
+
+
+		for(let child of elem.children){
+			child.style.animation = "showcase-flash 0.5s ease-in-out";
+			child.addEventListener("animationend", (event)=>{
+				if(event.animationName === "showcase-flash") child.style.animation = "";
+			}, {once:true});
+		}
+	};
+
+	let close = header.querySelector(".close_window_button");
+	if(close){
+		close.addEventListener("click", elem.hideWindow);
+	}
+
 	header.onmousedown = onDragStart;
 	header.addEventListener("click", onClick);
+	elem.addEventListener("focusin", ()=>{bringFront()});
+	return elem;
 }
 
 	//	New scope because these are only needed for initialization
@@ -301,8 +335,14 @@ function addWindow(elem){
 	const object_window_template = document.getElementById("object_window_template").content.children[0];
 	const draggables_container = document.getElementById("draggables_container");
 
+	
+	const manager_button_template = document.getElementById("object_window_button_template").content.children[0];
+	let window_button_map = new Map();
+	const object_window_manager = document.getElementById("object_windows");
+
+
 	let object_window_map = new Map();
-	setInterval(()=>{
+	let object_window_update_handler = ()=>{
 		let toChange = [];
 		for(let i=0; i<_globalScene.children.length; i++){
 			let child = _globalScene.children[i];
@@ -315,6 +355,8 @@ function addWindow(elem){
 			let child = _globalScene.children[index];
 			let window = object_window_template.cloneNode(true);
 			let title = window.querySelector(".object_name");
+			let window_button = manager_button_template.cloneNode(true);
+			let button_title = window_button.querySelector(".object_name");
 
 			let oc = window.querySelector(".object_children");
 
@@ -328,6 +370,7 @@ function addWindow(elem){
 				name:{
 					onUpdate: (obj, name)=>{
 						title.innerText = name;
+						button_title.innerText = name;
 					}
 				}
 			};
@@ -349,21 +392,39 @@ function addWindow(elem){
 				if(index === -1) return;
 				_globalScene.removeChild(obj);
 				window.remove();
+				window_button.remove();
 			});
-			addWindow(window);
+			window_button.addEventListener("click", ()=>{
+				window.showcaseWindow();
+			});
+
+			window_button_map.set(addWindow(window), window_button);
+			object_window_manager.appendChild(window_button);
+			window.managedObject3 = obj;
 		}
 		toChange.length = 0;
 
 		for(let [obj, window] of object_window_map.entries()){
 			if(!_globalScene.children.includes(obj)){
-				toChange.push(obj);
+				if(obj !== Camera) toChange.push(obj);
 			}
 		}
 		for(let obj of toChange){
 			let window = object_window_map.get(obj);
-			window.remove();
+			let wbutton = window_button_map.get(window);
+			if(wbutton) wbutton.remove();
+			window_button_map.delete(window);
 			object_window_map.delete(obj);
+			window.remove();
 		}
-	}, 250);
+	};
+	Camera.name = "Camera";
+	_globalScene.children.push(Camera);		//	The camera object is not a normal object and cannot be removed. Since its not a part of the scene trying to remove it from the scene
+	object_window_update_handler();
+	Camera = _globalScene.children.pop();
+	let cam_window = object_window_map.get(Camera);
+	cam_window.querySelector(".delete_object_button").remove();
+
+	setInterval(object_window_update_handler, 250);
 
 	//oc.appendChild(createObject3Descriptor(_globalScene));

@@ -31,12 +31,10 @@
 			<span id="rotz"></span>
 		</div>
 		<div class="draggables" id="draggables_container">
-			<details class="window" open>
-				<summary>Test Element</summary>
+			<details id="object_window_manager" class="window" open>
+				<summary>Object Manager</summary>
 				<div class="content">
-					Test 1 <br/>
-					<div id="object_children" class="object_descriptor"></div>
-					Test 2
+					<div id="object_windows"></div>
 				</div>
 			</details>
 		</div>
@@ -84,13 +82,19 @@
 			</div>
 		</template>
 		<template id="object_window_template">
-			<details class="window" open>
-				<summary class="object_name">Test Element</summary>
+			<details class="window">
+				<summary>
+					<span class="object_name">Test Element</span>
+					<button class="close_window_button">&#128469</button>
+				</summary>
 				<div class="content">
 					<div class="object_children" class="object_descriptor"></div>
 					<button class="delete_object_button">Delete Object</button>
 				</div>
 			</details>
+		</template>
+		<template id="object_window_button_template">
+			<button class="object_window_button"><span class="object_name"></span></button>
 		</template>
 	</body>
 </html>
