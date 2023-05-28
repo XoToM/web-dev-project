@@ -2,13 +2,13 @@ function render(deltaTime){
 	NoclipCamera(deltaTime);
 }
 {
-	const vert_shader = getFileSync("shaders/vert.glsl");
-	const default_shader_program = twgl.createProgramInfo(gl, [vert_shader, getFileSync("shaders/frag.glsl")]);
-	const ground_shader_program = twgl.createProgramInfo(gl, [vert_shader, getFileSync("shaders/ground_frag.glsl")]);
-	const light_cube_shader_program = twgl.createProgramInfo(gl, [vert_shader, getFileSync("shaders/light_cube_frag.glsl")]);
+	const vert_shader = getFileSync("/3d-engine/shaders/vert.glsl");
+	const default_shader_program = twgl.createProgramInfo(gl, [vert_shader, getFileSync("/3d-engine/shaders/frag.glsl")]);
+	const ground_shader_program = twgl.createProgramInfo(gl, [vert_shader, getFileSync("/3d-engine/shaders/ground_frag.glsl")]);
+	const light_cube_shader_program = twgl.createProgramInfo(gl, [vert_shader, getFileSync("/3d-engine/shaders/light_cube_frag.glsl")]);
 
 	_assetManager.loadModel(
-		"tests/light_cube.gltf",
+		"/3d-engine/tests/light_cube.gltf",
 		"light_cube",
 		light_cube_shader_program,
 		{
@@ -18,7 +18,7 @@ function render(deltaTime){
 			colorSampler: "u_colorTexture",
 		});
 	_assetManager.loadModel(
-		"tests/default_cube.gltf",
+		"/3d-engine/tests/default_cube.gltf",
 		"default_cube",
 		default_shader_program,
 		{
@@ -28,7 +28,7 @@ function render(deltaTime){
 			colorSampler: "u_colorTexture",
 		});
 	_assetManager.loadModel(
-		"tests/test1.gltf",
+		"/3d-engine/tests/test1.gltf",
 		"test1",
 		default_shader_program,
 		{
@@ -38,7 +38,7 @@ function render(deltaTime){
 			colorSampler: "u_colorTexture",
 		});
 	_assetManager.loadModel(
-		"tests/test3.gltf",
+		"/3d-engine/tests/test3.gltf",
 		"test3",
 		default_shader_program,
 		{
@@ -48,7 +48,7 @@ function render(deltaTime){
 			colorSampler: "u_colorTexture",
 		});
 	_assetManager.loadModel(
-		"tests/test4.gltf",
+		"/3d-engine/tests/test4.gltf",
 		"test4",
 		default_shader_program,
 		{
@@ -58,7 +58,7 @@ function render(deltaTime){
 			colorSampler: "u_colorTexture",
 		});
 	_assetManager.loadModel(
-		"tests/test5.gltf",
+		"/3d-engine/tests/test5.gltf",
 		"test5",
 		default_shader_program,
 		{
@@ -68,7 +68,7 @@ function render(deltaTime){
 			colorSampler: "u_colorTexture",
 		});
 	_assetManager.loadModel(
-		"tests/blender_monkey.gltf",
+		"/3d-engine/tests/blender_monkey.gltf",
 		"blender_monkey",
 		default_shader_program,
 		{
@@ -78,7 +78,7 @@ function render(deltaTime){
 			colorSampler: "u_colorTexture",
 		}
 	);
-	_assetManager.loadModel("game/models/player.gltf","player", default_shader_program, {
+	_assetManager.loadModel("/3d-engine/game/models/player.gltf","player", default_shader_program, {
 		position: "a_position",
 		normal: "a_normal",
 		colorTexCoord: "a_colorTexCoord",
@@ -87,7 +87,7 @@ function render(deltaTime){
 
 
 	_assetManager.loadModel(
-		"tests/ground_plane.gltf",
+		"/3d-engine/tests/ground_plane.gltf",
 		"ground_plane",
 		ground_shader_program,
 		{

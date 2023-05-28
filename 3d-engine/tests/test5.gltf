@@ -297,7 +297,7 @@
   "images": [
     {
       "mimeType": "image/png",
-      "uri": "/tests/tex3.png"
+      "uri": "/3d-engine/tests/tex3.png"
     }
   ],
   "meshes": [
