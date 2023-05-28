@@ -1,3 +1,12 @@
+body {
+    height: 100%;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+}
+
 .hexedit {
     font-family: monospace;
     font-weight: normal;
@@ -5,11 +14,15 @@
     grid-template-columns: auto auto;
     text-align: center;
     padding-right: 1em;
+    width: auto;
+    height: auto;
+    margin: auto;
 }
 .hexedit .labels {
     display:grid;
     grid-template-columns: auto;
-    margin-right: 1.5em;
+    margin-right: 1.0em;
+    padding: 0px 0.2em;
 }
 .hexedit .labels, .hexedit .top-labels {
     font-weight: bold;
@@ -25,14 +38,16 @@
 .hexedit .data {
     display: grid;
     grid-template-columns: repeat(16, 1.6em);
-}
-.hexedit .data *{
     background: white;
-    /*border-left: dotted 1px black;*/
 }
 
+.hexedit .data * {
+    border-bottom: 1px;
+    border-bottom-style: dashed;
+    background: whitesmoke;
+}
 .hexedit .data *:nth-child(even){
-    filter: brightness(92.5%);
+    background: gainsboro;
 }
 .hexedit .padding {
     width: 100%;
@@ -44,49 +59,32 @@
     z-index: 3;
 }
 
-#memory .data * {
-    border-bottom: 1px;
-    border-bottom-style: dashed;
-}
-body {
-    height: 100%;
-    width: 100%;
-    padding: 0px;
-    margin: 0px;
-    display: flex;
-    flex-direction: column;
-}
-#memory {
-    margin: auto;
-    width: auto;
-    height: auto;
-    grid-column: 2;
-}
-
 main {
     margin:auto;
     height: 100%;
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    display: flex;
+    flex-direction: column;
     font-size: xx-large;
     flex-grow: 1;
 }
 
-#drag_overlay {
+#drag-overlay {
     user-select: none;
     background-color: rgba(128, 128, 128, 0.5);
-    position:fixed;
-    display: table;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
     transition: 0.5s;
     z-index: -100;
     opacity: 0;
-    top:0px;
-    left:0px;
+    top: 0px;
+    left: 0px;
 }
-#drag_overlay * {
+#drag-overlay * {
     user-select: none;
     display: table-cell;
     text-align: center;
@@ -95,7 +93,17 @@ main {
     width: max-content;
     height: max-content;
 }
-nav {
+#fake-dropzone {
+    user-select: none;
+    text-align: center;
+    display: block;
+    border: 0.5em dashed;
+    padding: 30% 20%;
+    border-radius: 4em;
+    background-color: rgba(128, 128, 128, 0.75);
+    font-size: xx-large;
+}
+header {
     display: flex;
     flex-direction: column;
     align-content: start;
@@ -105,6 +113,16 @@ nav {
     margin-bottom: 0.5em;
 }
 
-nav * {
+header * {
     margin:0.5em;
+}
+header h1 {
+    font-size: xxx-large;
+    margin: 0.2em 1em;
+}
+header h2 {
+    font-size: larger;
+}
+#file-select {
+    display: inline;
 }
