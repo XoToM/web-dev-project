@@ -1,132 +1,131 @@
 body {
-    height: 100%;
-    width: 100%;
-    padding: 0px;
-    margin: 0px;
-    display: flex;
-    flex-direction: column;
+	height: 100%;
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+	display: flex;
+	flex-direction: column;
+	font-family: monospace;
+}
+main {
+	margin: auto;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	font-size: xx-large;
+	flex-grow: 1;
 }
 
+/*	The styling of the hex viewer itself	*/
 .hexedit {
-    font-family: monospace;
-    font-weight: normal;
-    display:grid;
-    grid-template-columns: auto auto;
-    text-align: center;
-    padding-right: 1em;
-    width: auto;
-    height: auto;
-    margin: auto;
+	font-weight: normal;
+	display:grid;
+	grid-template-columns: auto auto;
+	text-align: center;
+	padding-right: 1em;
+	width: auto;
+	height: auto;
+	margin: auto;
 }
 .hexedit .labels {
-    display:grid;
-    grid-template-columns: auto;
-    margin-right: 1.0em;
-    padding: 0px 0.2em;
+	display:grid;
+	grid-template-columns: auto;
+	margin-right: 1.0em;
+	padding: 0px 0.2em;
 }
 .hexedit .labels, .hexedit .top-labels {
-    font-weight: bold;
-    position: sticky;
-    top: 0px;
-    background: silver;
-    z-index: 1;
+	font-weight: bold;
+	position: sticky;
+	top: 0px;
+	background: silver;
+	z-index: 1;
 }
 .hexedit .top-labels {
-    display: grid;
-    grid-template-columns: repeat(16, 1.6em);
+	display: grid;
+	grid-template-columns: repeat(16, 1.6em);
 }
 .hexedit .data {
-    display: grid;
-    grid-template-columns: repeat(16, 1.6em);
-    background: white;
+	display: grid;
+	grid-template-columns: repeat(16, 1.6em);
+	background: white;
 }
 
 .hexedit .data * {
-    border-bottom: 1px;
-    border-bottom-style: dashed;
-    background: whitesmoke;
+	border-bottom: 1px;
+	border-bottom-style: dashed;
+	background: whitesmoke;
 }
 .hexedit .data *:nth-child(even){
-    background: gainsboro;
+	background: gainsboro;
 }
 .hexedit .padding {
-    width: 100%;
-    height: 100%;
-    display: block;
-    position: sticky;
-    top: 0px;
-    background-color: whitesmoke;
-    z-index: 3;
+	width: 100%;
+	height: 100%;
+	display: block;
+	position: sticky;
+	top: 0px;
+	background-color: whitesmoke;
+	z-index: 3;
 }
 
-main {
-    margin:auto;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    font-size: xx-large;
-    flex-grow: 1;
-}
-
+/*	The styling of the overlay which shows up when you drag and drop files onto the page	*/
 #drag-overlay {
-    user-select: none;
-    background-color: rgba(128, 128, 128, 0.5);
-    position: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    transition: 0.5s;
-    z-index: -100;
-    opacity: 0;
-    top: 0px;
-    left: 0px;
+	user-select: none;
+	background-color: rgba(128, 128, 128, 0.5);
+	position: fixed;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	transition: 0.5s;
+	z-index: -100;
+	opacity: 0;
+	top: 0px;
+	left: 0px;
 }
 #drag-overlay * {
-    user-select: none;
-    display: table-cell;
-    text-align: center;
-    vertical-align: middle;
-    margin: auto;
-    width: max-content;
-    height: max-content;
+	user-select: none;
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;
+	margin: auto;
+	width: max-content;
+	height: max-content;
 }
 #fake-dropzone {
-    user-select: none;
-    text-align: center;
-    display: table;
-    border: 0.5em dashed;
-    border-radius: 4em;
-    background-color: rgba(128, 128, 128, 0.75);
-    font-size: xx-large;
-    width: 75%;
-    height: 75%;
+	user-select: none;
+	text-align: center;
+	display: table;
+	border: 0.5em dashed;
+	border-radius: 4em;
+	background-color: rgba(128, 128, 128, 0.75);
+	font-size: xx-large;
+	width: 75%;
+	height: 75%;
 }
 #fake-dropzone * {
-    margin:auto;
-}
-header {
-    display: flex;
-    flex-direction: column;
-    align-content: start;
-    align-items: center;
-    width: 100%;
-    background-color: lightgray;
-    margin-bottom: 1em;
-    padding: 1em 0px;
+	margin:auto;
 }
 
+/*	The styling of the page's header	*/
+header {
+	display: flex;
+	flex-direction: column;
+	align-content: start;
+	align-items: center;
+	width: 100%;
+	background-color: lightgray;
+	margin-bottom: 1em;
+	padding: 1em 0px;
+}
 header * {
-    margin: 0.2em 1em;
+	margin: 0.2em 1em;
 }
 header h1 {
-    font-size: xxx-large;
+	font-size: xxx-large;
 }
 header h2 {
-    font-size: larger;
-}
-#file-select {
-    display: inline;
+	font-size: larger;
 }
