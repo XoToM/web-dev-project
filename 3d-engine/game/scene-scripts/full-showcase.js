@@ -1,14 +1,12 @@
-function render(deltaTime){
-	NoclipCamera(deltaTime);
-}
+const default_vert_shader = getFileSync("/3d-engine/shaders/vert.glsl");
+const default_shader_program = twgl.createProgramInfo(gl, [default_vert_shader, getFileSync("/3d-engine/shaders/frag.glsl")]);
+const ground_shader_program = twgl.createProgramInfo(gl, [default_vert_shader, getFileSync("/3d-engine/shaders/ground_frag.glsl")]);
+const light_cube_shader_program = twgl.createProgramInfo(gl, [default_vert_shader, getFileSync("/3d-engine/shaders/light_cube_frag.glsl")]);
+
 {
-	const vert_shader = getFileSync("/3d-engine/shaders/vert.glsl");
-	const default_shader_program = twgl.createProgramInfo(gl, [vert_shader, getFileSync("/3d-engine/shaders/frag.glsl")]);
-	const ground_shader_program = twgl.createProgramInfo(gl, [vert_shader, getFileSync("/3d-engine/shaders/ground_frag.glsl")]);
-	const light_cube_shader_program = twgl.createProgramInfo(gl, [vert_shader, getFileSync("/3d-engine/shaders/light_cube_frag.glsl")]);
 
 	_assetManager.loadModel(
-		"/3d-engine/tests/light_cube.gltf",
+		"/3d-engine/game/models/light_cube.gltf",
 		"light_cube",
 		light_cube_shader_program,
 		{
@@ -87,7 +85,7 @@ function render(deltaTime){
 
 
 	_assetManager.loadModel(
-		"/3d-engine/tests/ground_plane.gltf",
+		"/3d-engine/game/models/ground_plane.gltf",
 		"ground_plane",
 		ground_shader_program,
 		{
@@ -101,6 +99,18 @@ function render(deltaTime){
 let cube1,cube2,cube3,blender_monkey,player;
 (async ()=>{
 	await _assetManager.finishedLoading();
+
+	let plane = new Object3();
+
+	let ground = await _assetManager.generateObject3("ground_plane");
+	ground.scaling[0] = 50;
+	ground.position[1] = -10;
+	ground.scaling[2] = 50;
+	plane.name = "Ground grid plane";
+	plane.appendChild(ground);
+
+	_globalScene.appendChild(plane);
+
 	cube1_spin = await _assetManager.generateObject3("default_cube");
 	cube1_spain = await _assetManager.generateObject3("default_cube");
 	cube1_pain = await _assetManager.generateObject3("default_cube");
@@ -134,14 +144,12 @@ let cube1,cube2,cube3,blender_monkey,player;
 
 	let plight1 = new PointLight3D({position:[2,-2,-8]});
 	let pldc1 = await _assetManager.generateObject3("light_cube");
-	//pldc1.scaling = v3.create(0.25,0.25,0.25);
 	plight1.appendChild(pldc1);
 	_globalScene.appendChild(plight1);
 
 	let plight2 = new PointLight3D({position:[2,-2,2]});
 	plight2.lightColor = new Float32Array([1.0,0.0,0.0]);
 	let pldc2 = await _assetManager.generateObject3("light_cube");
-	//pldc2.scaling = v3.create(0.25,0.25,0.25);
 	plight2.appendChild(pldc2);
 	_globalScene.appendChild(plight2);
 
@@ -152,7 +160,6 @@ let cube1,cube2,cube3,blender_monkey,player;
 		plight3.lightColor = new Float32Array([col[0]/max, col[1]/max, col[2]/max]);
 		//console.log(plight3.lightColor);
 		let pldc3 = await _assetManager.generateObject3("light_cube");
-		//pldc3.scaling = v3.create(0.25,0.25,0.25);
 		plight3.appendChild(pldc3);
 		_globalScene.appendChild(plight3);
 	}
@@ -173,16 +180,6 @@ let cube1,cube2,cube3,blender_monkey,player;
 	//*/
 	_globalScene.appendChild(blender_monkey);
 	_globalScene.appendChild(player);
-	let plane = new Object3();
-
-	let ground = await _assetManager.generateObject3("ground_plane");
-	ground.scaling[0] = 50;
-	ground.position[1] = -10;
-	ground.scaling[2] = 50;
-	plane.name = "Ground grid plane";
-	plane.appendChild(ground);
-
-	_globalScene.appendChild(plane);
 
 	let animate_manual = ()=>{
 		let promise = new Promise((resolve)=>{
@@ -206,3 +203,7 @@ let cube1,cube2,cube3,blender_monkey,player;
 
 	player.playAnimation("player.flop", {mode:ANIMATION_MODES.PLAY_CLAMP});
 })();
+
+function render(deltaTime){
+	NoclipCamera(deltaTime);
+}

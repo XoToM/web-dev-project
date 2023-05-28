@@ -1,0 +1,27 @@
+nav {
+	color: white;
+}
+#navigator {
+	top: 25%;
+	left: 25%;
+}
+#project-selector {
+	display: flex;
+	flex-direction: row;
+}
+#project-selector>*{
+	background-color: rgb(32, 32, 32);
+	display: flex;
+	flex-direction: column;
+	border-style: solid;
+	border-color: white;
+	border-width: 0.15em;
+	border-radius: 0.5em;
+	margin: 1em;
+	padding: 1em;
+	color: white;
+}
+#project-selector a img{
+	width: 6cm;
+	height: 6cm;
+}

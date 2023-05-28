@@ -12,23 +12,21 @@
 		<script src="engine/animationPlayer.js"></script>
 		<script src="init.js" defer></script>
 
-		<!--	Game Code	-->
+		<!--	Program Code	-->
 		<script src="game/camera.js" defer></script>
-		<script src="game/main.js" defer></script>
 		<script src="overlay.js" defer></script>
+		<script src="project-loader.js" defer></script>
+
 
 		<link rel="stylesheet" href="engine-styles.css">
+		<link rel="stylesheet" href="styles.css">
 	</head>
+
 	<body>
 		<canvas id="canvasgl"></canvas>
 		<div class="overlay">
-			<span id="timer"></span><br/>
-			<span id="posx"></span>
-			<span id="posy"></span>
-			<span id="posz"></span><br/>
-			<span id="rotx"></span>
-			<span id="roty"></span>
-			<span id="rotz"></span>
+			Camera Position:<pre> <span id="posx"></span> <span id="posy"></span> <span id="posz"></span></pre>
+			Camera Rotation:<pre> <span id="rotx"></span> <span id="roty"></span> <span id="rotz"></span></pre>
 		</div>
 		<div class="draggables" id="draggables_container">
 			<details id="object_window_manager" class="window" open>
@@ -37,7 +35,30 @@
 					<div id="object_windows"></div>
 				</div>
 			</details>
+			<details id="navigator" class="window" open>
+				<summary>Navigator</summary>
+				<nav class="content">
+					<h1>Example Scenes</h1>
+					<div id="project-selector">
+						<a href="">
+							<div>
+								<img src="\3d-engine\game\scene-scripts\thumbnails\blank.png">
+								<h2>Blank Scene</h2>
+							</div>
+						</a>
+						<a href="#full-showcase">
+							<div>
+								<img src="\3d-engine\game\scene-scripts\thumbnails\full-showcase.png">
+								<h2>Feature showcase</h2>
+							</div>
+						</a>
+					</div>
+				</nav>
+			</details>
 		</div>
+
+
+		<!--	Templates for elements used to display properties of objects	-->
 		<template id="v3_descriptor_template">
 			<div class="property_display vector_property_display">
 				<span class="property_name"></span>
@@ -88,7 +109,7 @@
 					<button class="close_window_button">&#128469</button>
 				</summary>
 				<div class="content">
-					<div class="object_children" class="object_descriptor"></div>
+					<div class="object_children object_descriptor"></div>
 					<button class="delete_object_button">Delete Object</button>
 				</div>
 			</details>

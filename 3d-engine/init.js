@@ -1,5 +1,4 @@
 const canvas = document.getElementById("canvasgl");
-const timer_elem = document.getElementById("timer");
 
 
 const m4 = twgl.m4;
@@ -9,6 +8,11 @@ function logGLCall(functionName, args) {
 let gl = canvas.getContext("webgl2", {antialias:false});	//	Firefox seems to get better results with antialiasing disabled. When its enabled there might be some gaps between faces
 //let gl = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl2"), undefined, logGLCall);	//	Get a WebGL 2 context. WebGL 1 is very limited, and most devices support it by now anyway
 
+if(!gl){
+	alert("WebGl 2 is not supported in your browser, which means you cannot open this page properly. This page will now close.");
+	window.stop();
+	window.close();
+}
 
 var getFileSync = function(url) {
 	var req = new XMLHttpRequest();
@@ -30,14 +34,11 @@ gl.enable(gl.DEPTH_TEST);
 
 
 let _LastRenderTime = 0;
-let counter = 0;
 
 function _render(time) {
 	twgl.resizeCanvasToDisplaySize(gl.canvas);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 	let deltaTime = (time - _LastRenderTime)/1000;
-	counter +=deltaTime;
-	timer_elem.innerText = counter;
 
 	if(typeof(render) != "undefined"){
 		render(deltaTime);

@@ -1,6 +1,8 @@
 let __focusCounter = 1;
+let windowAutoHide = true;
+
 function addWindow(elem){
-	let header = elem.querySelector(":scope>summary");
+	let header = elem.querySelector(":scope>summary,:scope>.header");
 
 	let mouseX, mouseY;
 	let moved = 0;
@@ -81,7 +83,7 @@ function addWindow(elem){
 		close.addEventListener("click", elem.hideWindow);
 	}
 
-	header.onmousedown = onDragStart;
+	if(!elem.classList.contains("no-drag")) header.onmousedown = onDragStart;
 	header.addEventListener("click", onClick);
 	elem.addEventListener("focusin", ()=>{bringFront()});
 	return elem;
@@ -401,6 +403,10 @@ function addWindow(elem){
 			window_button_map.set(addWindow(window), window_button);
 			object_window_manager.appendChild(window_button);
 			window.managedObject3 = obj;
+
+			if(windowAutoHide){
+				window.hideWindow();
+			}
 		}
 		toChange.length = 0;
 

@@ -32,7 +32,8 @@ canvas {
 	z-index: 0;
 }
 .draggables {
-	position:absolute;
+	position: absolute;
+	display: table;
 	top: 0px;
 	left: 0px;
 }
@@ -44,7 +45,7 @@ canvas {
 .window>*{
 	padding: 0.2em 0.5em;
 }
-.window>summary {
+.window>summary, .window>.header {
 	/*margin: -0.5em -0.5em 0.1em -0.5em;*/
 	background-color: rgba(0, 64, 128, 0.75);
 	border-color: black;
@@ -52,9 +53,11 @@ canvas {
 	border-radius: 0.5em;
 	border-style: double;
 	width: max-content;
+}
+.window:not(.no-drag)>summary, .window:not(.no-drag)>.header {
 	cursor: grab;
 }
-.window[open]>summary {
+.window[open]>summary, .window[open]>.header {
 	width: 100%;
 	min-width: max-content;
 	border-radius: 0.5em 0.5em 0px 0px;
