@@ -96,12 +96,16 @@ main {
 #fake-dropzone {
     user-select: none;
     text-align: center;
-    display: block;
+    display: table;
     border: 0.5em dashed;
-    padding: 30% 20%;
     border-radius: 4em;
     background-color: rgba(128, 128, 128, 0.75);
     font-size: xx-large;
+    width: 75%;
+    height: 75%;
+}
+#fake-dropzone * {
+    margin:auto;
 }
 header {
     display: flex;
@@ -110,15 +114,15 @@ header {
     align-items: center;
     width: 100%;
     background-color: lightgray;
-    margin-bottom: 0.5em;
+    margin-bottom: 1em;
+    padding: 1em 0px;
 }
 
 header * {
-    margin:0.5em;
+    margin: 0.2em 1em;
 }
 header h1 {
     font-size: xxx-large;
-    margin: 0.2em 1em;
 }
 header h2 {
     font-size: larger;
