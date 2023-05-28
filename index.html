@@ -1,9 +1,23 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" href="styles.css">
-		<script src="hexedit.js"></script>
-		<script src="main.js" defer></script>
+		<title>Hex Viewer</title>
+		<meta name="title" content="Hex Viewer">
+		<meta name="description" content="This hex viewer lets you display your files as binary data conveniently displayed as hexadecimal numbers.">
+		<meta name="keywords" content="hex viewer, hexviewer, binary data">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="language" content="English">
+		<meta name="author" content="Dawid Kawka">
+
+		<link rel="stylesheet" href="./styles.css">
+		<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
+		<link rel="manifest" href="./icons/site.webmanifest">
+
+		<script src="./hexedit.js"></script>
+		<script src="./main.js" defer></script>
 	</head>
 	<body ondrop="loadFile(event); onDragEnd(event)" ondragover="onFileHover(event)" ondragenter="onDragStart(event)">
 		<header>
