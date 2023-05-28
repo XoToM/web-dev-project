@@ -8,7 +8,7 @@ const drag_overlay = document.getElementById("drag-overlay");
 		data.push(i%256);
 	}
 
-	hex = loadHex("memory", data, 4);	//	Initialize the hex viewer with data
+	hex = loadHex("memory", data);	//	Initialize the hex viewer with data
 }
 
 function onFileHover(event){	//	Prevent the browser from messing with our dragging behaviour
