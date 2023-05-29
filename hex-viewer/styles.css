@@ -6,6 +6,8 @@ body {
 	display: flex;
 	flex-direction: column;
 	font-family: monospace;
+	overflow: auto auto;
+	max-width: 100vw;
 }
 main {
 	margin: auto;
@@ -16,7 +18,15 @@ main {
 	font-size: xx-large;
 	flex-grow: 1;
 }
+.mobile {
+	display: none;
+}
 
+@media (pointer:none), (pointer:coarse) and (orientation:portrait) { 
+	.mobile {
+		display: block;
+	}
+}
 /*	The styling of the hex viewer itself	*/
 .hexedit {
 	font-weight: normal;
@@ -28,22 +38,27 @@ main {
 	height: auto;
 	margin: auto;
 }
+.hexedit .labels, .hexedit .top-labels {
+	font-weight: bold;
+	background: silver;
+	z-index: 1;
+}
 .hexedit .labels {
 	display:grid;
 	grid-template-columns: auto;
 	margin-right: 1.0em;
 	padding: 0px 0.2em;
-}
-.hexedit .labels, .hexedit .top-labels {
-	font-weight: bold;
 	position: sticky;
-	top: 0px;
-	background: silver;
-	z-index: 1;
+	border-right: 1px solid black;
+	left:0px;
 }
 .hexedit .top-labels {
 	display: grid;
 	grid-template-columns: repeat(16, 1.6em);
+	position: sticky;
+	top: 0px;
+	border-bottom: 1px solid black;
+	z-index: 5;
 }
 .hexedit .data {
 	display: grid;
@@ -115,10 +130,12 @@ header {
 	flex-direction: column;
 	align-content: start;
 	align-items: center;
-	width: 100%;
+	width: 100vw;
 	background-color: lightgray;
 	margin-bottom: 1em;
 	padding: 1em 0px;
+	position: sticky;
+	left: 0px;
 }
 header * {
 	margin: 0.2em 1em;
@@ -128,4 +145,7 @@ header h1 {
 }
 header h2 {
 	font-size: larger;
+}
+.red-highlight {
+	background-color: rgba(255, 0, 0, 0.75) !important;
 }

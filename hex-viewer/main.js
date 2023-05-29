@@ -40,26 +40,47 @@ async function onFileInputChange(event){	//	On File loaded through button
 	}
 }
 async function onExampleSelected(event){
+	hex.unhighlight(0, hex.length);
 	switch(event.target.selectedIndex){	//	Do a different thing depending on what is selected in the dropdown
-		case 1:
+		case 1:	//	Generate 256 numbers
 			hex.length = 0;
 			for(let i=0;i<256;i++){
 				hex.push(i%256);
 			}
 			break;
-		case 2:
-			await loadHexFile("./examples/test.nbt");
+		case 2:	//	Generate 256 numbers
+			hex.length = 0;
+			for(let i=0;i<256;i++){
+				hex.push(i%256);
+				let isPrime = true;
+				for(let n=2; n<128; n++){
+					if(!(i%n) && i !== n){
+						isPrime = false;
+						break;
+					}
+				}
+				if(isPrime) hex.highlight(i,1, "red-highlight");
+			}
 			break;
-		case 3:
-			await loadHexFile("./index.html");
+		case 3:	//	Generate 256 zeros. Bytes are changed elsewhere
+			hex.length = 0;
+			for(let i=0;i<256;i++){
+				hex.push(0);
+			}
 			break;
 		case 4:
-			await loadHexFile("./styles.css");
+			await loadHexFile("./examples/test.nbt");
 			break;
 		case 5:
-			await loadHexFile("./main.js");
+			await loadHexFile("./index.html");
 			break;
 		case 6:
+			await loadHexFile("./styles.css");
+			break;
+		case 7:
+			await loadHexFile("./main.js");
+			break;
+		case 8:
 			await loadHexFile("./hexedit.js");
 			break;
 	}
@@ -76,6 +97,7 @@ async function loadHexFile(path){
 async function loadFile(event){
 	event.preventDefault();		//	Prevent the browser from opening the file in this browser tab. This would close the page which we dont want
 	example_selector.selectedIndex = 0;
+	hex.unhighlight(0, hex.length);
 
 	if(event.dataTransfer.files && event.dataTransfer.files.length){	//	Check if there are any files to be loaded
 		let file = event.dataTransfer.files[0];	//	Get the first file
@@ -93,4 +115,13 @@ async function loadBuffer(data){
 	for(let i=0; i<data.length; i++){	//	Load all bytes into the hex viewer
 		hex.push(data[i]);
 	}
+}
+
+{	//	Check if example nr 3 is selected, and if so, randomly change 1 byte every 500 ms
+	const example_seletor = document.getElementById("example-selection");
+	setInterval(()=>{
+		if(example_selector.selectedIndex === 3){
+			hex[Math.floor(Math.random() * hex.length)] = Math.floor(Math.random() * 256);
+		}
+	}, 500);
 }

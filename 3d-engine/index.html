@@ -90,17 +90,18 @@
 						</p>
 					</span>
 
+					<!--	Project selection.		the href attributes are used to determine which project to open. One of the scripts attached to this page reloads the webpage when these are clicked to ensure that the page loads properly. I used anchors for this because everything links to this page. Only one file really differs between projects, so I decided that its not worth it to have multiple sub-pages for this. Google Lighthouse does't like me using anchors in this way though...	-->
 					<h1>Example Scenes</h1>
 					<div id="project-selector">
 						<a href="">
 							<div>
-								<img src="\3d-engine\game\scene-scripts\thumbnails\blank.webp" alt="Thumbnail image of a blank scene">
+								<img src="game\scene-scripts\thumbnails\blank.webp" alt="Thumbnail image of a blank scene">
 								<h2>Blank Scene</h2>
 							</div>
 						</a>
 						<a href="#full-showcase">
 							<div>
-								<img src="\3d-engine\game\scene-scripts\thumbnails\full-showcase.webp" alt="Thumbnail image of the showcase scene">
+								<img src="game\scene-scripts\thumbnails\full-showcase.webp" alt="Thumbnail image of the showcase scene">
 								<h2>Feature showcase</h2>
 							</div>
 						</a>

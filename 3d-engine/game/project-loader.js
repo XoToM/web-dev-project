@@ -17,7 +17,7 @@ async function loadProject(project){	//	Load project script from link
 				document.querySelector(".overlay").style.display = "initial";
 				accept();
 			}
-			script.src = "/3d-engine/game/scene-scripts/" + project+".js";
+			script.src = "game/scene-scripts/" + project+".js";
 			document.querySelector("head").appendChild(script);
 		}catch(e){
 			console.error("Error while loading project: ", e);
