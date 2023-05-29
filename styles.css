@@ -56,12 +56,27 @@ aside {
 	height: max-content;
 	width: max-content;
 }
+aside a div {
+	display: flex;
+	flex-direction: column;
+	
+}
 aside a {
 	color: white;
 	text-decoration: none;
+	min-width: max-content;
+	width: 100%;
+}
+aside div:has(a) {
+	min-width: max-content;
+	width: 100%;
 }
 aside>h2{
 	margin: 0.5em 1em 0.75em 1em;
+	display: inline-block;
+}
+aside h3{
+	display: inline-block;
 }
 header {
 	background-color: #C7FFDA;
@@ -80,6 +95,7 @@ header {
 	background-color: #26402F;
 	height: max-content;
 	width: max-content;
+	max-width: 100%;
 	display: block;
 	border-radius: 0.5em;
 	margin: 1em 2em;
