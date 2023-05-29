@@ -107,7 +107,8 @@ class AssetManager{
 				if(image.uri){
 					let promise = new Promise((resolve,reject)=>{
 						let img = new Image();
-						img.src = image.uri;
+						let uri = image.uri;
+						img.src = uri;
 						img.onload = ()=>{
 							texture.data = img;
 							texture.width = img.width;
@@ -115,8 +116,18 @@ class AssetManager{
 							resolve(img);
 						}
 						img.onerror = (e)=>{
-							console.error("Failed to load texture: ",e);
-							reject(e);
+							let img = new Image();
+							img.src = "./"+uri;
+							img.onload = ()=>{
+								texture.data = img;
+								texture.width = img.width;
+								texture.height = img.height;
+								resolve(img);
+							}
+							img.onerror = (e)=>{
+								console.error("Failed to load texture: ",e);
+								reject(e);
+							}
 						}
 					});
 					image.loader = promise;
