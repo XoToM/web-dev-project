@@ -1,8 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-GB">
 	<head>
-		<script src="twgl/twgl-full.js"></script> <!--  minimal WebGL helper library (TWGL) from https://twgljs.org/  -->
-		<script src="webgl-debug.js"></script>
+		<title>Simple 3D Engine</title>
+		<meta name="title" content="Simple 3D Engine">
+		<meta name="description" content="A simple 3D engine made with WebGL 2 which allows you to view your gltf models. ">
+		<meta name="keywords" content="3d, 3D, 3d engine, 3D Engine, simple, simple 3D Engine, WebGL 2">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="language" content="English">
+		<meta name="author" content="Dawid Kawka">
+
+		<link rel="stylesheet" href="./styles.css">
+		<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
+		<link rel="manifest" href="./icons/site.webmanifest">
+
+		<script src="twgl/twgl-full.min.js"></script> <!--  minimal WebGL helper library (TWGL) from https://twgljs.org/  . This is the minimized version, full version has an annoying warning and is bigger in size-->
+		<!--<script src="webgl-debug.js"></script>--><!--	WebGL Debugging library which I used during development	-->
 
 		<!--	Code needed for the game engine	-->
 		<script src="engine/object3d.js"></script>
@@ -14,8 +30,8 @@
 
 		<!--	Program Code	-->
 		<script src="game/camera.js" defer></script>
-		<script src="overlay.js" defer></script>
-		<script src="project-loader.js" defer></script>
+		<script src="game/overlay.js" defer></script>
+		<script src="game/project-loader.js" defer></script>
 		<script src="game/file-drag-drop.js" defer></script>
 
 
@@ -36,8 +52,10 @@
 			Camera Position:<pre> <span id="posx"></span> <span id="posy"></span> <span id="posz"></span></pre>
 			Camera Rotation:<pre> <span id="rotx"></span> <span id="roty"></span> <span id="rotz"></span></pre>
 		</div>
+		<!--	List of windows	-->
 		<div class="draggables" id="draggables_container">
 			<details id="light_manager"  class="window" open>
+				<!--	Light manager window	-->
 				<summary>Light Manager</summary>
 				<div class="content">
 					<h3>Directional Light</h3>
@@ -48,33 +66,41 @@
 			</details>
 			<details id="object_window_manager" class="window" open>
 				<summary>Object Manager</summary>
+				<!--	Object manager window	-->
 				<div class="content">
 					<div id="object_windows"></div>
 				</div>
 			</details>
 			<details id="navigator" class="window" open>
+				<!--	Navigator window	-->
 				<summary>Navigator</summary>
 				<nav class="content">
 					<h1>How to use</h1>
 					<span>
-						Click anywhere on the scene behind this window to start controlling the camera. <nobr>Press ESC to exit the camera.</nobr><br/>
-						Windows can be dragged around and minimized. You can also press the <b>X</b> button <nobr>(if it's present)</nobr> to close the window.<br/>
-						If you can't find a specific object window or if the object window is closed, you can use the object manager window to highlight and re-open it.<br/>
-						You can also drag and drop gltf files onto the page to load and open them. This lets you see your models in 3d!<br/>
-						When loading custom gltf files make sure they are exported as non binary gltf embed files, as loading binary gltf files is not currently supported.
+						<p>
+							Click anywhere on the scene behind this window to start controlling the camera. Use WSAD keys to move forward, backward, left and right. Use Left Shift to move down and space to move up. You can slow down your movements by pressing the left Alt key. When CapsLock is enabled the camera will move twice as fast as it normally would. <nobr>Press ESC to exit the camera.</nobr>
+						</p>
+						<p>
+							Windows can be dragged around and minimized. You can also press the <b>X</b> button <nobr>(if it's present)</nobr> to close the window.<br/>
+							If you can't find a specific object window or if the object window is closed, you can use the object manager window to highlight and re-open it.<br/>
+						</p>
+						<p>
+							You can also drag and drop gltf files onto the page to load and open them. This lets you see your models in 3d!<br/>
+							When loading custom gltf files make sure they are exported as non binary gltf embed files, as loading binary gltf files is not currently supported.
+						</p>
 					</span>
 
 					<h1>Example Scenes</h1>
 					<div id="project-selector">
 						<a href="">
 							<div>
-								<img src="\3d-engine\game\scene-scripts\thumbnails\blank.png">
+								<img src="\3d-engine\game\scene-scripts\thumbnails\blank.webp" alt="Thumbnail image of a blank scene">
 								<h2>Blank Scene</h2>
 							</div>
 						</a>
 						<a href="#full-showcase">
 							<div>
-								<img src="\3d-engine\game\scene-scripts\thumbnails\full-showcase.png">
+								<img src="\3d-engine\game\scene-scripts\thumbnails\full-showcase.webp" alt="Thumbnail image of the showcase scene">
 								<h2>Feature showcase</h2>
 							</div>
 						</a>

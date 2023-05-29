@@ -1,14 +1,15 @@
-document.querySelector(".overlay").style.display = "none";
+document.querySelector(".overlay").style.display = "none";	//	Hide the position overlay if no project is selected. It will contain garbage text
 
 
-
-async function loadProject(project){
+async function loadProject(project){	//	Load project script from link
 	if(!project) return;
 	let promise = new Promise((accept,reject)=>{
 		try{
-			let script = document.createElement("script");
+			let script = document.createElement("script");	//	Create and add the script to DOM and wait for it to load
 			project = project.substring(1);
+
 			script.onerror = (e)=>{
+				alert("Could not load the project.");
 				console.error("Error while loading project: ", e);
 				reject();
 			};
@@ -32,7 +33,6 @@ async function loadProject(project){
 		let links = document.querySelectorAll("#project-selector a");
 
 		for(let i=0;i<links.length;i++){
-			console.log(links[i]);
 			links[i].onclick = async (e)=>{
 				if(links[i].hash) {
 					location.hash = links[i].hash;
