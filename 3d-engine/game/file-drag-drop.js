@@ -11,7 +11,7 @@ function onFileDragStart(event){
 		current_drag_object = event.target;
 
 		drag_overlay.style.opacity = 100;	//	Show the file drop overlay
-		drag_overlay.style.zIndex = 100;
+		drag_overlay.style.zIndex = 100 + __focusCounter;
 	}
 }
 function onFileDragEnd(event){
