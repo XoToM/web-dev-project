@@ -178,21 +178,21 @@ function loadHex(hex_id, data, defaultAddrPadding){		//	Function for generating 
 		for(let i = 0; i < toAppend.length; i++) hex.highlights.push(toAppend[i]);
 	}
 
-	data.highlight = function(start, count, style){	//	Apply highlight to the indicated data cells. style is the name of the css class to apply
+	data.highlight = function(index, count, style){	//	Apply highlight to the indicated data cells. style is the name of the css class to apply
 		if(typeof count == "string"){
 			style = count;
 			count = 1;
 		}
-		let h = [start, count, style];
+		let h = [index, count, style];
 		hex.highlights.push(h);
 		applyHighlight(h);
 	};
-	data.unhighlight = function(start, count, style){	//	Remove highlight from the indicated data cells
+	data.unhighlight = function(index, count, style){	//	Remove highlight from the indicated data cells
 		if(typeof count == "string"){
 			style = count;
 			count = 1;
 		}
-		for(let i = start; i < start + count; i++){
+		for(let i = index; i < index + count; i++){
 			removeHighlightCell(i, style);
 		}
 	}

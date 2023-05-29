@@ -38,6 +38,7 @@ main {
 	padding: 0px 5%;
 	gap: 3em;
 	margin-bottom: 2em;
+	flex-grow: 1;
 }
 article {
 	margin-top: 0.5em;
@@ -59,7 +60,7 @@ aside {
 aside a div {
 	display: flex;
 	flex-direction: column;
-	
+
 }
 aside a {
 	color: white;
@@ -107,4 +108,52 @@ header {
 }
 .applink h3 {
 	margin: 0.25em;
+}
+article h3 {
+	margin-bottom: 0px;
+}
+code {
+	display: inline-block;
+	background-color: lightgray;
+	padding: 0.1em 0.25em;
+	border-radius: 0.25em;
+}
+@media (max-device-width: 400px) {
+	body {
+		font-size: larger;
+	}
+}
+@media (max-device-width: 1024px) {
+	main {
+		flex-direction: column-reverse;
+		padding: 0px;
+		overflow-x: hidden;
+		margin-bottom: 0px;
+	}
+	article {
+		padding: 1em;
+	}
+	aside {
+		display: flex;
+		flex-direction: column;
+		padding: 1em 2em 4em 2em ;
+		margin: -2em;
+		border-radius: 0px;
+		min-width: 100dvw;
+		justify-content: center;
+		text-align: left;
+	}
+	.applink, aside>div, aside>h2{
+		width: fit-content;
+		max-width: 90dvw;
+	}
+	aside>* {
+		margin-left: 1em;
+	}
+	aside>div{
+		margin-left: 0px;
+	}
+	aside h2 {
+		display: inline;
+	}
 }

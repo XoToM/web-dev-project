@@ -52,7 +52,7 @@
 					</a>
 				</div>
 				<div>
-					<a href="3d-engine/index.html#full-showcase" class="applink">
+					<a href="3d_help.html" class="applink">
 						<h3>3d Engine documentation</h3>
 					</a>
 				</div>
@@ -88,8 +88,33 @@
 					<li>Incrementing numbers - 256 bytes of unique data in increasing order generated with javascript.</li>
 					<li>Prime numbers - Same as <em>Incrementing numbers</em>, but javascript also highlights prime numbers.</li>
 					<li>Changing numbers - 256 zero bytes. Javascript sets a random byte to a random value every 0.5 seconds.</li>
-					<li>NBT Data (<a href="https://raw.github.com/Dav1dde/nbd/master/test/hello_world.nbt">test.nbt</a>) - A test file in the NBT data format. The NBT data format is a binary data format developed by Mojang for their game <a href="https://minecraft.net/">Minecraft</a>. Find out more <a href="https://wiki.vg/NBT" title="NBT format documentation">here</a> or <a href="https://minecraft.fandom.com/wiki/NBT_format" title="Description of the NBT format on minecraft wiki">here</a>.</li>
+					<li>NBT Data (<a href="https://raw.github.com/Dav1dde/nbd/master/test/hello_world.nbt">test.nbt</a>) - A test file in the NBT data format. The NBT data format is a binary data format developed by Mojang for their game <a href="https://minecraft.net/">Minecraft</a>. Find out more <a href="https://wiki.vg/NBT" title="NBT format documentation">on wiki.vg</a> or <a href="https://minecraft.fandom.com/wiki/NBT_format" title="Description of the NBT format on minecraft wiki">on Minecraft Wiki</a>.</li>
 					<li>This page (*) - Source code of the hex viewer website. The hex viewer will interpret the text as bytes and display them.</li>
+				</ul>
+
+				<h2>Console commands</h2>
+				<p>
+					The hex viewer stores all of the currently displayed data in the <code>hex</code> object. The <code>hex</code> object works just like a any other javascript array, and all the rendering is done through it. This means that the <code>hex</code> object has extra properties and methods which give you access to the hex viewer's extra functionality.
+				</p>
+				<h3>highlight</h3>
+				<p>
+					<code>hex.highlight(index [, count], style)</code><br/>
+					This method is used for highlighting pieces of data. It will add the CSS class given in the <code>style</code> parameter to the cell at <code>index</code>. If <code>count</code> is specified it will apply this class to <code>count</code> cells starting at <code>index</code>.
+				</p>
+				<h3>un-highlight</h3>
+				<p>
+					<code>hex.unhighlight(index [, count], style)</code><br/>
+					This method is used for removing the highlighting from pieces of data. It will remove the CSS class given in the <code>style</code> parameter to the cell at <code>index</code>. If <code>count</code> is specified it will remove this class from <code>count</code> cells starting at <code>index</code>.
+				</p>
+
+				<h3>CSS classes</h3>
+				<p>
+					Here is a list of provided CSS classes and colors you can highlight your data with:
+				</p>
+				<ul>
+					<li><code>red-highlight</code> - #FF0000 red at 75% opacity</li>
+					<li><code>green-highlight</code> - #00FF00 green at 75% opacity</li>
+					<li><code>blue-highlight</code> - #0000FF blue at 75% opacity</li>
 				</ul>
 			</article>
 		</main>

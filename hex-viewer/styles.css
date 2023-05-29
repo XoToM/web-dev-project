@@ -149,3 +149,9 @@ header h2 {
 .red-highlight {
 	background-color: rgba(255, 0, 0, 0.75) !important;
 }
+.green-highlight {
+	background-color: rgba(0, 255, 0, 0.75) !important;
+}
+.blue-highlight {
+	background-color: rgba(0, 0, 255, 0.75) !important;
+}
