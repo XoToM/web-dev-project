@@ -1,24 +1,23 @@
-let __focusCounter = 1;
+let __focusCounter = 1;	//	Set up global variables
 let windowAutoHide = true;
 
-function addWindow(elem){
+function addWindow(elem){		//	Set up the window to allow the user to drag it around. Also sets up extra features like closing windows.
 	let header = elem.querySelector(":scope>summary,:scope>.header");
 
 	let mouseX, mouseY;
 	let moved = 0;
 	let last = true;
 
-	function onClick(e){
+	function onClick(e){	//	OnClick event handler for the window header
 		bringFront();
 		if(moved > 0){
 			e.preventDefault();
 			elem.open = last;
 			return false;
 		}
-		//bringFront();
 	}
 
-	function onDragStart(e){
+	function onDragStart(e){	//	OnDragStart event handler for the window header
 		bringFront();
 		document.onmousemove = onDrag;
 		document.onmouseup = onDragEnd;
@@ -30,7 +29,7 @@ function addWindow(elem){
 
 		e.preventDefault();
 	}
-	function onDrag(e){
+	function onDrag(e){		//	OnDrag event handler for the window header
 		let ny = (e.clientY - mouseY);
 		let nx = (e.clientX - mouseX);
 		moved += Math.abs(nx) + Math.abs(ny);
@@ -40,7 +39,7 @@ function addWindow(elem){
 		mouseY = e.clientY;
 		e.preventDefault();
 	}
-	function onDragEnd(e){
+	function onDragEnd(e){		//	OnDragEnd event handler for the window header
 		document.onmouseup = null;
 		document.onmousemove = null;
 		if(moved > 0){
@@ -48,29 +47,26 @@ function addWindow(elem){
 			elem.open = last;
 		}
 	}
-	function bringFront(){		//	Bring to front breaks minimizing windows
-		//let parent = elem.parentNode;
-		//parent.removeChild(elem);
-		//parent.appendChild(elem);
+	function bringFront(){		//	Function which moves the window to be in front of all other windows
 		if(__focusCounter !== elem.style.zIndex) {
 			__focusCounter++;
 			elem.style.zIndex = __focusCounter;
 		}
 	}
 	elem.bringToFront = bringFront;
-	elem.showWindow = ()=>{
+	elem.showWindow = ()=>{		//	Show window if closed. 
 		elem.hidden = false;
 	};
 	elem.hideWindow = ()=>{
-		elem.hidden = "until-found";
+		elem.hidden = "until-found";	//	Not supported on firefox and defaults to true
 	};
-	elem.showcaseWindow = ()=>{
+	elem.showcaseWindow = ()=>{		//	Highlight the window and make it flash to bring it to the user's attention
 		elem.open = true;
 		elem.showWindow();
 		elem.bringToFront();
 
 
-		for(let child of elem.children){
+		for(let child of elem.children){	//	Play flashing animation if its not playing already
 			child.style.animation = "showcase-flash 0.5s ease-in-out";
 			child.addEventListener("animationend", (event)=>{
 				if(event.animationName === "showcase-flash") child.style.animation = "";
@@ -78,7 +74,7 @@ function addWindow(elem){
 		}
 	};
 
-	let close = header.querySelector(".close_window_button");
+	let close = header.querySelector(".close_window_button");	//	Set up the close button if its present
 	if(close){
 		close.addEventListener("click", elem.hideWindow);
 	}
@@ -90,35 +86,34 @@ function addWindow(elem){
 }
 
 	//	New scope because these are only needed for initialization
-	let meshId = 0;
 	let objId = 0;
 	let lightId = 0;
-	const object_property_descriptor_template = document.getElementById("object_property_descriptor_template").content.children[0];
+	const object_property_descriptor_template = document.getElementById("object_property_descriptor_template").content.children[0];	//	Set up the needed object templates once so we don't have to look them up every time we add a property
 	const array_property_descriptor_template = document.getElementById("array_property_descriptor_template").content.children[0];
 	const object_descriptor_template = document.getElementById("object_descriptor_template").content.children[0];
 	const vector_descriptor_template = document.getElementById("v3_descriptor_template").content.children[0];
 	const single_descriptor_template = document.getElementById("single_descriptor_template").content.children[0];
-	const null_descriptor_template = document.getElementById("null_descriptor_template").content.children[0];
+	const null_descriptor_template = document.getElementById("null_descriptor_template").content.children[0];	//	Optional
 
 	let proxy_map = new Map();
 
-	function generateDescriptor(obj, container, propData, reset){	//	Assumes container is controlled by this function alone
+	function generateDescriptor(obj, container, propData, reset){	//	Links the properties of an object to html elements. Assumes the container element is controlled by this function alone
 		propData ||= {};
 		let proxy, prop_map, redo;
 		let proxy_data = proxy_map.get(obj);
-		if(proxy_data && !reset){
+		if(proxy_data && !reset){		//	Check if the object already has a proxy assigned
 			[prop_map, redo, _] = proxy_data;
 			proxy = obj;
 		}else{
 			prop_map = new Map();	//	key: name,  value: onUpdate()
 
-			for(let [prop_name, prop_value] of Object.entries(obj)){
+			for(let [prop_name, prop_value] of Object.entries(obj)){	//	Generate DOM elements for every property
 				if(prop_name.startsWith("_")) continue;
 				let onUpdate;
 				let skip = false;
 				let node;
-				switch(typeof(prop_value)){
-					case "number":
+				switch(typeof(prop_value)){	//	Set up a differet DOM element depending on the type of this property
+					case "number":	//	Set up a numeric input and link it to this property through the proxy and events
 						{
 							node = single_descriptor_template.cloneNode(true);
 							let inp = node.querySelector("input");
@@ -144,7 +139,7 @@ function addWindow(elem){
 							inp.addEventListener("change", changeListener, { passive:true });
 						}
 						break;
-					case "string":
+					case "string":	//	Set up a text input and link it to this property through the proxy and events
 						{
 							node = single_descriptor_template.cloneNode(true);
 							let inp = node.querySelector("input");
@@ -165,7 +160,7 @@ function addWindow(elem){
 							inp.addEventListener("change", changeListener, { passive:true });
 						}
 						break;
-					case "boolean":
+					case "boolean":	//	Set up a checkbox and link it to this property through the proxy and events
 						{
 							node = single_descriptor_template.cloneNode(true);
 							let inp = node.querySelector("input");
@@ -186,12 +181,12 @@ function addWindow(elem){
 							inp.addEventListener("change", changeListener, { passive:true });
 						}
 						break;
-					case "function":
+					case "function":	//	if the property is a function we skip it. Functions cannot be rendered as DOM elements
 						skip = true;
 						break;
 					default:
-						if(prop_value === null){
-							skip=true;break; //	Toggle rendering of null properties
+						if(prop_value === null){	//	If the propertyis null render it (optional, currently disabled through comments)
+							skip=true;break; //	Comment/Uncomment this line to Enable/Disable rendering of null properties. I'm gonna leave it as disabld because it makes the ui a bit less cluttered
 							node = null_descriptor_template.cloneNode(true);
 							if(propData[prop_name] && propData[prop_name].name){
 								node.querySelector(".property_name").innerText = propData[prop_name].name;
@@ -200,8 +195,8 @@ function addWindow(elem){
 							}
 							break;
 						}
-						if(prop_value instanceof Float32Array && prop_value.length === 3){
-							onUpdate = ()=>{
+						if(prop_value instanceof Float32Array && prop_value.length === 3){	//	Set up the needed DOM elements for rendering vectors. These are a bit more compelex as object store them as Float32Array objects and we need 3 separate numeric inputs to display them. This means that when onUpdate fires we need to rebuild the entire vector display from scratch
+							onUpdate = ()=>{	//	OnUpdate only fires when the property is changed, not when a property of a property is changed. This means that we need a separate proxy to detect changes to vectors
 								let vector_proxy_handler = prop_value["__proxyHandler"] || {};
 								let originalObject = prop_value["__originalObject"];
 								if(originalObject){
@@ -213,7 +208,7 @@ function addWindow(elem){
 								node = vector_descriptor_template.cloneNode(true);
 								let inputs = node.querySelectorAll("input");
 
-								if(propData[prop_name] && propData[prop_name].name){
+								if(propData[prop_name] && propData[prop_name].name){		//	Set up the property name
 									node.querySelector(".property_name").innerText = propData[prop_name].name;
 								}else{
 									node.querySelector(".property_name").innerText = prop_name;
@@ -223,8 +218,8 @@ function addWindow(elem){
 								inputs[1].valueAsNumber = +obj[prop_name][1];
 								inputs[2].valueAsNumber = +obj[prop_name][2];
 
-								
-								vector_proxy_handler.set = (o,n,v) => {
+
+								vector_proxy_handler.set = (o,n,v) => {	//	Set up the proxy to detect changes to the vector
 										o[n] = v;
 										switch(n) {
 											case "0":
@@ -240,7 +235,7 @@ function addWindow(elem){
 										return true;
 									};
 								
-								vector_proxy_handler.get = (o,n)=>{
+								vector_proxy_handler.get = (o,n)=>{	//	Set up fake properties in case we need to access the vector directly, or if we need to modify the proxy handler
 										switch(n){
 											case "__originalObject":
 												return o;
@@ -250,12 +245,12 @@ function addWindow(elem){
 												return o[n];
 										};
 									};
-								let vector_proxy = new Proxy(obj[prop_name], vector_proxy_handler);
+								let vector_proxy = new Proxy(obj[prop_name], vector_proxy_handler);	//	Generate the proxy
 								
 									
 								let prop_data = propData[prop_name] || {};
 
-								for(let i=0; i<3; i++){
+								for(let i=0; i<3; i++){	//	Set up each of the numeric inputs, and detect if they change so we can update the object
 									let inp = inputs[i];
 									let changeListener = (event)=>{
 										let val = event.target.valueAsNumber;
@@ -268,7 +263,7 @@ function addWindow(elem){
 								}
 								obj[prop_name] = vector_proxy;
 								
-								if(lastNode){
+								if(lastNode){	//	If we are only updating this property we should replace the existing DOM node instead of adding a new one at the end. It would be very annoying to use a UI which constantly rearranges itself
 									lastNode.replaceWith(node);
 								}
 							};
@@ -279,14 +274,14 @@ function addWindow(elem){
 				}
 				if(skip) continue;
 				if(onUpdate) {
-					prop_map.set(prop_name, onUpdate);
+					prop_map.set(prop_name, onUpdate);	//	If the property defined an onUpdate method we should call it once to initialize everything
 					onUpdate();
 				}
 				container.appendChild(node);
 			}
 
 
-			let handler = {
+			let handler = {	//	Set up a proxy to listen for changes to the javascript object
 				set: (o, name, val)=>{
 					let old = o[name];
 					o[name] = val;
@@ -302,17 +297,17 @@ function addWindow(elem){
 			};
 			proxy = new Proxy(obj, handler);
 		}
-		redo = ()=>{
+		redo = ()=>{	//	Used for rebuilding the entire object display from scratch. Usually used when something big changes
 			while(container.firstChild){
 				container.removeChild(container.lastChild);
 			}
 			generateDescriptor(proxy, container, propData, true);
 		};
-		proxy_map.set(proxy, [prop_map, redo, container]);
+		proxy_map.set(proxy, [prop_map, redo, container]);	//	Register the object
 		return proxy;
 	}
 
-	function cleanProxyMaps(){
+	function cleanProxyMaps(){	//	Detect unused objects and windows and remove them so they can be garbage collected by the browser
 		let toClean = [];
 		for(let [proxy, [prop_map, redo, container]] of Object.entries(proxy_map)){
 			if(!document.contains(container)){
@@ -324,48 +319,49 @@ function addWindow(elem){
 		}
 	}
 
-	let windows = document.querySelectorAll(".window");
+
+
+	let windows = document.querySelectorAll(".window");	//	Register all windows defined in index.html
 	for(let i=0; i<windows.length; i++){
 		addWindow(windows[i]);
 	}
 
-	setInterval(cleanProxyMaps, 5000);
+	setInterval(cleanProxyMaps, 5000);	//	Set up the removal of unused windows
 
-	//let oc = document.getElementById("object_children");
-	//_globalScene.name = "Scene Parent";
-	//_globalScene = generateDescriptor(_globalScene, oc, {name:{onUpdate:(p,n)=>}});
-	const object_window_template = document.getElementById("object_window_template").content.children[0];
+	const object_window_template = document.getElementById("object_window_template").content.children[0];	//	Initialize windows for all objects in the scene as well as the object manager window
 	const draggables_container = document.getElementById("draggables_container");
 
-	
 	const manager_button_template = document.getElementById("object_window_button_template").content.children[0];
 	let window_button_map = new Map();
 	const object_window_manager = document.getElementById("object_windows");
 
 
 	let object_window_map = new Map();
-	let object_window_update_handler = ()=>{
+	let object_window_update_handler = ()=>{	//	Set up methods for detecting new objects being added to the scene and removing them from the scene
 		let toChange = [];
-		for(let i=0; i<_globalScene.children.length; i++){
+		for(let i=0; i<_globalScene.children.length; i++){	//	Check for new objects
 			let child = _globalScene.children[i];
 
 			if(!object_window_map.has(child)){
 				toChange.push(i);
 			}
 		}
-		for(let index of toChange){
+		for(let index of toChange){	//	Set up new windows if needed
 			let child = _globalScene.children[index];
 			let window = object_window_template.cloneNode(true);
 			let title = window.querySelector(".object_name");
 			let window_button = manager_button_template.cloneNode(true);
 			let button_title = window_button.querySelector(".object_name");
+			let object_type_icon = "";
+
 
 			let oc = window.querySelector(".object_children");
 
 			if(!child.name){
 				if(child instanceof LightSource3D){
 					child.name = "Light "+(lightId++);
-					//console.log(child);
+				}else{
+					child.name = "Object "+(objId++);
 				}
 			}
 			let propertyData = {
@@ -376,39 +372,55 @@ function addWindow(elem){
 					}
 				}
 			};
-			if(child instanceof LightSource3D){
-				propertyData.lightColor = { min:0, max:1, step: 0.01, name: "Light Color"};
-				propertyData.ambientInfluence = { min:0, max:1, step: 0.01, name: "Ambient Light Influence"};
-				propertyData.specularInfluence = { min:0, max:1, step: 0.01, name: "Specular Light Influence"};
-				propertyData.diffuseInfluence = { min:0, max:1, step: 0.01, name: "Diffuse Light Influence"};
+			if(child instanceof Object3){
+				propertyData.renderVisibility = { name: "visible"};
+			}
+			if(child instanceof LightSource3D){	//	Set up icons for objects and special rules for handling their properties if they have any which need extra support
+				propertyData.lightColor = { min:0, max:1, step: 0.01, name: "light color"};
+				propertyData.ambientInfluence = { min:0, max:1, step: 0.01, name: "ambient light influence"};
+				propertyData.specularInfluence = { min:0, max:1, step: 0.01, name: "specular light influence"};
+				propertyData.diffuseInfluence = { min:0, max:1, step: 0.01, name: "diffuse light influence"};
+				object_type_icon = "\uD83D\uDCA1";
+			}else if(child instanceof Mesh3d){
+				object_type_icon = "\u25A6";
+			}else if(child === Camera){
+				object_type_icon = "\uD83D\uDCF7";
+			}else if(child instanceof Object3){
+				object_type_icon = "\u26BD";
+			}else{
+				object_type_icon = "\u2753";
 			}
 
-			let obj = generateDescriptor(child, oc, propertyData);
+			let obj = generateDescriptor(child, oc, propertyData);	//	Render the object's properties
 			_globalScene.children[index] = obj;
 
-			draggables_container.appendChild(window);
+			draggables_container.appendChild(window);	//	Render object
 			object_window_map.set(obj, window);
-			window.querySelector(".delete_object_button").addEventListener("click", ()=>{
+
+			window.querySelector(".delete_object_button").addEventListener("click", ()=>{	//	Set up the delete object button
 				let index = _globalScene.children.indexOf(obj);
-				console.log(index, obj, child);
 				if(index === -1) return;
 				_globalScene.removeChild(obj);
 				window.remove();
 				window_button.remove();
 			});
-			window_button.addEventListener("click", ()=>{
+			window_button.addEventListener("click", ()=>{	//	If the window's corresponding button in the object manager has been pressed show it to the user
 				window.showcaseWindow();
 			});
 
 			window_button_map.set(addWindow(window), window_button);
-			object_window_manager.appendChild(window_button);
 			window.managedObject3 = obj;
+			window.querySelector(".object_type_icon").innerText = object_type_icon;
+			window_button.querySelector(".object_type_icon").innerText = object_type_icon;
 
-			if(windowAutoHide){
+
+			if(windowAutoHide){	//	If auto hide is enabled start the window in the closed state
 				window.hideWindow();
 			}
+			object_window_manager.appendChild(window_button);
 		}
-		toChange.length = 0;
+
+		toChange.length = 0;	//	Set up the removal of unused windows
 
 		for(let [obj, window] of object_window_map.entries()){
 			if(!_globalScene.children.includes(obj)){
@@ -424,13 +436,14 @@ function addWindow(elem){
 			window.remove();
 		}
 	};
+
 	Camera.name = "Camera";
-	_globalScene.children.push(Camera);		//	The camera object is not a normal object and cannot be removed. Since its not a part of the scene trying to remove it from the scene
+	_globalScene.children.push(Camera);		//	The camera object is not a normal object and cannot be removed, however it should be processed by the window system as if it was one. Since its not a part of the scene trying to remove it from the scene would crash the program. For this reason we add it to the scene for the initialization and remove it as soon as we are done setting everything up
 	object_window_update_handler();
 	Camera = _globalScene.children.pop();
-	let cam_window = object_window_map.get(Camera);
+
+	let cam_window = object_window_map.get(Camera);	//	Remove the delete object button from the camera window
 	cam_window.querySelector(".delete_object_button").remove();
 
-	setInterval(object_window_update_handler, 250);
+	setInterval(object_window_update_handler, 250);		//	Remove windows and objects which are not getting rendered anymore from the system to save memory and cpu usage. Perform this cleanup every 250 milliseconds
 
-	//oc.appendChild(createObject3Descriptor(_globalScene));

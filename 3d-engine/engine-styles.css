@@ -40,7 +40,7 @@ canvas {
 
 .window {
 	position: absolute;
-	width: fit-content;
+	min-width: fit-content;
 }
 .window>*{
 	padding: 0.2em 0.5em;
@@ -75,7 +75,7 @@ canvas {
 	float: right;
 	margin-left: 2em;
 	font-weight: bolder;
-	padding: 0em 0.1em;
+	padding: 0.1em 0.4em;
 	color: white;
 	background: rgba(44, 44, 44, 0.75);
 	border-radius: 0.3em;
@@ -87,7 +87,7 @@ canvas {
 	border-style: solid;
 	border-width: 1px 1px 1px 3px;
 	padding: 0.1em 0.2em 0.1em 0.3em;
-	
+
 	display: flex;
 	flex-direction: column;
 	gap: 0.1em;
@@ -107,6 +107,8 @@ canvas {
 }
 .property_display span:first-child {
 	flex-grow: 1;
+	min-width: max-content;
+	width: 100%;
 }
 .property_display>input {
 	width: fit-content;
@@ -122,4 +124,19 @@ canvas {
 	border-color: red;
 	border-radius: 0.2em;
 
+}
+.object_type_icon {
+	margin-right: 1em;
+}
+#object_windows {
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+	max-height: 50vh;
+	min-width: max-content;
+}
+#object_windows>*{
+	min-width: max-content;
+	width: 100%;
+	text-align: left;
 }

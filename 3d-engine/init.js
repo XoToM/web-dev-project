@@ -2,11 +2,9 @@ const canvas = document.getElementById("canvasgl");
 
 
 const m4 = twgl.m4;
-function logGLCall(functionName, args) {
-	//console.log("gl." + functionName + "(" + WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");	//	Log WebGL calls
-}
-let gl = canvas.getContext("webgl2", {antialias:false});	//	Firefox seems to get better results with antialiasing disabled. When its enabled there might be some gaps between faces
-//let gl = WebGLDebugUtils.makeDebugContext(canvas.getContext("webgl2"), undefined, logGLCall);	//	Get a WebGL 2 context. WebGL 1 is very limited, and most devices support it by now anyway
+let gl = canvas.getContext("webgl2", {antialias:false});
+//	Get a WebGL 2 context. WebGL 1 is very limited, and most devices support it by now anyway
+	//	Both Chrome and Firefox seem to get better results with antialiasing disabled. When its enabled there might be some gaps between faces
 
 if(!gl){
 	alert("WebGl 2 is not supported in your browser, which means you cannot open this page properly. This page will now close.");
@@ -28,7 +26,7 @@ _globalScene = _assetManager.correctObject(_globalScene);
 
 let waiting = true;
 
-let Camera = {position:[0,0,-5], rotation:[0,0,0], renderDistance:200, specularEnable:true, ambientEnable:true, diffuseEnable:true};
+let Camera = {position:new Float32Array([0,0,-5]), rotation:new Float32Array([0,0,0]), renderDistance:200};	//	Set up the camera object
 
 gl.enable(gl.DEPTH_TEST);
 
@@ -53,7 +51,6 @@ function _render(time) {
 	m4.rotateY(cameraMatrix, Camera.rotation[1] * (Math.PI/180), cameraMatrix);
 	m4.rotateZ(cameraMatrix, Camera.rotation[2] * (Math.PI/180), cameraMatrix);
 	m4.translate(cameraMatrix, [-Camera.position[0], -Camera.position[1], Camera.position[2]], cameraMatrix);
-	//m4.scale(cameraMatrix, [1,1,camera.renderDistance], cameraMatrix);
 
 	const standardUniforms = {
 		u_resolution: [gl.canvas.width, gl.canvas.height],

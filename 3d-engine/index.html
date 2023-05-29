@@ -38,6 +38,13 @@
 			<details id="navigator" class="window" open>
 				<summary>Navigator</summary>
 				<nav class="content">
+					<h1>How to use</h1>
+					<span>
+						Click anywhere on the scene behind this window to start controlling the camera. <nobr>Press ESC to exit the camera.</nobr><br/>
+						Windows can be dragged around and minimized. You can also press the <b>X</b> button <nobr>(if it's present)</nobr> to close the window.<br/>
+						If you can't find a specific object window or if the object window is closed, you can use the object manager window to highlight and re-open it.<br/>
+					</span>
+
 					<h1>Example Scenes</h1>
 					<div id="project-selector">
 						<a href="">
@@ -105,17 +112,21 @@
 		<template id="object_window_template">
 			<details class="window">
 				<summary>
-					<span class="object_name">Test Element</span>
-					<button class="close_window_button">&#128469</button>
+					<span class="object_type_icon"></span><span class="object_name">Test Element</span>
+					<button class="close_window_button">X</button>
 				</summary>
 				<div class="content">
 					<div class="object_children object_descriptor"></div>
+					<div class="animation_descriptor"></div>
 					<button class="delete_object_button">Delete Object</button>
 				</div>
 			</details>
 		</template>
 		<template id="object_window_button_template">
-			<button class="object_window_button"><span class="object_name"></span></button>
+			<button class="object_window_button"><span class="object_type_icon"></span><span class="object_name"></span></button>
+		</template>
+		<template id="animation_template">
+			<button class="object_window_button"><span class="object_type_icon"></span><span class="object_name"></span></button>
 		</template>
 	</body>
 </html>

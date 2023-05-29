@@ -513,7 +513,6 @@ class AssetManager{
 
 			asset.ready = true;
 			asset.loader = null;
-			console.log(gltf);
 		});
 
 		this.modelMap.set(id, asset);
@@ -521,7 +520,6 @@ class AssetManager{
 	}
 	async generateObject3(asset_id, scene, params){
 		let asset = this.modelMap.get(asset_id);
-		//console.log(structuredClone(asset));
 		if(asset.loader) await asset.loader;
 		return asset.generateObject3(scene, params);
 	}

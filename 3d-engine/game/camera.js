@@ -30,7 +30,8 @@ document.addEventListener("pointerlockchange", ()=>{
 let _KeyboardStatus = {};
 document.addEventListener("keydown", (e)=>{
 	if(document.pointerLockElement === canvas){
-		_KeyboardStatus[e.code] = true;
+		if(e.code !== "CapsLock") _KeyboardStatus[e.code] = true;
+		_KeyboardStatus.CapsLock = e.getModifierState && e.getModifierState( 'CapsLock' );
 		e.preventDefault();
 	}
 	//_KeyboardStatus[e.code] = true;
@@ -39,7 +40,7 @@ document.addEventListener("keydown", (e)=>{
 });
 document.addEventListener("keyup", (e)=>{
 	if(document.pointerLockElement === canvas){
-		_KeyboardStatus[e.code] = false;
+		if(e.code !== "CapsLock") _KeyboardStatus[e.code] = false;
 		e.preventDefault();
 	}
 });
@@ -66,7 +67,7 @@ function NoclipCamera(deltaTime){					//	Simple Noclip Camera
 		if(_KeyboardStatus.ShiftLeft) {
 			cameraMovement[1] -= CAMERA_MOVEMENT_SPEED;
 		}
-		if(_KeyboardStatus.ControlLeft){
+		if(_KeyboardStatus.CapsLock){
 			v3.mulScalar(cameraMovement, 5, cameraMovement);
 		}
 		if(_KeyboardStatus.AltLeft){

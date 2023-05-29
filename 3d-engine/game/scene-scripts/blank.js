@@ -46,6 +46,8 @@ _assetManager.loadModel(
 	let point_light1_cube = await _assetManager.generateObject3("light_cube");	//	Give the point light a cube so it is easier to see where it is
 	point_light1.appendChild(point_light1_cube);
 	_globalScene.appendChild(point_light1);
+
+	setTimeout(()=>{windowAutoHide = false;}, 500);	//	Stop objects from hiding automatically
 })();
 
 function render(deltaTime){	//	Function to be called every time a frame is rendered

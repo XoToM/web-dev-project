@@ -1,10 +1,19 @@
 nav {
 	color: white;
+
 }
 #navigator {
 	top: 25%;
 	left: 25%;
 }
+nav>h1 {
+	font-size: x-large;
+	margin-bottom: 0.1em;
+}
+nav>*:first-child {
+	margin-top: 0.2em;
+}
+
 #project-selector {
 	display: flex;
 	flex-direction: row;
