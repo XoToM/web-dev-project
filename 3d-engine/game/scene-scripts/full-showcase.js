@@ -1,10 +1,11 @@
+//	Load shaders
 const default_vert_shader = getFileSync("/3d-engine/shaders/vert.glsl");
 const default_shader_program = twgl.createProgramInfo(gl, [default_vert_shader, getFileSync("/3d-engine/shaders/frag.glsl")]);
 const ground_shader_program = twgl.createProgramInfo(gl, [default_vert_shader, getFileSync("/3d-engine/shaders/ground_frag.glsl")]);
 const light_cube_shader_program = twgl.createProgramInfo(gl, [default_vert_shader, getFileSync("/3d-engine/shaders/light_cube_frag.glsl")]);
 
 {
-
+	//	Load needed assets
 	_assetManager.loadModel(
 		"/3d-engine/game/models/light_cube.gltf",
 		"light_cube",
@@ -98,9 +99,9 @@ const light_cube_shader_program = twgl.createProgramInfo(gl, [default_vert_shade
 }
 let cube1,cube2,cube3,blender_monkey,player;
 (async ()=>{
-	await _assetManager.finishedLoading();
+	await _assetManager.finishedLoading();	//	Wait for loading to finish
 
-	let plane = new Object3();
+	let plane = new Object3();	//	Create the ground plane
 
 	let ground = await _assetManager.generateObject3("ground_plane");
 	ground.scaling[0] = 50;
@@ -111,7 +112,7 @@ let cube1,cube2,cube3,blender_monkey,player;
 
 	_globalScene.appendChild(plane);
 
-	cube1_spin = await _assetManager.generateObject3("default_cube");
+	cube1_spin = await _assetManager.generateObject3("default_cube");	//	Create all objects
 	cube1_spain = await _assetManager.generateObject3("default_cube");
 	cube1_pain = await _assetManager.generateObject3("default_cube");
 	cube1_mlinear = await _assetManager.generateObject3("default_cube");
@@ -125,7 +126,7 @@ let cube1,cube2,cube3,blender_monkey,player;
 	blender_monkey = await _assetManager.generateObject3("blender_monkey");
 	player = await _assetManager.generateObject3("player");
 
-	blender_monkey.position[0] += 5;
+	blender_monkey.position[0] += 5;	//	Set up the objects in the scene
 	blender_monkey.position[2] -= 7.5;
 	cube1_spain.position[2] -= 3;
 	cube1_pain.position[2] -= 6;
@@ -139,10 +140,8 @@ let cube1,cube2,cube3,blender_monkey,player;
 	test4.position[0] += 6;
 	player.position[0] -= 3;
 
-	blender_monkey.name = "Suzanne";
 
-
-	let plight1 = new PointLight3D({position:[2,-2,-8]});
+	let plight1 = new PointLight3D({position:[2,-2,-8]});	//	Create lights
 	let pldc1 = await _assetManager.generateObject3("light_cube");
 	plight1.appendChild(pldc1);
 	_globalScene.appendChild(plight1);
@@ -153,18 +152,18 @@ let cube1,cube2,cube3,blender_monkey,player;
 	plight2.appendChild(pldc2);
 	_globalScene.appendChild(plight2);
 
-	for(let i=0; i<32; i++){
+	for(let i=0; i<32; i++){							//	Create a line of 32 lights
 		let plight3 = new PointLight3D({position:[-4,-4,4+(i*-3)]});
 		let col = [Math.random(),Math.random(),Math.random()];
 		let max = Math.max(...col);
 		plight3.lightColor = new Float32Array([col[0]/max, col[1]/max, col[2]/max]);
-		//console.log(plight3.lightColor);
+
 		let pldc3 = await _assetManager.generateObject3("light_cube");
 		plight3.appendChild(pldc3);
 		_globalScene.appendChild(plight3);
 	}
 
-	_globalScene.appendChild(cube1_spin);
+	_globalScene.appendChild(cube1_spin);	//	Add the objects to the scene
 	_globalScene.appendChild(cube1_spain);
 	_globalScene.appendChild(cube1_pain);
 	_globalScene.appendChild(cube1_mlinear);
@@ -183,29 +182,31 @@ let cube1,cube2,cube3,blender_monkey,player;
 
 	setTimeout(()=>{windowAutoHide = false;}, 500);	//	Stop objects from hiding automatically
 
-	let animate_manual = ()=>{
+	let animate_manual = ()=>{		//	This script animates the monkey's spin. This is here to show that the properties of objects can be manipulated easily through code as well as through the editor
 		let promise = new Promise((resolve)=>{
 			blender_monkey.rotation[1] = ((blender_monkey.rotation[1]+180.5)%360) - 180;
-			setTimeout(resolve,25);
+			setTimeout(resolve, 25);
 		});
 		promise.then(animate_manual);
 	}
 
+	//	Play animations for objects
 	cube1_spin.animationPlayer.play("cube.spin", {mode:ANIMATION_MODES.LOOP});
 	cube1_spain.animationPlayer.play("cube.spain", {mode:ANIMATION_MODES.LOOP});
 	cube1_pain.animationPlayer.play("cube.pain", {mode:ANIMATION_MODES.LOOP});
 	cube1_mlinear.animationPlayer.play("cube.move.linear", {mode:ANIMATION_MODES.LOOP});
 	cube1_mstep.animationPlayer.play("cube.move.step", {mode:ANIMATION_MODES.LOOP});
 
-	test1.playAnimation("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
-	test2.animationPlayer.play("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
-	test3.animationPlayer.play("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
-	test4.animationPlayer.play("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
-	animate_manual();
+	test1.playAnimation("animation.model.bend", {mode:ANIMATION_MODES.LOOP});	//	object.playAnimation() is shorthand for object.animationPlayer.play()
+	test2.playAnimation("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
+	test3.playAnimation("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
+	test4.playAnimation("animation.model.bend", {mode:ANIMATION_MODES.LOOP});
 
-	player.playAnimation("player.flop", {mode:ANIMATION_MODES.PLAY_CLAMP});
+	player.playAnimation("player.flop", {mode:ANIMATION_MODES.PLAY_CLAMP});	//	The blocky player character plays its animation once and sticks to the position indicated by its last keyframe
+
+	animate_manual();	//	Animate th monkey
 })();
 
-function render(deltaTime){
+function render(deltaTime){	//	This function gets called every frame and is used for controlling the camera. If you were making a full game you could put extra scripts here like physics calculations
 	NoclipCamera(deltaTime);
 }

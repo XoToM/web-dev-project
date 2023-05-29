@@ -126,8 +126,10 @@
 					<button class="close_window_button">X</button>
 				</summary>
 				<div class="content">
+					<h3 class="property_label">Properties</h3>
 					<div class="object_children object_descriptor"></div>
-					<div class="animation_descriptor"></div>
+					<h3 class="animation_label">Animations</h3>
+					<div class="animation_descriptors"></div>
 					<button class="delete_object_button">Delete Object</button>
 				</div>
 			</details>
@@ -136,7 +138,15 @@
 			<button class="object_window_button"><span class="object_type_icon"></span><span class="object_name"></span></button>
 		</template>
 		<template id="animation_template">
-			<button class="object_window_button"><span class="object_type_icon"></span><span class="object_name"></span></button>
+			<div>
+				<span class="animation_name"></span>
+				<select class="animation_mode">
+					<option value="0">Play once</option>
+					<option value="1">Loop</option>
+					<option value="2">Pause on last keyframe</option>
+				</select>
+				<button class="play_pause_button"></button>
+			</div>
 		</template>
 	</body>
 </html>

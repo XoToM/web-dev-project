@@ -80,9 +80,12 @@ class AnimationPlayer{
 		__ANIMATION_PLAYERS.add(this);
 		let anim = this.animationMap.get(name);
 		if(anim){
+			let a;
 			let promise = new Promise((resolve,reject)=>{
-				this.playing.push({name,mode, onFinish:resolve, onStop:reject, time: (timestamp || 0), playTime:anim.playTime, playing:true, animation:this.animationMap.get(name)});
+				a = {name,mode, onFinish:resolve, onStop:resolve, time: (timestamp || 0), playTime:anim.playTime, playing:true, animation:this.animationMap.get(name)};
+				this.playing.push(a);
 			});
+			a.promise = promise;
 			return promise;
 		}
 		return null;
@@ -113,7 +116,7 @@ class AnimationPlayer{
 			if(this.playing.length !== 0 && our !== last){
 				this.playing[index] = last;
 			}
-			if(our.onStop) our.onStop(our);
+			if(our.onStop) try{our.onStop(our);}catch(e){console.error(e)}
 
 			if(this.playing.length === 0) __ANIMATION_PLAYERS.delete(this);
 			return our;

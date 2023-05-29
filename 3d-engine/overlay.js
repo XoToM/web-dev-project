@@ -332,6 +332,7 @@ function addWindow(elem){		//	Set up the window to allow the user to drag it aro
 	const draggables_container = document.getElementById("draggables_container");
 
 	const manager_button_template = document.getElementById("object_window_button_template").content.children[0];
+	const animation_template = document.getElementById("animation_template").content.children[0];
 	let window_button_map = new Map();
 	const object_window_manager = document.getElementById("object_windows");
 
@@ -393,6 +394,78 @@ function addWindow(elem){		//	Set up the window to allow the user to drag it aro
 
 			let obj = generateDescriptor(child, oc, propertyData);	//	Render the object's properties
 			_globalScene.children[index] = obj;
+
+
+			if(!obj.animationPlayer){	//	Set up the list of animations
+				window.querySelector(".animation_label").remove();
+				window.querySelector(".animation_descriptors").remove();
+			}else{
+				let animator = obj.animationPlayer;
+				let animationContainer = window.querySelector(".animation_descriptors");
+				let animButtonMap = new Map();
+				let playing = (animator.__originalObject && animator.__originalObject.playing) || animator.playing;
+
+				let handler = {	//	Handler for detecting when animations start/stop. Used for updating the play/pause button
+					get: (o,p)=>{
+						if(p === "__originalObject") return playing;
+						return o[p];
+					},
+					set: (o,p,v)=>{
+						let last = o[p];
+						o[p] = v;
+
+						if(!Number.isNaN(+p)){
+							let name = (v && v.name) || (last && last.name);
+							btn = animButtonMap.get(name);
+							btn = btn.querySelector(".play_pause_button");
+							if(animator.playing.find(e=>(e.name === name))){
+								btn.innerText = "\u23F5";
+							}else{
+								btn.innerText = "\u23F9";
+							}
+						}
+						if(p === "length"){
+							for(let [aname, btn] of animButtonMap.entries()){
+								btn = btn.querySelector(".play_pause_button");
+								if(animator.playing.find(e=>(e.name === aname))){
+									btn.innerText = "\u23F9";
+								}else{
+									btn.innerText = "\u23F5";
+								}
+							}
+						}
+
+						return true;
+					}
+				};
+				let proxy = new Proxy(playing, handler);
+				obj.animationPlayer.playing = proxy;
+
+				for(let aname of animator.animationMap.keys()){
+					let abutton = animation_template.cloneNode(true);
+					let btn = abutton.querySelector(".play_pause_button");
+
+					abutton.querySelector(".animation_name").innerText = aname;
+					if(animator.playing.find(e=>(e.name === aname))){
+						btn.innerText = "\u23F9";
+					}else{
+						btn.innerText = "\u23F5";
+					}
+					btn.onclick = ()=>{	//	Play/pause animations
+						if(animator.playing.find(e=>(e.name === aname))){
+							animator.stop(aname);
+							btn.innerText = "\u23F5";
+						}else{
+							let mode = abutton.querySelector(".animation_mode");
+							animator.play(aname, {mode:+mode.value});
+							btn.innerText = "\u23F9";
+						}
+					};
+
+					animButtonMap.set(aname, abutton);
+					animationContainer.appendChild(abutton);
+				}
+			}
 
 			draggables_container.appendChild(window);	//	Render object
 			object_window_map.set(obj, window);

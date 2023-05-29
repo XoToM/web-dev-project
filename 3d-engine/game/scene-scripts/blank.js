@@ -50,6 +50,6 @@ _assetManager.loadModel(
 	setTimeout(()=>{windowAutoHide = false;}, 500);	//	Stop objects from hiding automatically
 })();
 
-function render(deltaTime){	//	Function to be called every time a frame is rendered
+function render(deltaTime){	//	This function gets called every frame and is used for controlling the camera. If you were making a full game you could put extra scripts here like physics calculations
 	NoclipCamera(deltaTime);	//	Handles camera input and movement
 }
