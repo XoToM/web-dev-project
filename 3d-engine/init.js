@@ -33,7 +33,7 @@ gl.enable(gl.DEPTH_TEST);
 
 let _LastRenderTime = 0;
 
-function _render(time) {
+function _render(time) {	//	Set up the rendering loop
 	twgl.resizeCanvasToDisplaySize(gl.canvas);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 	let deltaTime = (time - _LastRenderTime)/1000;

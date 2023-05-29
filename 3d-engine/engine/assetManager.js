@@ -38,7 +38,7 @@ class AssetManager{
 		return proxy;
 	}
 
-	loadModel(path, id, shader, shaderInfo){
+	loadModel(path, id, shader, shaderInfo){	//	path can either represent a path to a file or a parsed gltf object
 		if(this.modelMap.has(id)) {
 			let e = async()=>this.modelMap.get(id);
 			return e();
@@ -46,9 +46,8 @@ class AssetManager{
 		let asset = new ModelAsset(this);
 
 		asset.path = path;
-		asset.loader = fetch(path).then(async (gltf)=>{
+		let loader = async (gltf)=>{
 			let gl = this.gl;
-			gltf = await gltf.json();
 			let toLoad = [];
 
 			for(let accessor of gltf.accessors){
@@ -123,6 +122,7 @@ class AssetManager{
 					continue;
 				}
 				console.error("Image data stored in an unsupported format.");
+				alert("Image data stored in an unsupported format. Model will be loaded without invalid textures.");
 			}
 
 			await Promise.all(toLoad);
@@ -513,7 +513,14 @@ class AssetManager{
 
 			asset.ready = true;
 			asset.loader = null;
-		});
+		};
+
+		if(typeof(path) === "string"){
+			asset.loader = fetch(path).then((gltf)=>gltf.json()).then(loader);
+		}else{
+			asset.loader = loader(path);
+		}
+
 
 		this.modelMap.set(id, asset);
 		return asset.loader.then(()=>asset);

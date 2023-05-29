@@ -16,13 +16,21 @@
 		<script src="game/camera.js" defer></script>
 		<script src="overlay.js" defer></script>
 		<script src="project-loader.js" defer></script>
+		<script src="game/file-drag-drop.js" defer></script>
 
 
 		<link rel="stylesheet" href="engine-styles.css">
 		<link rel="stylesheet" href="styles.css">
 	</head>
 
-	<body>
+	<body ondrop="loadModelFile(event); onFileDragEnd(event)" ondragover="onFileHover(event)" ondragenter="onFileDragStart(event)">
+		<!--	Overlay for when the user drags a file over the page	-->
+		<div id="drag-overlay" ondragleave="onFileDragEnd(event)">
+			<div id="fake-dropzone">
+				<h1>Drop file here to open</h1>
+			</div>
+		</div>
+
 		<canvas id="canvasgl"></canvas>
 		<div class="overlay">
 			Camera Position:<pre> <span id="posx"></span> <span id="posy"></span> <span id="posz"></span></pre>
