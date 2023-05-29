@@ -1,13 +1,13 @@
 //	Load shaders asynchronously
-const default_vert_shader = getFileAsync("/3d-engine/shaders/vert.glsl");
-const default_shader_program = (async ()=>{return twgl.createProgramInfo(gl, [await default_vert_shader, await getFileAsync("/3d-engine/shaders/frag.glsl")]);})();
-const ground_shader_program = (async ()=>{return twgl.createProgramInfo(gl, [await default_vert_shader, await getFileAsync("/3d-engine/shaders/ground_frag.glsl")]);})();
-const light_cube_shader_program = (async ()=>{return twgl.createProgramInfo(gl, [await default_vert_shader, await getFileAsync("/3d-engine/shaders/light_cube_frag.glsl")]);})();
+const default_vert_shader = getFileAsync("./shaders/vert.glsl");
+const default_shader_program = (async ()=>{return twgl.createProgramInfo(gl, [await default_vert_shader, await getFileAsync("./shaders/frag.glsl")]);})();
+const ground_shader_program = (async ()=>{return twgl.createProgramInfo(gl, [await default_vert_shader, await getFileAsync("./shaders/ground_frag.glsl")]);})();
+const light_cube_shader_program = (async ()=>{return twgl.createProgramInfo(gl, [await default_vert_shader, await getFileAsync("./shaders/light_cube_frag.glsl")]);})();
 
 
 //	Load needed assets
 _assetManager.loadModel(
-	"/3d-engine/game/models/ground_plane.gltf",
+	"./game/models/ground_plane.gltf",
 	"ground_plane",
 	ground_shader_program,
 	{
@@ -18,7 +18,7 @@ _assetManager.loadModel(
 	}
 );
 _assetManager.loadModel(
-	"/3d-engine/game/models/light_cube.gltf",
+	"./game/models/light_cube.gltf",
 	"light_cube",
 	light_cube_shader_program,
 	{
