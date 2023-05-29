@@ -123,6 +123,31 @@ class AssetManager{
 					toLoad.push(promise);
 					continue;
 				}
+				if(image.bufferView != undefined){	//	Convert bytes from buffer into a base64 string, then into a data uri, and then load as an img element.
+					let promise = new Promise(async (resolve,reject)=>{
+						let offset = gltf.bufferViews[image.bufferView].byteOffset;
+
+						let buffer = await gltf.buffers[gltf.bufferViews[image.bufferView].buffer].dataReady;
+						let bytes = new Uint8Array(buffer.slice(offset, offset + gltf.bufferViews[image.bufferView].byteLength));
+						let uri = "data:" + image.mimeType + ";base64," + btoa(String.fromCharCode(...bytes));
+
+						let img = new Image();
+						img.src = uri;
+						img.onload = ()=>{
+							texture.data = img;
+							texture.width = img.width;
+							texture.height = img.height;
+							resolve(img);
+						}
+						img.onerror = (e)=>{
+							console.error("Failed to load texture: ",e);
+							reject(e);
+						}
+					});
+					image.loader = promise;
+					toLoad.push(promise);
+					continue;
+				}
 				console.error("Image data stored in an unsupported format.");
 				alert("Image data stored in an unsupported format. Model will be loaded without invalid textures.");
 			}
