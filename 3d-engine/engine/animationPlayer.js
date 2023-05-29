@@ -1,6 +1,6 @@
 const TWO_PI = Math.PI * 2;
-const ANIMATION_MODES = {PLAY_ONCE:0, LOOP:1, PLAY_CLAMP:2};
-const __ANIMATION_HELPERS = {
+const ANIMATION_MODES = {PLAY_ONCE:0, LOOP:1, PLAY_CLAMP:2};	//	Animation Modes
+const __ANIMATION_HELPERS = {	//	Helper methods for calculating interpolations
 	lerp: (ax,ay,az, bx,by,bz, t)=>{
 		let rx = (1-t)*ax + t*bx;
 		let ry = (1-t)*ay + t*by;
@@ -29,7 +29,7 @@ const __ANIMATION_HELPERS = {
 
 		return [ax*ratioA+bx*ratioB, ay*ratioA+by*ratioB, az*ratioA+bz*ratioB, aw*ratioA+bw*ratioB];
 	},
-	keyframeBinarySearch: (array, time)=>{
+	keyframeBinarySearch: (array, time)=>{	//	Finds the closest 2 keyframes to the given time
 		let start = 0;
 		let end = array.length-1;
 		if(array[start] >= time){
@@ -73,7 +73,7 @@ class AnimationPlayer{
 		this.animationRoot = obj;
 		this.animationMap = animations;
 	}
-	play(name, params){
+	play(name, params){	//	Play animation
 		if(!params) params = {};
 		let timestamp = params.timestamp || 0;
 		let mode = params.mode || ANIMATION_MODES.PLAY_ONCE;
@@ -81,7 +81,7 @@ class AnimationPlayer{
 		let anim = this.animationMap.get(name);
 		if(anim){
 			let a;
-			let promise = new Promise((resolve,reject)=>{
+			let promise = new Promise((resolve,_)=>{
 				a = {name,mode, onFinish:resolve, onStop:resolve, time: (timestamp || 0), playTime:anim.playTime, playing:true, animation:this.animationMap.get(name)};
 				this.playing.push(a);
 			});
@@ -90,10 +90,10 @@ class AnimationPlayer{
 		}
 		return null;
 	}
-	stop(anim){
+	stop(anim){	//	Pause animation
 		if(anim){
 			let index = -1;
-			if(typeof(anim) == "string"){
+			if(typeof(anim) == "string"){	//	If anim is string look up animation based on its name instead of animation data reference
 				for(let i=0; i<this.playing.length; i++){
 					if(this.playing[i].name == anim){
 						index = i;
@@ -110,7 +110,7 @@ class AnimationPlayer{
 			}
 			if(index === -1) return null;
 
-			let our = this.playing[index];
+			let our = this.playing[index];	//	Remove animation from the list of playing animations without using array.splice.	Array.splice is slower because it tries to preserve the order of the array, while this method simply removes the object and replaces it with the last object in the list
 			let last = this.playing.pop();
 
 			if(this.playing.length !== 0 && our !== last){
@@ -134,24 +134,24 @@ class AnimationPlayer{
 			return played;
 		}
 	}
-	stepAnimations(deltaTime){
+	stepAnimations(deltaTime){	//	Calculate how far the animations have progressed since last frame
 		//deltaTime = 0.001;	//	Fixed delta time for animation debugging
 		let toCleanUp = [];
 		for(let anim of this.playing){
 			if(!anim.playing) continue;
 			anim.time += deltaTime;
 
-			if(anim.playTime <= anim.time){
+			if(anim.playTime <= anim.time){	//	What to do when animations finish
 				switch(anim.mode){
-					case ANIMATION_MODES.PLAY_ONCE:
+					case ANIMATION_MODES.PLAY_ONCE:	//	Remove animation fro the list of playing animations
 						toCleanUp.push(anim);
 						anim.onStop = null;
 						anim.onFinish(anim.time - anim.playTime);
 						break;
-					case ANIMATION_MODES.LOOP:
+					case ANIMATION_MODES.LOOP:	//	restart animation
 						anim.time -= anim.playTime;
 						break;
-					case ANIMATION_MODES.PLAY_CLAMP:
+					case ANIMATION_MODES.PLAY_CLAMP:	//	Pause animation on last frame
 						anim.playing = false;
 						anim.time = anim.playTime;
 						break;
@@ -159,10 +159,10 @@ class AnimationPlayer{
 			}
 		}
 		while(toCleanUp.length){
-			this.stop(toCleanUp.pop());
+			this.stop(toCleanUp.pop());	//	Remove animations which finished playing
 		}
 	}
-	calculateAdjust(obj, adjustment){
+	calculateAdjust(obj, adjustment){	//	Calculate the adjustments for the transform matrix
 		adjustment = adjustment || {};
 
 
@@ -171,7 +171,7 @@ class AnimationPlayer{
 			let channels = animation.get(obj);
 			if(!channels) continue;
 
-			if(channels.position){
+			if(channels.position){	//	Calculate the interpolation for the object's position
 				adjustment.position = adjustment.position || [0,0,0];
 				let [kfa, kfb] = __ANIMATION_HELPERS.keyframeBinarySearch(channels.position.keyframes, animationInfo.time);
 
@@ -206,7 +206,7 @@ class AnimationPlayer{
 					adjustment.position[2] += a[2];
 				}
 			}
-			if(channels.scale){
+			if(channels.scale){		//	Calculate the interpolation for the object's scale
 				adjustment.scale = adjustment.scale || [1,1,1];
 				let [kfa, kfb] = __ANIMATION_HELPERS.keyframeBinarySearch(channels.scale.keyframes, animationInfo.time);
 
@@ -241,7 +241,7 @@ class AnimationPlayer{
 					adjustment.scale[2] *= a[2];
 				}
 			}
-			if(channels.rotation){
+			if(channels.rotation){	//	Calculate the interpolation for the object's rotation. You cannot use lerp with rotation, so we need to work in quaternions
 				adjustment.rotation = adjustment.rotation || m4.identity();
 				let [kfa, kfb] = __ANIMATION_HELPERS.keyframeBinarySearch(channels.rotation.keyframes, animationInfo.time);
 

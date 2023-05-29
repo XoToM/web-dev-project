@@ -1,9 +1,8 @@
 //	Load shaders
-const default_vert_shader = getFileSync("/3d-engine/shaders/vert.glsl");
-const default_shader_program = twgl.createProgramInfo(gl, [default_vert_shader, getFileSync("/3d-engine/shaders/frag.glsl")]);
-const ground_shader_program = twgl.createProgramInfo(gl, [default_vert_shader, getFileSync("/3d-engine/shaders/ground_frag.glsl")]);
-const light_cube_shader_program = twgl.createProgramInfo(gl, [default_vert_shader, getFileSync("/3d-engine/shaders/light_cube_frag.glsl")]);
-
+const default_vert_shader = getFileAsync("/3d-engine/shaders/vert.glsl");
+const default_shader_program = (async ()=>{return twgl.createProgramInfo(gl, [await default_vert_shader, await getFileAsync("/3d-engine/shaders/frag.glsl")]);})();
+const ground_shader_program = (async ()=>{return twgl.createProgramInfo(gl, [await default_vert_shader, await getFileAsync("/3d-engine/shaders/ground_frag.glsl")]);})();
+const light_cube_shader_program = (async ()=>{return twgl.createProgramInfo(gl, [await default_vert_shader, await getFileAsync("/3d-engine/shaders/light_cube_frag.glsl")]);})();
 {
 	//	Load needed assets
 	_assetManager.loadModel(
@@ -77,7 +76,9 @@ const light_cube_shader_program = twgl.createProgramInfo(gl, [default_vert_shade
 			colorSampler: "u_colorTexture",
 		}
 	);
-	_assetManager.loadModel("/3d-engine/game/models/player.gltf","player", default_shader_program, {
+	_assetManager.loadModel("/3d-engine/game/models/player.gltf",
+	"player",
+	default_shader_program, {
 		position: "a_position",
 		normal: "a_normal",
 		colorTexCoord: "a_colorTexCoord",

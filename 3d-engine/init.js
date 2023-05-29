@@ -6,17 +6,25 @@ let gl = canvas.getContext("webgl2", {antialias:false});
 //	Get a WebGL 2 context. WebGL 1 is very limited, and most devices support it by now anyway
 	//	Both Chrome and Firefox seem to get better results with antialiasing disabled. When its enabled there might be some gaps between faces
 
-if(!gl){
+if(!gl){	//	Display a message to the user if they can't run this project
 	alert("WebGl 2 is not supported in your browser, which means you cannot open this page properly. This page will now close.");
 	window.stop();
 	window.close();
 }
 
-var getFileSync = function(url) {
+var getFileAsync = function(url) {	//	Load files asynchronously
 	var req = new XMLHttpRequest();
-	req.open("GET", url, false);
-	req.send(null);
-	return (req.status == 200) ? req.responseText : null;
+	let promise = new Promise((resolve, reject)=>{
+		req.open("GET", url, true);
+		req.onload = (d)=>{
+			let result = (d.target.status == 200) ? d.target.responseText : null;
+			//console.log(d,d.target.status,d.target.responseText, result);
+			resolve(result);
+		};
+		req.onerror = (e)=>{console.error(e);reject();};
+		req.send(null);
+	});
+	return promise;
 };
 
 new AssetManager(gl);

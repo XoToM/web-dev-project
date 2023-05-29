@@ -47,6 +47,8 @@ class AssetManager{
 
 		asset.path = path;
 		let loader = async (gltf)=>{
+			await shader;
+			shader = await shader;
 			let gl = this.gl;
 			let toLoad = [];
 
