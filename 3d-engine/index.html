@@ -37,6 +37,15 @@
 			Camera Rotation:<pre> <span id="rotx"></span> <span id="roty"></span> <span id="rotz"></span></pre>
 		</div>
 		<div class="draggables" id="draggables_container">
+			<details id="light_manager"  class="window" open>
+				<summary>Light Manager</summary>
+				<div class="content">
+					<h3>Directional Light</h3>
+					<div id="dir_light_descriptor" class="object_descriptor"></div>
+					<label for="lightCubes">Render Light Cubes</label><input type="checkbox" id="lightCubes" checked="true"><br/>
+					<button onclick="onCreateNewPointLight()">Create New PointLight</button>
+				</div>
+			</details>
 			<details id="object_window_manager" class="window" open>
 				<summary>Object Manager</summary>
 				<div class="content">

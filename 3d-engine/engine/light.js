@@ -38,9 +38,13 @@ class SpotLight3D extends LightSource3D {
 }
 const __LightManager = {
 	directional:{
-		power: v3.create(0.1, 0.7, 0.7),	//	influence of the different light components (after calculation they are multiplied by this). The order is x:ambient, y:diffuse, z:specular
+		ambientInfluence: 0.1,
+		diffuseInfluence: 0.7,
+		specularInfluence: 0.7,
+		//power: v3.create(0.1, 0.7, 0.7),
 		direction: v3.create(0,0.5,0.5),
-		lightColor: v3.create(1,1,1)
+		lightColor: v3.create(1,1,1),
 	},
+	lightRenderChildren: true,
 	point:[]
 };

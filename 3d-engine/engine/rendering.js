@@ -37,8 +37,10 @@ function performRender(cameraMatrix,cameraPos, standardUniforms){
 					list.push([matrix, primitive, normalMatrix]);
 				}
 			}
-			for(let child of object3.children) {
-				calculateTransforms(child, matrix);
+			if(!(object3 instanceof LightSource3D) || __LightManager.lightRenderChildren){
+				for(let child of object3.children) {
+					calculateTransforms(child, matrix);
+				}
 			}
 			if(object3.animationPlayer) animators.pop();
 		}
@@ -54,9 +56,9 @@ function performRender(cameraMatrix,cameraPos, standardUniforms){
 	}
 
 	let lightUniforms = {
-		u_dlight_color: __LightManager.directional.lightColor,
-		u_dlight_direction: __LightManager.directional.direction,
-		u_dlight_power: __LightManager.directional.power,
+		u_dlight_color: v3.copy(__LightManager.directional.lightColor),
+		u_dlight_direction: v3.copy(__LightManager.directional.direction),
+		u_dlight_power: v3.create(__LightManager.directional.ambientInfluence, __LightManager.directional.diffuseInfluence, __LightManager.directional.specularInfluence),//	influence of the different light components (after calculation they are multiplied by this). The order is x:ambient, y:diffuse, z:specular
 		u_pointLights: pointLights_ready,
 		u_pointLightCount: pointLights_ready.length
 	};

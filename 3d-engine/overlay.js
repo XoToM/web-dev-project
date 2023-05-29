@@ -336,7 +336,6 @@ function addWindow(elem){		//	Set up the window to allow the user to drag it aro
 	let window_button_map = new Map();
 	const object_window_manager = document.getElementById("object_windows");
 
-
 	let object_window_map = new Map();
 	let object_window_update_handler = ()=>{	//	Set up methods for detecting new objects being added to the scene and removing them from the scene
 		let toChange = [];
@@ -508,6 +507,7 @@ function addWindow(elem){		//	Set up the window to allow the user to drag it aro
 			object_window_map.delete(obj);
 			window.remove();
 		}
+
 	};
 
 	Camera.name = "Camera";
@@ -517,6 +517,29 @@ function addWindow(elem){		//	Set up the window to allow the user to drag it aro
 
 	let cam_window = object_window_map.get(Camera);	//	Remove the delete object button from the camera window
 	cam_window.querySelector(".delete_object_button").remove();
+
+	//	Populate light manager
+	{
+		let propData = {};
+		propData.lightColor = { min:0, max:1, step: 0.01, name: "light color"};
+		propData.ambientInfluence = { min:0, max:1, step: 0.01, name: "ambient light influence"};
+		propData.specularInfluence = { min:0, max:1, step: 0.01, name: "specular light influence"};
+		propData.diffuseInfluence = { min:0, max:1, step: 0.01, name: "diffuse light influence"};
+		propData.direction = { step: 0.01 };
+		__LightManager.directional = generateDescriptor(__LightManager.directional, document.getElementById("dir_light_descriptor"), propData);
+	}
+	async function onCreateNewPointLight(){
+		let point_light = new PointLight3D();		//	Add a point light to the scene
+		let point_light_cube = await _assetManager.generateObject3("light_cube");	//	Give the point light a cube so it is easier to see where it is
+		point_light.appendChild(point_light_cube);
+		_globalScene.appendChild(point_light);
+	}
+	
+	document.getElementById("lightCubes").onchange = ()=>{
+		__LightManager.lightRenderChildren = document.getElementById("lightCubes").checked;
+	};
+	__LightManager.lightRenderChildren = document.getElementById("lightCubes").checked;
+
 
 	setInterval(object_window_update_handler, 250);		//	Remove windows and objects which are not getting rendered anymore from the system to save memory and cpu usage. Perform this cleanup every 250 milliseconds
 
