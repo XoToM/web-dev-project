@@ -4,7 +4,7 @@
 		<title>Web Dev Project</title>
 		<meta name="title" content="3D Engine documentation">
 		<meta name="description" content="Documentation for the 3D Rendering Engine">
-		<meta name="keywords" content="Dawid Kawka, Web Dev, Web Dev Project, Assessment, ">
+		<meta name="keywords" content="Dawid Kawka, Web Dev, Web Dev Project, Assessment, 3d, 3D, 3d engine, 3D Engine, simple, simple 3D Engine, WebGL 2">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="robots" content="index, follow">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -70,21 +70,28 @@
 
 				<h2>How to use it</h2>
 				<p>
-					My 3D engine draws things in the following order: 3D graphics, overlay with basic informations, and windows for managing the 3D environment.<br/>
-					
+					First of all, although it can render its graphics correctly, my 3D engine does not work correctly on mobile devices. It doesn't provide any controls or on-screen joysticks for mobiles, meaning that moving the camera is not possible. <br/>
+					My 3D engine draws things in the following order: 3D graphics, overlay with basic informations, and windows for managing the 3D environment.
+					Windows are on top of everything, meaning that to be able to access the 3D graphics you might have to minimize and move some of them out of the way.<br/>
+					To start controlling the camera in the 3D environment you have to click on the 3D scene. My engine will automatically hide the mouse pointer and give you control over the camera.<br/>
+					Pressing the WSAD keys will move the camera forward, backward, left and right respectively. Use Left Shift to move down and space to move up. You can slow down your movements by pressing the left Alt key. When CapsLock is enabled the camera will move twice as fast as it normally would. To exit the camera press the ESC key.
+				</p>
+				<p>
+					You can also control the 3D environment through the windows my engine provides. Through these windows you can scale, rotate and move all loaded 3D objects and control all lights. Windows also give you the ability to delete objects, play animations, and change the engine's settings.<br/>
+					This means that there could be a lot of windows on screen at any given time, which is why I added the ability to move them and minimize them.<br/>
+					Windows which control objects can also be closed and later reopened through the Object Manager window.
+					You can change which example scene is loaded as well as exit the engine through the Navigator window.
+					The last important window is the Light manager. It gives you the ability to create new point lights, as well as control the directional light.<br/>
+					You can also upload your own 3D models and display them in the 3D engine. First make sure the model is exported as a .gltf file, and that it has all the needed textures and models embedded in it. To upload the file, simply drag and drop it over the webpage. When you drag the file over the website it will display an overlay show you that it is recognising the file as a file. Do make sure you are dragging the file from your file manager and not a different program, othrewise your web browser might not see it properly.
+					Alternatively you can use the Browse button at the bottom of the Object Manager window to upload files. Once uploaded, the model will be displayed at position 0, 0, 0.
 				</p>
 
 				<h2>Available Examples</h2>
 				<p>
-					Hex viewer has several example files provided with it, and some examples also have extra functionality provided through javascript. Here is a list of all examples:
+					My 3D engine only provides you with only two example projects.<br/>
+					The first one is simply blank. At startup it will only contain a plane with a grid on it, and one point light. Its intended to be used mostly for viewing your 3D models.<br/>
+					The second project is more interesting. It contains several test 3D models I added to showcase the engine's capabilities. It contains several animated and textured cubes (yes, the teleporting one works as intended), sets of boxes which play a bending animation (each of these has a different structure inside of the .gltf file), Suzanne (the monkey head) which is animated through javascript only, the ground, and 25 point lights with random colours.<br/> 
 				</p>
-				<ul>
-					<li>Incrementing numbers - 256 bytes of unique data in increasing order generated with javascript.</li>
-					<li>Prime numbers - Same as <em>Incrementing numbers</em>, but javascript also highlights prime numbers.</li>
-					<li>Changing numbers - 256 zero bytes. Javascript sets a random byte to a random value every 0.5 seconds.</li>
-					<li>NBT Data (<a href="https://raw.github.com/Dav1dde/nbd/master/test/hello_world.nbt">test.nbt</a>) - A test file in the NBT data format. The NBT data format is a binary data format developed by Mojang for their game <a href="https://minecraft.net/">Minecraft</a>. Find out more <a href="https://wiki.vg/NBT" title="NBT format documentation">here</a> or <a href="https://minecraft.fandom.com/wiki/NBT_format" title="Description of the NBT format on minecraft wiki">here</a>.</li>
-					<li>This page (*) - Source code of the hex viewer website. The hex viewer will interpret the text as bytes and display them.</li>
-				</ul>
 			</article>
 		</main>
 	</body>

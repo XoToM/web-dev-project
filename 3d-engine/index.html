@@ -71,12 +71,20 @@
 				<!--	Object manager window	-->
 				<div class="content">
 					<div id="object_windows"></div>
+					<label for="file-select">Upload 3D model</label>
+					<input id="file-select" type="file" onchange="onFileInputChange(event)">
 				</div>
 			</details>
 			<details id="navigator" class="window" open>
 				<!--	Navigator window	-->
 				<summary>Navigator</summary>
 				<nav class="content">
+					<h1 class="mobile">This page was designed to be used with a mouse and keyboard, and does not work properly on handheld devices.</h1>
+					<a href="/index.html" class="back-to-main mobile">
+						<div>
+							<h2>Back to main page</h2>
+						</div>
+					</a>
 					<details>
 						<summary>
 							<h1>How to use</h1>
@@ -89,7 +97,7 @@
 							If you can't find a specific object window or if the object window is closed, you can use the object manager window to highlight and re-open it.<br/>
 						</p>
 						<p>
-							You can also drag and drop gltf files onto the page to load and open them. This lets you see your models in 3d!<br/>
+							You can also drag and drop gltf files onto the page to load and open them. This lets you see your models in 3d! You can also upload files from the Object Manager window.<br/>
 							When loading custom gltf files make sure they are exported as non binary gltf embed files, as loading binary gltf files is not currently supported.
 						</p>
 					</details>
@@ -110,7 +118,7 @@
 							</div>
 						</a>
 					</div>
-					<a href="/index.html" id="back-to-main">
+					<a href="/index.html" class="back-to-main">
 						<div>
 							<h2>Back to main page</h2>
 						</div>

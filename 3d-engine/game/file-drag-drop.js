@@ -19,15 +19,27 @@ function onFileDragEnd(event){
 	drag_overlay.style.opacity = 0;	//	Hide the file drop overlay
 	drag_overlay.style.zIndex = -100;
 }
+
+async function onFileInputChange(event){
+	if(event.target.files && event.target.files.length){	//	Check if there are any files to be loaded
+		let file = event.target.files[0];	//	Get the first file
+
+		return await loadModeFromFile(file);
+	}
+}
+
 let _loadedFiles = 0;
 //	Load dropped file
 async function loadModelFile(event){
 	event.preventDefault();		//	Prevent the browser from opening the file in this browser tab. This would close the page which we dont want
 
-	console.log(event, event.dataTransfer.files, event.dataTransfer.files.length);
 
 	if(event.dataTransfer.files && event.dataTransfer.files.length){	//	Check if there are any files to be loaded
 		let file = event.dataTransfer.files[0];	//	Get the first file
+		return await loadModeFromFile(file);
+	}
+}
+async function loadModeFromFile(file){
 		let text = await file.text();
 
 		try{
@@ -52,5 +64,4 @@ async function loadModelFile(event){
 			console.error("Error while loading file: ", e);
 			alert("Could not load the given file (invalid file format?)")
 		}
-	}
 }
