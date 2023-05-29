@@ -158,6 +158,9 @@ code {
 		display: inline;
 	}
 }
+a {
+	transition: 0.3s;
+}
 a:hover, a:focus, a:active {
 	filter:brightness(75%);
 }
