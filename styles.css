@@ -89,6 +89,7 @@ header {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	z-index: 5;
 }
 
 .applink {
@@ -156,4 +157,7 @@ code {
 	aside h2 {
 		display: inline;
 	}
+}
+a:hover, a:focus, a:active {
+	filter:brightness(75%);
 }
