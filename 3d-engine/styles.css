@@ -18,7 +18,7 @@ nav>*:first-child {
 	display: flex;
 	flex-direction: row;
 }
-#project-selector>*{
+#project-selector>*, #back-to-main{
 	background-color: rgb(32, 32, 32);
 	display: flex;
 	flex-direction: column;
@@ -73,4 +73,11 @@ nav>*:first-child {
 }
 #fake-dropzone * {
 	margin:auto;
+}
+#back-to-main {
+	margin-right: 2.5em;
+	text-align: center;
+}
+nav summary * {
+	display: inline;
 }

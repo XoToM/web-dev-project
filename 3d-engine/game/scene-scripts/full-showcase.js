@@ -153,8 +153,8 @@ let cube1,cube2,cube3,blender_monkey,player;
 	plight2.appendChild(pldc2);
 	_globalScene.appendChild(plight2);
 
-	for(let i=0; i<32; i++){							//	Create a line of 32 lights
-		let plight3 = new PointLight3D({position:[-4,-4,4+(i*-3)]});
+	for(let i=0; i<24; i++){							//	Create a line of 32 lights
+		let plight3 = new PointLight3D({position:[-4,-4,4+(i*-4)]});
 		let col = [Math.random(),Math.random(),Math.random()];
 		let max = Math.max(...col);
 		plight3.lightColor = new Float32Array([col[0]/max, col[1]/max, col[2]/max]);

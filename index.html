@@ -2,37 +2,34 @@
 <html lang="en-GB">
 	<head>
 		<title>Web Dev Project</title>
+		<meta name="title" content="Dawid Kawka Web Dev Project">
+		<meta name="description" content="Dawid's submission for the Web Dev Project Assessment">
+		<meta name="keywords" content="Dawid Kawka, Web Dev, Web Dev Project, Assessment, University Assessment">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="language" content="English">
+		<meta name="author" content="Dawid Kawka">
 
 		<link rel="stylesheet" href="./styles.css">
+		<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+		<link rel="manifest" href="/icons/site.webmanifest">
 	</head>
 
 	<body>
 		<header>
-			<h1>
-				Web Dev Project
-			</h1>
+			<a href="/index.html">
+				<h1>
+					Web Dev Project
+				</h1>
+			</a>
+			<h2>by Dawid Kawka</h2>
 		</header>
 		<main>
-			<article>
-				<h2>Introdution</h2>
-				<p>
-					Hi, I'm Dawid Kawka, and this set of small projects is my Web Dev Project. This website consists of 2 main pages: the hex viewer and the 3D engine. Each of these smaller projects has basic information on how to use them directly on the page, however I also added 2 smaller pages which describe how to use them in a bit more detail. Below you can find short descriptions of each project.
-				</p>
-				<p>
-					<h2>Hex Viewer</h2>
-					<p>
-						A hex viewer is a program which displays data as hexadecimal numbers.
-						It reads files as bytes, and then displays those bytes to the user as hexadecimal numbers.
-						Hex viewers and hex editors are often used for displaying binary data such as compiled code, as they show a clear image of where each byte is in memory, as well as what value it has.
-					</p>
-					<p>
-						My hex viewer can read bytes from files as well as bytes generated through javascript code, and it will update the page live to reflect those changes as soon as they happen.
-						It also supports highlighting data values, although controlling this functionality is currently not possible through the web interface and has to be done through the javascript console.
-					</p>
-				</p>
-			</article>
 			<aside>
-				<h2>Links</h2>
+				<h2>Project Links</h2>
 				<div>
 					<a href="hex-viewer/index.html" class="applink">
 						<div>
@@ -49,7 +46,61 @@
 						</div>
 					</a>
 				</div>
+				<h2>Documentation Links</h2>
+				<div>
+					<a href="hex_help.html" class="applink">
+						<h3>Hex Viewer documentation</h3>
+					</a>
+				</div>
+				<div>
+					<a href="3d-engine/index.html#full-showcase" class="applink">
+						<h3>3d Engine</h3>
+					</a>
+				</div>
 			</aside>
+			<article>
+				<h2>Introdution</h2>
+				<p>
+					Hi, I'm Dawid Kawka, and this set of small projects is my Web Dev Project. This website consists of 3 main pages: the hex viewer, the 3D engine and this landing page. Each of these smaller projects has basic information on how to use them directly on the page, however I also added 2 smaller pages which describe how to use them in a bit more detail. Below you can find short descriptions of each project.
+				</p>
+					<h2>Hex Viewer</h2>
+					<p>
+						A hex viewer is a program which displays data as hexadecimal numbers.
+						It reads files as bytes, and then displays those bytes to the user as hexadecimal numbers.
+						Hex viewers and hex editors are often used for displaying binary data such as compiled code, as they show a clear image of where each byte is in memory, as well as what value it has.
+					</p>
+					<p>
+						My hex viewer can read bytes from files as well as bytes generated through javascript code, and it will update the page live to reflect those changes as soon as they happen.
+						It also supports highlighting data values, although controlling this functionality is currently not possible through the web interface and has to be done through the javascript console.
+						You can drag and drop your own files into the hex editor (or use the upload button, your choice) to load them and display them as binary data. I do recommend to keep the files well under under 1 megabyte however, as my hex viewer isn't well optimised for large files, and your web browser will likely run out of memory.
+					</p>
+
+					<h2>3D Rendering engine</h2>
+					<p>
+						The second part of my project is my 3D rendering engine written with WebGL 2 and javascript. It was written from scratch, with the only library required for it to work being TWGL.
+						TWGL is a very simple library which provides helper functions for WebGl programming.
+						I mostly used for its math functions, as javascript alone doesn't provide functions for performing the maths required for 3d rendering, however most of these functions are pretty simple to implement (like adding vectors together or multiplying matrices).
+						<br/>
+						<a href="https://twgljs.org/">Find out more about TWGL here</a>
+					</p>
+					<p>
+						My 3D engine can display 3D models in the GLTF file format as well as animate them through bone animations.
+						It can also be easily controlled through javascript code, as it has a fairly simple object oriented API.
+						It does however have some limitations which most modern 3D engines don't have:
+					</p>
+					<ul>
+						<li>Light does not get stopped by objects. This means that objects cannot cast shadows on each other.</li>
+						<li>It can only render up to 17 light sources at a time (1 directional light, 16 point lights). Modern 3D engines often also have this limit, but they can usually render more than this. If more than 16 lights are present my engine will prioritize rendering lights closest to the camera.</li>
+						<li>It uses the Blinn-Phong shading model while GLTF uses the PBR model. In addition to being less accurate, Blinn-Phong is fundamentally incompatible with the PBR model, meaning that my 3D engine cannot properly render GLTF's materials.</li>
+						<li>It cannot do mesh animations. This means that it cannot display more complex animations like bending or twisting objects. Its perfect for displaying Minecraft like animations though.</li>
+						<li>It doesn't have anti-aliasing. This mens that lines and edges of objects which should be straight or smooth will look jagged.</li>
+					</ul>
+					<p>
+						I have also added a set of windows which let you manipulate the objects in the scene, play animations, and change the engine's settings.
+						The windows can be dragged around, minimized and closed.
+						These windows also update in real time, letting you see where the objects are, and how different scripts are modifying them.
+					</p>
+			</article>
 		</main>
 	</body>
 </html>

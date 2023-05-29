@@ -49,8 +49,9 @@
 
 		<canvas id="canvasgl"></canvas>
 		<div class="overlay">
-			Camera Position:<pre> <span id="posx"></span> <span id="posy"></span> <span id="posz"></span></pre>
-			Camera Rotation:<pre> <span id="rotx"></span> <span id="roty"></span> <span id="rotz"></span></pre>
+			FPS: <span id="fps_counter"></span><br/>
+			Camera Position: <span id="posx"></span> <span id="posy"></span> <span id="posz"></span><br/>
+			Camera Rotation: <span id="rotx"></span> <span id="roty"></span> <span id="rotz"></span><br/>
 		</div>
 		<!--	List of windows	-->
 		<div class="draggables" id="draggables_container">
@@ -61,6 +62,7 @@
 					<h3>Directional Light</h3>
 					<div id="dir_light_descriptor" class="object_descriptor"></div>
 					<label for="lightCubes">Render Light Cubes</label><input type="checkbox" id="lightCubes" checked="true"><br/>
+					<label for="lightCubes">Blinn-Phong Shading</label><input type="checkbox" id="blinnPhong" checked="true"><br/>
 					<button onclick="onCreateNewPointLight()">Create New PointLight</button>
 				</div>
 			</details>
@@ -75,8 +77,10 @@
 				<!--	Navigator window	-->
 				<summary>Navigator</summary>
 				<nav class="content">
-					<h1>How to use</h1>
-					<span>
+					<details>
+						<summary>
+							<h1>How to use</h1>
+						</summary>
 						<p>
 							Click anywhere on the scene behind this window to start controlling the camera. Use WSAD keys to move forward, backward, left and right. Use Left Shift to move down and space to move up. You can slow down your movements by pressing the left Alt key. When CapsLock is enabled the camera will move twice as fast as it normally would. <nobr>Press ESC to exit the camera.</nobr>
 						</p>
@@ -88,7 +92,7 @@
 							You can also drag and drop gltf files onto the page to load and open them. This lets you see your models in 3d!<br/>
 							When loading custom gltf files make sure they are exported as non binary gltf embed files, as loading binary gltf files is not currently supported.
 						</p>
-					</span>
+					</details>
 
 					<!--	Project selection.		the href attributes are used to determine which project to open. One of the scripts attached to this page reloads the webpage when these are clicked to ensure that the page loads properly. I used anchors for this because everything links to this page. Only one file really differs between projects, so I decided that its not worth it to have multiple sub-pages for this. Google Lighthouse does't like me using anchors in this way though...	-->
 					<h1>Example Scenes</h1>
@@ -106,6 +110,11 @@
 							</div>
 						</a>
 					</div>
+					<a href="/index.html" id="back-to-main">
+						<div>
+							<h2>Back to main page</h2>
+						</div>
+					</a>
 				</nav>
 			</details>
 		</div>

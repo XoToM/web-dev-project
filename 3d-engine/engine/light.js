@@ -38,13 +38,13 @@ class SpotLight3D extends LightSource3D {
 }
 const __LightManager = {
 	directional:{
-		ambientInfluence: 0.1,
-		diffuseInfluence: 0.7,
-		specularInfluence: 0.7,
-		//power: v3.create(0.1, 0.7, 0.7),
+		ambientInfluence: 0.05,
+		diffuseInfluence: 0.35,
+		specularInfluence: 0.35,
 		direction: v3.create(0,0.5,0.5),
 		lightColor: v3.create(1,1,1),
 	},
 	lightRenderChildren: true,
+	BlinnPhong: true,
 	point:[]
 };

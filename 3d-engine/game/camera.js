@@ -1,5 +1,5 @@
 //	Store the DOM elements for displaying camera's position and rotation
-const [posx,posy,posz, rotx,roty,rotz] = [document.getElementById("posx"), document.getElementById("posy"), document.getElementById("posz"), document.getElementById("rotx"), document.getElementById("roty"), document.getElementById("rotz")];
+const [posx,posy,posz, rotx,roty,rotz,fps_counter] = [document.getElementById("posx"), document.getElementById("posy"), document.getElementById("posz"), document.getElementById("rotx"), document.getElementById("roty"), document.getElementById("rotz"), document.getElementById("fps_counter")];
 
 let MOUSE_SENSITIVITY = 15;	//	Mouse sensitivity	-	These can be changed through console
 let CAMERA_MOVEMENT_SPEED = 5;	//	Default movement speed
@@ -90,4 +90,5 @@ function NoclipCamera(deltaTime){					//	Simple Noclip Camera
 	rotx.innerText = Math.round(Camera.rotation[0]*1000)/1000;
 	roty.innerText = Math.round(Camera.rotation[1]*1000)/1000;
 	rotz.innerText = Math.round(Camera.rotation[2]*1000)/1000;
+	fps_counter.innerText = Math.round(1/deltaTime);
 }

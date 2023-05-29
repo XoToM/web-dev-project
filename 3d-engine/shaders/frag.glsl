@@ -26,6 +26,7 @@ uniform vec3 u_dlight_power;
 
 uniform PointLight u_pointLights[MAX_POINT_LIGHTS];
 uniform int u_pointLightCount;
+uniform bool u_blinn_phong;
 
 
 in vec2 v_colorCoord;
@@ -42,9 +43,16 @@ vec3 calculateDirectional(vec3 normal, vec3 viewDirection){
 	float diffuseDifference = max(dot(normal, lightDir), 0.0);
 	vec3 diffuse = diffuseDifference * u_dlight_color * u_dlight_power.y;
 
-	vec3 reflectDirection = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), u_shininess);
-	vec3 specular = u_dlight_power.z * spec * u_dlight_color;
+	vec3 specular;
+	if(u_blinn_phong){
+		vec3 halfDirection = normalize(lightDir+viewDirection);
+		float spec = pow(max(dot(viewDirection, halfDirection), 0.0), 2.0*u_shininess);
+		specular = u_dlight_power.z * spec * u_dlight_color;
+	}else{
+		vec3 reflectDirection = reflect(-lightDir, normal);
+		float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), u_shininess);
+		specular = u_dlight_power.z * spec * u_dlight_color;
+	}
 
 	return (ambient + diffuse + specular) ;
 }
@@ -59,9 +67,16 @@ vec3 calculatePoint(PointLight light, vec3 normal, vec3 viewDirection){
 	float diffuseDifference = max(dot(normal, lightDir), 0.0);
 	vec3 diffuse = diffuseDifference * light.lightColor.xyz * light.lightPowers.y;
 
-	vec3 reflectDirection = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), u_shininess);
-	vec3 specular = light.lightPowers.z * spec * light.lightColor.xyz;
+	vec3 specular;
+	if(u_blinn_phong){
+		vec3 halfDirection = normalize(lightDir+viewDirection);
+		float spec = pow(max(dot(viewDirection, halfDirection), 0.0), 2.0*u_shininess);
+		specular = u_dlight_power.z * spec * u_dlight_color;
+	}else{
+		vec3 reflectDirection = reflect(-lightDir, normal);
+		float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), u_shininess);
+		specular = light.lightPowers.z * spec * light.lightColor.xyz;
+	}
 
 	ambient *= attenuation;
 	diffuse *= attenuation;

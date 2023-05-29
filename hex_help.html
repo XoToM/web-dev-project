@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+	<head>
+		<title>Web Dev Project</title>
+		<meta name="title" content="Hex viewer documentation">
+		<meta name="description" content="Documentation for the Hex Viewer">
+		<meta name="keywords" content="Dawid Kawka, Web Dev, Web Dev Project, Assessment, ">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="robots" content="index, follow">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="language" content="English">
+		<meta name="author" content="Dawid Kawka">
+
+		<link rel="stylesheet" href="./styles.css">
+		<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+		<link rel="manifest" href="/icons/site.webmanifest">
+	</head>
+	<body>
+		<header>
+			<a href="/index.html">
+				<h1>
+					Web Dev Project - Hex Viewer
+				</h1>
+			</a>
+			<h2>by Dawid Kawka</h2>
+		</header>
+		<main>
+			<aside>
+				<h2>Project Links</h2>
+				<div>
+					<a href="hex-viewer/index.html" class="applink">
+						<div>
+							<img src="hexview.webp" alt="Image of the hex viewer">
+							<h3>Hex Viewer</h3>
+						</div>
+					</a>
+				</div>
+				<div>
+					<a href="3d-engine/index.html#full-showcase" class="applink">
+						<div>
+							<img src="3ddd.webp" alt="Image of the 3d Engine">
+							<h3>3d Engine</h3>
+						</div>
+					</a>
+				</div>
+				<h2>Documentation Links</h2>
+				<div>
+					<a href="hex_help.html" class="applink">
+						<h3>Hex Viewer documentation</h3>
+					</a>
+				</div>
+				<div>
+					<a href="3d-engine/index.html#full-showcase" class="applink">
+						<h3>3d Engine</h3>
+					</a>
+				</div>
+			</aside>
+			<article>
+				<h2>Hex Viewer - What is it?</h2>
+				<p>
+					A hex viewer is a program which displays data as hexadecimal numbers.
+					It reads files as bytes, and then displays those bytes to the user as hexadecimal numbers.
+					Hex viewers and hex editors are often used for displaying binary data such as compiled code, as they show a clear image of where each byte is in memory, as well as what value it has.
+				</p>
+				<p>
+					My hex viewer can read bytes from files as well as bytes generated through javascript code, and it will update the page live to reflect those changes as soon as they happen.
+					It also supports highlighting data values, although controlling this functionality is currently not possible through the web interface and has to be done through the javascript console.
+					You can drag and drop your own files into the hex editor (or use the upload button, your choice) to load them and display them as binary data. I do recommend to keep the files well under under 1 megabyte however, as my hex viewer isn't well optimised for large files, and your web browser will likely run out of memory.
+				</p>
+
+				<h2>How to use it</h2>
+				<p>
+					To use the hex viewer you first need to open a file. You can either choose one of the examples or upload your own.<br/>
+					To upload your own file just drag the file over the browser window and release your mouse button.
+					The hex viewer should display an overlay telling you that you can safely drop the file when you hover a valid file over it.
+					Note that dragging files directly from programs might not always work, and you might have to drag the file over from a folder on your disk.<br/>If you can't or don't want to drag a file over a window, you can use the Browse Files button to select your file.<br/>
+					<br/>
+					The hex viewer stores addresses of bytes as hexadecimal numbers. The least significant hex digit is shown on the top bar, while the rest of the digits is shown to the left of the data.
+				</p>
+
+				<h2>Available Examples</h2>
+				<p>
+					Hex viewer has several example files provided with it, and some examples also have extra functionality provided through javascript. Here is a list of all examples:
+				</p>
+				<ul>
+					<li>Incrementing numbers - 256 bytes of unique data in increasing order.</li>
+				</ul>
+			</article>
+		</main>
+	</body>
+</html>

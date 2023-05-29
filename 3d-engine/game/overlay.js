@@ -534,11 +534,15 @@ function addWindow(elem){		//	Set up the window to allow the user to drag it aro
 		point_light.appendChild(point_light_cube);
 		_globalScene.appendChild(point_light);
 	}
-	
+
 	document.getElementById("lightCubes").onchange = ()=>{
 		__LightManager.lightRenderChildren = document.getElementById("lightCubes").checked;
 	};
+	document.getElementById("blinnPhong").onchange = ()=>{
+		__LightManager.BlinnPhong = document.getElementById("blinnPhong").checked;
+	};
 	__LightManager.lightRenderChildren = document.getElementById("lightCubes").checked;
+	__LightManager.BlinnPhong = document.getElementById("blinnPhong").checked;
 
 
 	setInterval(object_window_update_handler, 250);		//	Remove windows and objects which are not getting rendered anymore from the system to save memory and cpu usage. Perform this cleanup every 250 milliseconds

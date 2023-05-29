@@ -60,7 +60,8 @@ function performRender(cameraMatrix,cameraPos, standardUniforms){
 		u_dlight_direction: v3.copy(__LightManager.directional.direction),
 		u_dlight_power: v3.create(__LightManager.directional.ambientInfluence, __LightManager.directional.diffuseInfluence, __LightManager.directional.specularInfluence),//	influence of the different light components (after calculation they are multiplied by this). The order is x:ambient, y:diffuse, z:specular
 		u_pointLights: pointLights_ready,
-		u_pointLightCount: pointLights_ready.length
+		u_pointLightCount: pointLights_ready.length,
+		u_blinn_phong: __LightManager.BlinnPhong
 	};
 
 
