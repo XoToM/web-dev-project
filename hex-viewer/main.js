@@ -143,7 +143,8 @@ async function onFileDownload(){		//	Generate and download the hex file
 	}
 	let file = new File([data.buffer], lastFileName);
 	let url = URL.createObjectURL(file)
-	let a = document.createElement("a");
+	
+	let a = document.createElement("a");	//	create a fake download link and click it
 	a.href = url;
 	a.download = lastFileName || 'download';
 
@@ -158,7 +159,6 @@ async function onFileDownload(){		//	Generate and download the hex file
 }
 const ALLOWED_KEYS = ["Backspace", "ArrowLeft", "ArrowRight", "Delete"]	//	Make sure only allowed characters are allowed in
 function hexOnly(event){
-	console.log(event);
 	if(Number.isNaN(parseInt(event.key, 16)) && !ALLOWED_KEYS.find((e)=>(e==event.key))){
 		event.preventDefault();
 		return false;
