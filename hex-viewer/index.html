@@ -23,6 +23,7 @@
 	<body ondrop="loadFile(event); onDragEnd(event)" ondragover="onFileHover(event)" ondragenter="onDragStart(event)">
 		<header>
 			<a href="../index.html"><h1>Hex Viewer</h1></a>
+			<span>Double click on a byte to edit it</span>
 			<div>
 				<label for="file-select">Drag and drop a file here to open it or click here to choose one:</label>
 				<input id="file-select" type="file" onchange="onFileInputChange(event)">
