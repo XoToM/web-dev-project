@@ -15,6 +15,7 @@ function loadHex(hex_id, data, defaultAddrPadding){		//	Function for generating 
 	let hex = {};
 	let autoPadding = !defaultAddrPadding;
 	let last_input = null;
+	let last_text = null;
 	if(!autoPadding) defaultAddrPadding--;
 
 	data.hex = hex;		//	Store the data for later
@@ -87,27 +88,37 @@ function loadHex(hex_id, data, defaultAddrPadding){		//	Function for generating 
 		}
 		defaultAddrPadding = counter;
 	};
-	hex.closeInput = ()=>{
+	hex.closeInput = ()=>{	//	Close text inputs if there are any
 		if(last_input){
 			let index = whichChild(last_input);
-			let value = Math.max(0,Math.min(255,Math.round(last_input.querySelector("input").valueAsNumber)));
-			let span = document.createElement("SPAN");
-			span.ondblclick = hex.onEditor;
-			span.innerText = HEX_PALETTE[value];
-			last_input.replaceWith(span);
-			hex.proxy[index] = value;
-			last_input = null;
+			let span = last_text || document.createElement("SPAN");
+			try{
+				let data = last_input.querySelector("input").value;
+				data = parseInt(data, 16);
+				if(Number.isNaN(data)) data = parseInt(last_text.innerText, 16);
+				let value = Math.max(0,Math.min(255, Math.round(data)));
+				hex.proxy[index] = value;
+				span.innerText = HEX_PALETTE[value];
+			}catch(e){
+				span.innerText = HEX_PALETTE[hex.proxy[index]];
+			}
+				span.ondblclick = hex.onEditor;
+				last_input.replaceWith(span);
+				last_input = null;
+				last_text = null;
 		}
 	};
-	hex.onEditor = (event)=>{
+	hex.onEditor = (event)=>{	//	Open a text input
 		hex.closeInput();
 		let index = whichChild(event.target);
 		let hexin = inp_template.cloneNode(true);
 		let input = hexin.querySelector("input");
-		input.valueAsNumber = hex.data[index];
+		input.value = "";	//	HEX_PALETTE[hex.data[index]];
 		input.onblur = ()=>{hex.closeInput();}
+		last_text = event.target;
 		event.target.replaceWith(hexin);
 		last_input = hexin;
+		input.focus();
 	};
 
 	hex.render = function() {	//	The hex viewer rendering function

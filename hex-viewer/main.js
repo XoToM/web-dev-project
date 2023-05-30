@@ -42,6 +42,7 @@ async function onFileInputChange(event){	//	On File loaded through button
 	}
 }
 async function onExampleSelected(event){
+	hex.hex.closeInput();
 	hex.unhighlight(0, hex.length);
 	lastFileName = "hex file.bin";
 	switch(event.target.selectedIndex){	//	Do a different thing depending on what is selected in the dropdown
@@ -134,7 +135,7 @@ async function loadBuffer(data){
 		}
 	}, 500);
 }
-async function onFileDownload(){
+async function onFileDownload(){		//	Generate and download the hex file
 	hex.hex.closeInput();
 	let data = new Uint8Array(hex.hex.data.length);
 	for(let i=0;i<data.length;i++){
@@ -154,4 +155,13 @@ async function onFileDownload(){
 	  };
 	a.addEventListener("click", clickHandler,false);
 	a.click();
+}
+const ALLOWED_KEYS = ["Backspace", "ArrowLeft", "ArrowRight", "Delete"]	//	Make sure only allowed characters are allowed in
+function hexOnly(event){
+	console.log(event);
+	if(Number.isNaN(parseInt(event.key, 16)) && !ALLOWED_KEYS.find((e)=>(e==event.key))){
+		event.preventDefault();
+		return false;
+	}
+	return true;
 }
