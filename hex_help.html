@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 	<head>
-		<title>Web Dev Project</title>
-		<meta name="title" content="Hex viewer documentation">
-		<meta name="description" content="Documentation for the Hex Viewer">
-		<meta name="keywords" content="Dawid Kawka, Web Dev, Web Dev Project, Assessment, ">
+		<title>Hex Editor documentation</title>
+		<meta name="title" content="Hex Editor documentation">
+		<meta name="description" content="Documentation for the Hex Editor">
+		<meta name="keywords" content="Dawid Kawka, Web Dev, Web Dev Project, Assessment, hex editor, hex viewer, documentation">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="robots" content="index, follow">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -21,7 +21,7 @@
 		<header>
 			<a href="index.html">
 				<h1>
-					Web Dev Project - Hex Viewer
+					Web Dev Project - Hex Editor
 				</h1>
 			</a>
 			<h2>by Dawid Kawka</h2>
@@ -33,8 +33,8 @@
 				<div>
 					<a href="hex-viewer/index.html" class="applink">
 						<div>
-							<img src="hexview.webp" alt="Image of the hex viewer">
-							<h3>Hex Viewer</h3>
+							<img src="hexview.webp" alt="Image of the hex editor">
+							<h3>Hex Editor</h3>
 						</div>
 					</a>
 				</div>
@@ -49,7 +49,7 @@
 				<h2>Documentation Links</h2>
 				<div>
 					<a href="hex_help.html" class="applink">
-						<h3>Hex Viewer documentation</h3>
+						<h3>Hex Editor documentation</h3>
 					</a>
 				</div>
 				<div>
@@ -59,44 +59,52 @@
 				</div>
 			</aside>
 			<article>
-				<h2>Hex Viewer - What is it?</h2>
+				<h2>Hex Editor - What is it?</h2>
 				<p>
-					A hex viewer is a program which displays data as hexadecimal numbers.
+					A hex editor is a program which displays data as hexadecimal numbers and lets you modify this data.
 					It reads files as bytes, and then displays those bytes to the user as hexadecimal numbers.
 					Hex viewers and hex editors are often used for displaying binary data such as compiled code, as they show a clear image of where each byte is in memory, as well as what value it has.
 				</p>
 				<p>
-					My hex viewer can read bytes from files as well as bytes generated through javascript code, and it will update the page live to reflect those changes as soon as they happen.
+					My hex editor can read bytes from files as well as bytes generated through javascript code, and it will update the page live to reflect those changes as soon as they happen.
 					It also supports highlighting data values, although controlling this functionality is currently not possible through the web interface and has to be done through the javascript console.
-					You can drag and drop your own files into the hex editor (or use the upload button, your choice) to load them and display them as binary data. I do recommend to keep the files well under under 1 megabyte however, as my hex viewer isn't well optimised for large files, and your web browser will likely run out of memory.
+					You can drag and drop your own files into the hex editor (or use the upload button, your choice) to load them and display them as binary data. You can then modify the data by double clicking on the bytes you want to change and typing in the new value, and once you're done you can download the finished file.
+					I do recommend to keep the files well under under 1 megabyte however, as my hex editor isn't well suited for large files, and your web browser will likely run out of memory.
 				</p>
 
 				<h2>How to use it</h2>
 				<p>
-					To use the hex viewer you first need to open a file. You can either choose one of the examples or upload your own.<br/>
+					To use the hex editor you first need to open a file. You can either choose one of the examples or upload your own.<br/>
 					To upload your own file just drag the file over the browser window and release your mouse button.
-					The hex viewer should display an overlay telling you that you can safely drop the file when you hover a valid file over it.
+					The hex editor should display an overlay telling you that you can safely drop the file when you hover a valid file over it.
 					Note that dragging files directly from programs might not always work, and you might have to drag the file over from a folder on your disk.<br/>If you can't or don't want to drag a file over a window, you can use the Browse Files button to select your file.<br/>
 					<br/>
-					The hex viewer stores addresses of bytes as hexadecimal numbers. The least significant hex digit is shown on the top bar, while the rest of the digits is shown to the left of the data.
+					Once you're done selecting your file you can change it by double clicking on the bytes you want to change. To download the finished file simply press the download button at the top of the page.
+					<br/>
+					The hex editor stores addresses of bytes as hexadecimal numbers. The least significant hex digit is shown on the top bar, while the rest of the digits is shown to the left of the data.
 				</p>
 
 				<h2>Available Examples</h2>
 				<p>
-					Hex viewer has several example files provided with it, and some examples also have extra functionality provided through javascript. Here is a list of all examples:
+					Hex Editor has several example files provided with it, and some examples also have extra functionality provided through javascript. Here is a list of all examples:
 				</p>
 				<ul>
 					<li>Incrementing numbers - 256 bytes of unique data in increasing order generated with javascript.</li>
 					<li>Prime numbers - Same as <em>Incrementing numbers</em>, but javascript also highlights prime numbers.</li>
 					<li>Changing numbers - 256 zero bytes. Javascript sets a random byte to a random value every 0.5 seconds.</li>
-					<li>NBT Data (<a href="https://raw.github.com/Dav1dde/nbd/master/test/hello_world.nbt">test.nbt</a>) - A test file in the NBT data format. The NBT data format is a binary data format developed by Mojang for their game <a href="https://minecraft.net/">Minecraft</a>. Find out more <a href="https://wiki.vg/NBT" title="NBT format documentation">on wiki.vg</a> or <a href="https://minecraft.fandom.com/wiki/NBT_format" title="Description of the NBT format on minecraft wiki">on Minecraft Wiki</a>.</li>
-					<li>This page (*) - Source code of the hex viewer website. The hex viewer will interpret the text as bytes and display them.</li>
+					<li>NBT Data (<a href="https://raw.github.com/Dav1dde/nbd/master/test/hello_world.nbt">test.nbt</a>) - A test file in the NBT data format. The NBT data format is a simple binary data format developed by Mojang for their game <a href="https://minecraft.net/">Minecraft</a>. Find out more <a href="https://wiki.vg/NBT" title="NBT format documentation">on wiki.vg</a> or <a href="https://minecraft.fandom.com/wiki/NBT_format" title="Description of the NBT format on minecraft wiki">on Minecraft Wiki</a>.</li>
+					<li>This page (*) - Source code of the hex editor website. The hex editor will interpret the text as bytes and display them.</li>
 				</ul>
 
 				<h2>Console commands</h2>
 				<p>
-					The hex viewer stores all of the currently displayed data in the <code>hex</code> object. The <code>hex</code> object works just like a any other javascript array, and all the rendering is done through it. This means that the <code>hex</code> object has extra properties and methods which give you access to the hex viewer's extra functionality.
+					The hex editor stores all of the currently displayed data in the <code>hex</code> object. The <code>hex</code> object works just like a any other javascript array, and all the rendering is done through it. This means that the <code>hex</code> object has extra properties and methods which give you access to the hex editor's extra functionality.
 				</p>
+				<h3>hex[index]</h3>
+				<p>
+					<code>hex[index]</code><br/>
+					The hex editor can be indexed just like any normal array. This means you can read and write values as if it was just an array. Do <code>hex[index]</code> to read data, and <code>hex[index] = value</code> to write data.
+ 				</p>
 				<h3>highlight</h3>
 				<p>
 					<code>hex.highlight(index [, count], style)</code><br/>
