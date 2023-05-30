@@ -1,4 +1,5 @@
 let hex;
+let lastFileName = "hex file.bin";
 let current_drag_object = null;
 const drag_overlay = document.getElementById("drag-overlay");
 const example_selector = document.getElementById("example-selection");
@@ -34,6 +35,7 @@ function onDragEnd(event){
 async function onFileInputChange(event){	//	On File loaded through button
 	if(event.target.files && event.target.files.length){	//	Check if there are any files to be loaded
 		let file = event.target.files[0];	//	Get the first file
+		lastFileName = file.name.split(/(\\|\/)/g).pop();
 		let ab = await file.arrayBuffer();
 		example_selector.selectedIndex = 0;
 		await loadBuffer(ab);				//	Load the file
@@ -41,6 +43,7 @@ async function onFileInputChange(event){	//	On File loaded through button
 }
 async function onExampleSelected(event){
 	hex.unhighlight(0, hex.length);
+	lastFileName = "hex file.bin";
 	switch(event.target.selectedIndex){	//	Do a different thing depending on what is selected in the dropdown
 		case 1:	//	Generate 256 numbers
 			hex.length = 0;
@@ -70,18 +73,23 @@ async function onExampleSelected(event){
 			break;
 		case 4:
 			await loadHexFile("./examples/test.nbt");
+			lastFileName = "test.nbt";
 			break;
 		case 5:
 			await loadHexFile("./index.html");
+			lastFileName = "index.html";
 			break;
 		case 6:
 			await loadHexFile("./styles.css");
+			lastFileName = "styles.css";
 			break;
 		case 7:
 			await loadHexFile("./main.js");
+			lastFileName = "main.js";
 			break;
 		case 8:
 			await loadHexFile("./hexedit.js");
+			lastFileName = "hexedit.js";
 			break;
 	}
 }
@@ -101,6 +109,7 @@ async function loadFile(event){
 
 	if(event.dataTransfer.files && event.dataTransfer.files.length){	//	Check if there are any files to be loaded
 		let file = event.dataTransfer.files[0];	//	Get the first file
+		lastFileName = file.name.split(/(\\|\/)/g).pop();
 		let ab = await file.arrayBuffer();
 		await loadBuffer(ab);				//	Load the file
 	}
@@ -124,4 +133,25 @@ async function loadBuffer(data){
 			hex[Math.floor(Math.random() * hex.length)] = Math.floor(Math.random() * 256);
 		}
 	}, 500);
+}
+async function onFileDownload(){
+	hex.hex.closeInput();
+	let data = new Uint8Array(hex.hex.data.length);
+	for(let i=0;i<data.length;i++){
+		data[i] = hex[i];
+	}
+	let file = new File([data.buffer], lastFileName);
+	let url = URL.createObjectURL(file)
+	let a = document.createElement("a");
+	a.href = url;
+	a.download = lastFileName || 'download';
+
+	const clickHandler = () => {
+		setTimeout(() => {
+		  URL.revokeObjectURL(url);
+		  removeEventListener('click', clickHandler);
+		}, 150);
+	  };
+	a.addEventListener("click", clickHandler,false);
+	a.click();
 }

@@ -44,6 +44,12 @@
 					<option value="8" title="The javascript source code of this page used for displaying data">This page (hexedit.js)</option>
 				</select>
 			</div>
+			<div>
+				<label for="file_download">
+					Finally you can download your file here:
+				</label>
+				<button id="file_download" onclick="onFileDownload(event)">Download</button>
+			</div>
 			<nav>
 				<a href="../index.html"><h2>Go back to the main page</h2></a>
 				<a href="../hex_help.html"><h2>Hex viewer documentation</h2></a>
@@ -63,5 +69,10 @@
 				<h1>Drop file here to open</h1>
 			</div>
 		</div>
+		<template id="hex_input_template">
+			<div>
+				<input type="number" min="0" max="255" step="1">
+			</div>
+		</template>
 	</body>
 </html>
