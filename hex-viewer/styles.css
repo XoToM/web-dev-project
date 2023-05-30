@@ -169,3 +169,20 @@ nav {
 .blue-highlight {
 	background-color: rgba(0, 0, 255, 0.75) !important;
 }
+input[type="number"] {
+	width: 1.3em;
+	margin: -0.25em;
+	font-family: monospace;
+	font-size: 1em;
+	text-align: center;
+}
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type=number] {
+    -moz-appearance:textfield; /* Firefox */
+}

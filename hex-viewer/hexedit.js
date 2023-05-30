@@ -11,8 +11,10 @@ const HEX_PALETTE = genHexPalette(256, 2);	//	Generate the strings
 
 function loadHex(hex_id, data, defaultAddrPadding){		//	Function for generating a hex viewer object. First argument is the id of the DOM element which will become the hex viewer, second is the data we want to display, and third is the amount of digits we want the addresses to have
 	let grid = document.getElementById(hex_id);		//	Get the DOM element
+	const inp_template = document.getElementById("hex_input_template").content.children[0];
 	let hex = {};
 	let autoPadding = !defaultAddrPadding;
+	let last_input = null;
 	if(!autoPadding) defaultAddrPadding--;
 
 	data.hex = hex;		//	Store the data for later
@@ -20,6 +22,12 @@ function loadHex(hex_id, data, defaultAddrPadding){		//	Function for generating 
 	hex.data = data;
 	hex.changes = [];
 	hex.highlights = [];	//	Stores information about which bytes should have a highlight applied to them
+
+	function whichChild(elem){
+		var  i= 0;
+		while((elem=elem.previousSibling)!=null) ++i;
+		return i;
+	}
 
 	if(grid.childNodes.length==0){	//	Check if the hex viewer element already has any child elements, and if it does use them instead of generating new ones. This could be used for custom styling
 		hex.labels = document.createElement("DIV");	//	Create needed elements
@@ -79,6 +87,28 @@ function loadHex(hex_id, data, defaultAddrPadding){		//	Function for generating 
 		}
 		defaultAddrPadding = counter;
 	};
+	hex.closeInput = ()=>{
+		if(last_input){
+			let index = whichChild(last_input);
+			let value = Math.max(0,Math.min(255,Math.round(last_input.querySelector("input").valueAsNumber)));
+			let span = document.createElement("SPAN");
+			span.ondblclick = hex.onEditor;
+			span.innerText = HEX_PALETTE[value];
+			last_input.replaceWith(span);
+			hex.proxy[index] = value;
+			last_input = null;
+		}
+	};
+	hex.onEditor = (event)=>{
+		hex.closeInput();
+		let index = whichChild(event.target);
+		let hexin = inp_template.cloneNode(true);
+		let input = hexin.querySelector("input");
+		input.valueAsNumber = hex.data[index];
+		input.onblur = ()=>{hex.closeInput();}
+		event.target.replaceWith(hexin);
+		last_input = hexin;
+	};
 
 	hex.render = function() {	//	The hex viewer rendering function
 		let values = hex.values;	//	Initialize variables and shorthands for existing objects
@@ -90,7 +120,10 @@ function loadHex(hex_id, data, defaultAddrPadding){		//	Function for generating 
 		if(data.length > values.childNodes.length){	//	Detect if the length of the data array has increased, and add extra elements if so
 			let count = data.length - values.childNodes.length;
 			for(let i = 0; i < count; i++){
-				values.appendChild(document.createElement("SPAN"));
+				let span = document.createElement("SPAN");
+				span.ondblclick = hex.onEditor;
+				span.onclick = hex.closeInput;
+				values.appendChild(span);
 			}
 			redo_full = true;	//	The amount of DOM elements changed, meaning that we are going to need to redraw everything
 		}
